@@ -1,0 +1,466 @@
+export const categoryProducts = {
+  "auto-motorrad": [
+    {
+      id: "auto-1",
+      title: "Autobatterie 12V 74Ah AGM, wartungsfrei, Start-Stopp-System",
+      imageUrl: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "AUTO-001",
+      price: 89.99,
+      oldPrice: 119.99,
+      available: true
+    },
+    {
+      id: "auto-2",
+      title: "Motorrad-Handschuhe Leder, gepolstert, wasserabweisend",
+      imageUrl: "https://images.unsplash.com/photo-1558980664-2506fca6bfc2?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "AUTO-002",
+      price: 45.50,
+      oldPrice: 59.99,
+      available: true
+    },
+    {
+      id: "auto-3",
+      title: "Autoreifen 205/55 R16 Sommerreifen, 4er Set",
+      imageUrl: "https://images.unsplash.com/photo-1558442074-3d1982a56c24?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "AUTO-003",
+      price: 299.99,
+      oldPrice: 349.99,
+      available: true
+    },
+    {
+      id: "auto-4",
+      title: "Motoröl 5W-30, 5 Liter, vollsynthetisch",
+      imageUrl: "https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "AUTO-004",
+      price: 34.99,
+      oldPrice: 42.99,
+      available: true
+    },
+    {
+      id: "auto-5",
+      title: "Autowaschbürste mit Teleskopstiel, 180cm",
+      imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "AUTO-005",
+      price: 19.99,
+      available: true
+    },
+    {
+      id: "auto-6",
+      title: "OBD2 Diagnosegerät, Bluetooth, für alle Fahrzeuge",
+      imageUrl: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "AUTO-006",
+      price: 24.99,
+      oldPrice: 34.99,
+      available: false
+    }
+  ],
+  "garten": [
+    {
+      id: "garten-1",
+      title: "Rasenmäher Elektro, 1500W, 40cm Schnittbreite, Fangkorb 50L",
+      imageUrl: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "GART-001",
+      price: 129.99,
+      oldPrice: 159.99,
+      available: true
+    },
+    {
+      id: "garten-2",
+      title: "Gartenstühle Set aus 4, Kunststoff, wetterfest, verschiedene Farben",
+      imageUrl: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "GART-002",
+      price: 79.99,
+      oldPrice: 99.99,
+      available: true
+    },
+    {
+      id: "garten-3",
+      title: "Gartenschlauch 25m, PVC, mit Sprühpistole",
+      imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "GART-003",
+      price: 24.99,
+      oldPrice: 34.99,
+      available: true
+    },
+    {
+      id: "garten-4",
+      title: "Gartenbank Eiche, 180cm, wetterfest behandelt",
+      imageUrl: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "GART-004",
+      price: 199.99,
+      oldPrice: 249.99,
+      available: true
+    },
+    {
+      id: "garten-5",
+      title: "Pflanzkübel 50L, Kunststoff, selbstbewässernd, terracotta",
+      imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "GART-005",
+      price: 29.99,
+      available: true
+    },
+    {
+      id: "garten-6",
+      title: "Gartenwerkzeug Set, 5-teilig, Edelstahl, mit Aufbewahrungstasche",
+      imageUrl: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "GART-006",
+      price: 39.99,
+      oldPrice: 54.99,
+      available: false
+    }
+  ],
+  "haus-wohnen": [
+    {
+      id: "haus-1",
+      title: "Staubsauger Beutellos, 2000W, mit HEPA-Filter",
+      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "HAUS-001",
+      price: 149.99,
+      oldPrice: 199.99,
+      available: true
+    },
+    {
+      id: "haus-2",
+      title: "LED Deckenleuchte, dimmbar, 3-fach, warmweiß",
+      imageUrl: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "HAUS-002",
+      price: 79.99,
+      oldPrice: 99.99,
+      available: true
+    },
+    {
+      id: "haus-3",
+      title: "Wasserkocher Edelstahl, 1.7L, 3000W, automatische Abschaltung",
+      imageUrl: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "HAUS-003",
+      price: 34.99,
+      oldPrice: 44.99,
+      available: true
+    },
+    {
+      id: "haus-4",
+      title: "Bettwäsche Set 140x200cm, 100% Baumwolle, waschbar bei 60°C",
+      imageUrl: "https://images.unsplash.com/photo-1586105251261-72a756497a11?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "HAUS-004",
+      price: 49.99,
+      oldPrice: 69.99,
+      available: true
+    },
+    {
+      id: "haus-5",
+      title: "Vorhangstange 180-300cm, verstellbar, mit Halterungen",
+      imageUrl: "https://images.unsplash.com/photo-1586105251261-72a756497a11?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "HAUS-005",
+      price: 19.99,
+      available: true
+    },
+    {
+      id: "haus-6",
+      title: "Küchenwaage Digital, 5kg, LCD-Display, Tare-Funktion",
+      imageUrl: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "HAUS-006",
+      price: 14.99,
+      oldPrice: 19.99,
+      available: false
+    }
+  ],
+  "werkstatt-diy": [
+    {
+      id: "werk-1",
+      title: "Akku-Bohrschrauber 18V, 2 Akkus, 20+1 Drehmomenteinstellungen",
+      imageUrl: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "WERK-001",
+      price: 89.99,
+      oldPrice: 129.99,
+      available: true
+    },
+    {
+      id: "werk-2",
+      title: "Werkzeugkoffer 39-teilig, Stahl, mit Rollen",
+      imageUrl: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "WERK-002",
+      price: 79.99,
+      oldPrice: 99.99,
+      available: true
+    },
+    {
+      id: "werk-3",
+      title: "Schraubendreher Set, 20-teilig, magnetisch, verschiedene Größen",
+      imageUrl: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "WERK-003",
+      price: 24.99,
+      oldPrice: 34.99,
+      available: true
+    },
+    {
+      id: "werk-4",
+      title: "Stichsäge Elektro, 800W, Pendelhub, mit Zubehör",
+      imageUrl: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "WERK-004",
+      price: 69.99,
+      oldPrice: 89.99,
+      available: true
+    },
+    {
+      id: "werk-5",
+      title: "Werkbank 120cm, höhenverstellbar, mit Schubladen",
+      imageUrl: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "WERK-005",
+      price: 199.99,
+      oldPrice: 249.99,
+      available: true
+    },
+    {
+      id: "werk-6",
+      title: "Schleifpapier Set, 40-teilig, verschiedene Körnungen",
+      imageUrl: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "WERK-006",
+      price: 19.99,
+      available: false
+    }
+  ],
+  "tierbedarf": [
+    {
+      id: "tier-1",
+      title: "Hundefutter Trockenfutter, 15kg, für große Hunde, Lachs & Reis",
+      imageUrl: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "TIER-001",
+      price: 39.99,
+      oldPrice: 49.99,
+      available: true
+    },
+    {
+      id: "tier-2",
+      title: "Katzenstreu Klumpstreu, 20L, geruchsbindend, staubarm",
+      imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "TIER-002",
+      price: 14.99,
+      oldPrice: 19.99,
+      available: true
+    },
+    {
+      id: "tier-3",
+      title: "Hundeleine 120cm, Leder, verstellbar, mit Handschlaufe",
+      imageUrl: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "TIER-003",
+      price: 24.99,
+      oldPrice: 34.99,
+      available: true
+    },
+    {
+      id: "tier-4",
+      title: "Katzenkratzbaum 120cm, mit Spielzeug und Liegefläche",
+      imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "TIER-004",
+      price: 79.99,
+      oldPrice: 99.99,
+      available: true
+    },
+    {
+      id: "tier-5",
+      title: "Hundespielzeug Kauspielzeug, robust, für große Hunde",
+      imageUrl: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "TIER-005",
+      price: 12.99,
+      available: true
+    },
+    {
+      id: "tier-6",
+      title: "Vogelkäfig 60x40x50cm, mit Zubehör, für kleine Vögel",
+      imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "TIER-006",
+      price: 89.99,
+      oldPrice: 119.99,
+      available: false
+    }
+  ],
+  "sport-freizeit": [
+    {
+      id: "sport-1",
+      title: "Fahrradhelm, verstellbar, mit LED-Beleuchtung, verschiedene Größen",
+      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "SPORT-001",
+      price: 49.99,
+      oldPrice: 69.99,
+      available: true
+    },
+    {
+      id: "sport-2",
+      title: "Yoga-Matte, rutschfest, 6mm, mit Tragetasche",
+      imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "SPORT-002",
+      price: 24.99,
+      oldPrice: 34.99,
+      available: true
+    },
+    {
+      id: "sport-3",
+      title: "Hantelset verstellbar, 2x20kg, mit Stange und Scheiben",
+      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "SPORT-003",
+      price: 89.99,
+      oldPrice: 119.99,
+      available: true
+    },
+    {
+      id: "sport-4",
+      title: "Laufschuhe, atmungsaktiv, Dämpfung, verschiedene Größen",
+      imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "SPORT-004",
+      price: 79.99,
+      oldPrice: 99.99,
+      available: true
+    },
+    {
+      id: "sport-5",
+      title: "Tennis-Schläger Set, 2 Schläger, mit Bällen und Netz",
+      imageUrl: "https://images.unsplash.com/photo-1622163642999-2022b9907134?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "SPORT-005",
+      price: 59.99,
+      available: true
+    },
+    {
+      id: "sport-6",
+      title: "Fitnessmatte Puzzle, 6-teilig, 1cm dick, waschbar",
+      imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "SPORT-006",
+      price: 34.99,
+      oldPrice: 44.99,
+      available: false
+    }
+  ],
+  "pool-teich": [
+    {
+      id: "pool-1",
+      title: "Pool-Roboter automatisch, für Pools bis 8x4m, mit Filter",
+      imageUrl: "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "POOL-001",
+      price: 299.99,
+      oldPrice: 399.99,
+      available: true
+    },
+    {
+      id: "pool-2",
+      title: "Teichpumpe 5000L/h, mit Filter, für Teiche bis 10m³",
+      imageUrl: "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "POOL-002",
+      price: 89.99,
+      oldPrice: 119.99,
+      available: true
+    },
+    {
+      id: "pool-3",
+      title: "Pool-Abdeckplane, 6x4m, transparent, UV-beständig",
+      imageUrl: "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "POOL-003",
+      price: 49.99,
+      oldPrice: 69.99,
+      available: true
+    },
+    {
+      id: "pool-4",
+      title: "Chlor-Tabletten 5kg, langsam löslich, für Poolwasser",
+      imageUrl: "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "POOL-004",
+      price: 34.99,
+      oldPrice: 44.99,
+      available: true
+    },
+    {
+      id: "pool-5",
+      title: "Teichfilter Set, 3000L/h, mit UV-Lampe, biologisch",
+      imageUrl: "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "POOL-005",
+      price: 149.99,
+      oldPrice: 199.99,
+      available: true
+    },
+    {
+      id: "pool-6",
+      title: "Pool-Thermometer Digital, schwimmend, großes Display",
+      imageUrl: "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "POOL-006",
+      price: 19.99,
+      available: false
+    }
+  ],
+  "foto-studio": [
+    {
+      id: "foto-1",
+      title: "Digitalkamera DSLR, 24MP, mit Objektiv 18-55mm, WiFi",
+      imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "FOTO-001",
+      price: 449.99,
+      oldPrice: 599.99,
+      available: true
+    },
+    {
+      id: "foto-2",
+      title: "Fotostativ Aluminium, 3-fach ausziehbar, bis 160cm, mit Tasche",
+      imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "FOTO-002",
+      price: 59.99,
+      oldPrice: 79.99,
+      available: true
+    },
+    {
+      id: "foto-3",
+      title: "Ringlicht LED, 18cm, dimmbar, mit Stativ, für Smartphone/Kamera",
+      imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "FOTO-003",
+      price: 39.99,
+      oldPrice: 54.99,
+      available: true
+    },
+    {
+      id: "foto-4",
+      title: "Speicherkarte SDXC 128GB, UHS-I, Class 10, für Kameras",
+      imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "FOTO-004",
+      price: 24.99,
+      oldPrice: 34.99,
+      available: true
+    },
+    {
+      id: "foto-5",
+      title: "Fotobox Hintergrund, 2x3m, verschiedene Farben, faltbar",
+      imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "FOTO-005",
+      price: 49.99,
+      available: true
+    },
+    {
+      id: "foto-6",
+      title: "Blitzgerät extern, TTL, für DSLR-Kameras, mit Diffusor",
+      imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=600&q=80",
+      articleNumber: "FOTO-006",
+      price: 89.99,
+      oldPrice: 119.99,
+      available: false
+    }
+  ]
+};
+
+// export const categorySlugs = {
+//   "Auto & Motorrad": "auto-motorrad",
+//   "Garten": "garten",
+//   "Haus & Wohnen": "haus-wohnen",
+//   "Werkstatt & DIY": "werkstatt-diy",
+//   "Tierbedarf": "tierbedarf",
+//   "Sport & Freizeit": "sport-freizeit",
+//   "Pool & Teich": "pool-teich",
+//   "Foto & Studio": "foto-studio"
+// }
+
+export const categorySlugs = {
+  auto_motorrad: 'auto-motorrad',
+  garten: 'garten',
+  haus_wohnen: 'haus-wohnen',
+  werkstatt_diy: 'werkstatt-diy',
+  tierbedarf: 'tierbedarf',
+  sport_freizeit: 'sport-freizeit',
+  pool_teich: 'pool-teich',     
+  foto_studio: 'foto-studio' 
+};
+
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="800" height="600" fill="#f8f9fa"/>
+
+    <!-- Header -->
+    <rect x="0" y="0" width="800" height="60" fill="#2c3e50"/>
+
+    <!-- Sidebar -->
+    <rect x="0" y="60" width="200" height="540" fill="#34495e"/>
+
+    <!-- Content Area -->
+    <rect x="220" y="80" width="560" height="100" fill="#e3f2fd" rx="8"/>
+    <rect x="220" y="200" width="270" height="100" fill="#e3f2fd" rx="8"/>
+    <rect x="510" y="200" width="270" height="100" fill="#e3f2fd" rx="8"/>
+    <rect x="220" y="320" width="560" height="260" fill="#e3f2fd" rx="8"/>
+
+    <!-- Text Placeholders -->
+    <text x="400" y="35" font-family="Arial" font-size="20" fill="white" text-anchor="middle">SaleTodayStore Dashboard</text>
+    <text x="100" y="100" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Dashboard</text>
+    <text x="100" y="140" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Tenants</text>
+    <text x="100" y="180" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Users</text>
+    <text x="100" y="220" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Settings</text>
+</svg>
