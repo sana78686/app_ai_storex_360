@@ -23,7 +23,7 @@ return [
 
 
 
-    'prefix' => 'saletodaystore_tenant_',
+    'prefix' => 'aistorex360_tenant_',
     'identification' => [
         'middleware' => [
             'web' => [
@@ -39,6 +39,7 @@ return [
     'tenancy' => [
         'central_domains' => [
             'localhost',
+            'https://my.aistorex360.com',
             env('APP_DOMAIN', 'localhost'),
         ],
     ],
