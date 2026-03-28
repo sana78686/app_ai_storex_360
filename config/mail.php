@@ -89,6 +89,8 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Admin | SaleTodayStore'),
     ],
 
+    'support_address' => env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'hello@example.com')),
+
     // Custom additional config used in your app
     'admin_to' => env('MAIL_USERNAME'),
 ];

@@ -23,19 +23,19 @@
         </p>
 
         <div class="space-y-3">
-            <a href="http://localhost:8000"
+            <a href="{{ rtrim(config('app.url'), '/') }}/"
                class="block w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-95">
                 Back to main website
             </a>
 
-            <a href="mailto:support@yourdomain.com"
+            <a href="mailto:{{ config('mail.support_address') }}"
                class="block w-full py-3 px-4 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all">
                 Contact Support
             </a>
         </div>
 
         <p class="mt-12 text-sm text-gray-400">
-            &copy; {{ date('Y') }} YourPlatform Name. All rights reserved.
+            &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
         </p>
     </div>
 

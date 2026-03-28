@@ -2,6 +2,25 @@
 
 declare(strict_types=1);
 
+$appUrlHost = parse_url((string) env('APP_URL', 'http://localhost:8000'), PHP_URL_HOST);
+$primaryCentral = $appUrlHost ? strtolower($appUrlHost) : 'localhost';
+
+$extraCentral = array_values(array_filter(array_map(
+    static fn (string $host): string => strtolower(trim($host)),
+    explode(',', (string) env('CENTRAL_DOMAINS', ''))
+)));
+
+// Non-production: allow common local hosts even if APP_URL uses only one of them
+$devCentralHosts = env('APP_ENV') !== 'production'
+    ? ['127.0.0.1', 'localhost']
+    : [];
+
+$centralDomainList = array_values(array_unique(array_filter(array_merge(
+    [$primaryCentral],
+    $extraCentral,
+    $devCentralHosts
+))));
+
 return [
 
     'tenant_model' => \App\Models\Tenant::class,
@@ -10,10 +29,8 @@ return [
     // 👇 This is critical
     'tenant_finder' => Stancl\Tenancy\TenantFinder\DomainTenantFinder::class,
 
-    // Only these exact hosts serve the central app; all others (e.g. myshop.localhost) resolve to tenant
-    'central_domains' => [
-        env('APP_DOMAIN', 'localhost'),
-    ],
+    // Hostnames only (no scheme). Must match Request::getHost(). Built from APP_URL + CENTRAL_DOMAINS.
+    'central_domains' => $centralDomainList,
 
     // 'path_identifiers' => [
     //     'tenant' => 'tenant-{uuid}', // Makes sure only valid UUIDs are matched
@@ -35,14 +52,6 @@ return [
         ],
     ],
 
-
-    'tenancy' => [
-        'central_domains' => [
-            'localhost',
-            'https://my.aistorex360.com',
-            env('APP_DOMAIN', 'https://my.aistorex360.com'),
-        ],
-    ],
 
     'bootstrappers' => [
 

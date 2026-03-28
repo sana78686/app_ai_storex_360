@@ -52,8 +52,13 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://my.aistorex360.com'),
-    'domain' => env('APP_DOMAIN', 'https://my.aistorex360.com'),
+    'url' => env('APP_URL', 'http://localhost:8000'),
+
+    /*
+    | Hostname used for tenant subdomains (e.g. tenant-{id}.my.aistorex360.com).
+    | Defaults to the host portion of APP_URL. Override with CENTRAL_DOMAIN if needed.
+    */
+    'central_domain' => env('CENTRAL_DOMAIN') ?: (parse_url((string) env('APP_URL', 'http://localhost:8000'), PHP_URL_HOST) ?: 'localhost'),
 
     /*
     |--------------------------------------------------------------------------

@@ -141,7 +141,7 @@ Log::debug('token response', [$confirmationToken]);
         ]);
 
         // Create domain
-        $domain = "tenant-$tenantId." . config('app.domain', env('APP_DOMAIN', 'localhost'));
+        $domain = "tenant-$tenantId." . config('app.central_domain');
           $tenant->domains()->create([
         'domain' => $domain,
         'is_primary' => true,
@@ -524,7 +524,7 @@ public function resendCode(Request $request)
 
 
                  // ✅ Create domain
-            $domain = "tenant-$tenantId.localhost";
+            $domain = "tenant-$tenantId." . config('app.central_domain');
             $tenant->domains()->create(['domain' => $domain]);
 
                 // Create tenant database manually
