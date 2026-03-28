@@ -12,6 +12,25 @@ return Application::configure(basePath: dirname(__DIR__))
         // health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Behind Plesk/nginx TLS termination: correct scheme/host for sessions & secure cookies.
+        $middleware->trustProxies(at: '*');
+
+        /*
+         * Public central JSON endpoints: skip CSRF so signup/confirm work even when
+         * Sanctum cookies (XSRF/session) fail across HTTPS/proxy/domain quirks.
+         * Authenticated dashboard routes still use Bearer tokens; CSRF still applies to other stateful API calls.
+         */
+        $middleware->validateCsrfTokens(except: [
+            'api/v1/central/tenants',
+            'api/v1/central/tenants/confirm',
+            'api/v1/central/tenants/resend-code',
+            'api/v1/central/login',
+            'api/v1/central/signup',
+            'api/v1/central/contact',
+            'api/v1/central/auth/social/callback/google',
+            'api/v1/central/stripe/webhook',
+        ]);
+
         $middleware->api([
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
