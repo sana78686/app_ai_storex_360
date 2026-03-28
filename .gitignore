@@ -2,7 +2,7 @@
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
 /node_modules
-/public/build
+# Keep public/build committed (or run `npm ci && npm run build` on the server after each deploy).
 /public/hot
 /public/storage
 /storage/*.key
