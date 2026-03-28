@@ -26,6 +26,7 @@ use App\Models\Subscription;
 use Stripe\Stripe;
 use Stripe\Customer;
 use App\Helpers\GeoHelper;
+use App\Support\TenantUrl;
 use Stancl\Tenancy\Facades\Tenancy;
 use App\Models\Tenant\GeneralSetting;
 use Stripe\Subscription as StripeSubscription;
@@ -190,7 +191,7 @@ Cache::put(
         return response()->json([
             'message' => 'Tenant created successfully',
             'tenant_id' => $tenantId,
-            'tenant_domain' => "http://$domain:8000",
+            'tenant_domain' => TenantUrl::to($domain),
         ], 201);
 
     } catch (\Throwable $e) {
@@ -318,7 +319,7 @@ public function confirmTenant(Request $request)
 
     return response()->json([
         'message' => 'Tenant confirmed successfully',
-        'tenant_domain' => "http://{$tenant->domains()->first()->domain}:8000/dashboard/login",
+        'tenant_domain' => TenantUrl::to($tenant->domains()->first()->domain, '/dashboard/login'),
     ]);
 }
 
@@ -582,7 +583,7 @@ public function resendCode(Request $request)
                     'id' => $tenant->id,
                 ],
                 'tenant_id' => $tenant->id,
-                'tenant_domain' => "http://$domain:8000"
+                'tenant_domain' => TenantUrl::to($domain)
             ]);
         } catch (\Exception $e) {
             Log::error('Google login error: ' . $e->getMessage());

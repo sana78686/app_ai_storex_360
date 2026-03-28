@@ -78,7 +78,7 @@
         </ul>
 
         <p style="text-align: center;">
-            <a href="http://{{$tenant->domains()->first()->domain}}:8000/login" class="button">Access Your Account</a>
+            <a href="{{ \App\Support\TenantUrl::to($tenant->domains()->first()->domain, '/dashboard/login') }}" class="button">Access Your Account</a>
         </p>
 
         <p>If you have any questions or need assistance, our support team is here to help. You can reach us at <a href="mailto:{{ $supportEmail }}">{{ $supportEmail }}</a>.</p>

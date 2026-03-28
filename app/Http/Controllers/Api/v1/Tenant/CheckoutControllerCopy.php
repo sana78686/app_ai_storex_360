@@ -17,12 +17,13 @@ use App\Mail\InvoiceMail;
 use App\Models\Tenant\InvoiceSetting;
 use App\Models\Tenant\Media;
 use App\Services\MediaUploadService;
+use App\Support\TenantUrl;
 class CheckoutController extends Controller
 {
     public function createSession(Request $request)
     {
         $tenant = tenant(); // get current tenant
-        $tenantDomain = 'http://' . tenant('domains')->first()->domain . ':8000';
+        $tenantDomain = TenantUrl::to(tenant('domains')->first()->domain);
         $product = Product::find($request->product_id);
 
         if (!$product) {

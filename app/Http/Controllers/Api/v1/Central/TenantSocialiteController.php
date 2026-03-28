@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Http;
+use App\Support\TenantUrl;
 
 class TenantSocialiteController extends Controller
 {
@@ -66,7 +67,11 @@ class TenantSocialiteController extends Controller
             // Step 3: Ensure tenant domain exists
             if (!$tenant->domains()->exists()) {
                 $tenant->domains()->create([
-                    'domain' => 'tenant-' . $tenant->id,
+                    'domain' => 'tenant-' . $tenant->id . '.' . config('app.central_domain'),
+                    'is_primary' => true,
+                    'status' => 'active',
+                    'verified_at' => now(),
+                    'type' => 'subdomain',
                 ]);
             }
 
@@ -92,7 +97,9 @@ class TenantSocialiteController extends Controller
                 'tenant_id' => $tenant->id,
                 'tenant_token' => $token,
                 'user' => $tenantUser,
-                'tenant_domain' => $tenant->domains()->first()->domain ?? null,
+                'tenant_domain' => ($d = $tenant->domains()->first()?->domain)
+                    ? TenantUrl::to($d)
+                    : null,
             ], 201);
 
         } catch (\Exception $e) {
@@ -174,10 +181,13 @@ class TenantSocialiteController extends Controller
                     ];
                     $tenant->save();
 
-                    // Assign domain as http://127.0.0.1:8000/tenant-{tenant_id}
-                    $generatedDomain = 'http://127.0.0.1:8000/tenant-' . $tenant->id;
+                    $generatedDomain = 'tenant-' . $tenant->id . '.' . config('app.central_domain');
                     $tenant->domains()->create([
                         'domain' => $generatedDomain,
+                        'is_primary' => true,
+                        'status' => 'active',
+                        'verified_at' => now(),
+                        'type' => 'subdomain',
                     ]);
 
                     Log::info('Tenant created successfully via social login: ' . $tenant->id);
@@ -204,15 +214,14 @@ class TenantSocialiteController extends Controller
                 $token = $tenantUser->createToken('tenant_token')->plainTextToken;
             }
 
-            // Get the tenant's domain
-            $tenantDomain = $tenant->domains()->first()->domain ?? null;
+            $tenantHost = $tenant->domains()->first()?->domain;
 
             return response()->json([
                 'message' => 'Tenant authenticated successfully via social login.',
                 'tenant_id' => $tenant->id,
                 'tenant_token' => $token,
                 'user' => $tenantUser,
-                'tenant_domain' => $tenantDomain
+                'tenant_domain' => $tenantHost ? TenantUrl::to($tenantHost) : null,
             ], 200);
 
         } catch (\Exception $e) {

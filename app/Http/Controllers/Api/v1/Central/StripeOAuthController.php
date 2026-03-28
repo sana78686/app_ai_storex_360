@@ -11,6 +11,7 @@ use Stancl\Tenancy\TenantManager;
 
 use Illuminate\Support\Facades\Log;
 use App\Models\Tenant;
+use App\Support\TenantUrl;
 
 class StripeOAuthController extends Controller
 {
@@ -81,8 +82,10 @@ class StripeOAuthController extends Controller
         // You may want to redirect user back to tenant dashboard.
         // Build a redirect URL to the tenant's frontend including a success flag.
         // Use your logic to create tenant URL — e.g. tenant domain stored on tenant model
-       $tenantDomain = $tenant->domains()->first()?->domain ?? null;
-$redirectUrl = $tenantDomain ? "http://{$tenantDomain}:8000/dashboard/payments?stripe=connected" : '/';
+        $tenantDomain = $tenant->domains()->first()?->domain ?? null;
+        $redirectUrl = $tenantDomain
+            ? TenantUrl::to($tenantDomain, '/dashboard/payments?stripe=connected')
+            : '/';
 
 
         return redirect($redirectUrl);
