@@ -23,7 +23,7 @@ class RequireSiteAccessPass
             return $next($request);
         }
 
-        if ($request->is('site-access')) {
+        if ($request->is('site-access', 'sanctum/*')) {
             return $next($request);
         }
 

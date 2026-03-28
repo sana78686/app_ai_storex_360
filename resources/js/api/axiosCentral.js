@@ -1,10 +1,15 @@
 import axios from 'axios';
+
 const axiosCentral = axios.create({
   baseURL: '/api/v1/central',
+  withCredentials: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-  }
+    'X-Requested-With': 'XMLHttpRequest',
+  },
 });
 axiosCentral.interceptors.request.use(
   config => {
