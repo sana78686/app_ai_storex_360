@@ -119,7 +119,20 @@ Cache::put(
     ],
     1800 // 30 minutes
 );
-Log::debug('token response', [$confirmationToken]);
+
+        Log::info('email verification token for tenant', [
+            'otp' => $confirmationToken,
+            'tenant_id' => $tenantId,
+            'email' => $request->email,
+        ]);
+
+        if (config('app.debug')) {
+            error_log('email verification token for tenant: ' . json_encode([
+                'otp' => $confirmationToken,
+                'tenant_id' => $tenantId,
+                'email' => $request->email,
+            ]));
+        }
 
         // ✅ Capture IP ONCE
          $ip = GeoHelper::getClientIP() ?? '176.199.93.89';
@@ -334,6 +347,21 @@ public function resendCode(Request $request)
         ],
         1800
     );
+
+    Log::info('email verification token for tenant', [
+        'otp' => $newToken,
+        'tenant_id' => $tenant->id,
+        'email' => $tenant->email,
+    ]);
+
+    if (config('app.debug')) {
+        error_log('email verification token for tenant: ' . json_encode([
+            'otp' => $newToken,
+            'tenant_id' => $tenant->id,
+            'email' => $tenant->email,
+        ]));
+    }
+
     Mail::to($tenant->email)->queue(new TenantConfirmationEmail($tenant, $newToken));
 
     return response()->json([
