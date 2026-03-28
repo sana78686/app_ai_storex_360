@@ -52,8 +52,8 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
-    'domain' => env('APP_DOMAIN', 'localhost'),
+    'url' => env('APP_URL', 'https://my.aistorex360.com'),
+    'domain' => env('APP_DOMAIN', 'https://my.aistorex360.com'),
 
     /*
     |--------------------------------------------------------------------------

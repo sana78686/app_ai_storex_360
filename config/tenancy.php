@@ -40,7 +40,7 @@ return [
         'central_domains' => [
             'localhost',
             'https://my.aistorex360.com',
-            env('APP_DOMAIN', 'localhost'),
+            env('APP_DOMAIN', 'https://my.aistorex360.com'),
         ],
     ],
 
