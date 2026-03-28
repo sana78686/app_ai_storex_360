@@ -9,7 +9,7 @@ return new class extends Migration {
         Schema::create('payments', function (Blueprint $table) {
     $table->id();
 
-    $table->foreignId('subscription_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('subscription_id')->constrained('subscriptions')->cascadeOnDelete();
 
     $table->string('gateway')->default('stripe');
     $table->string('gateway_payment_id')->nullable();
