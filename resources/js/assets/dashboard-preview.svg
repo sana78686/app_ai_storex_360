@@ -16,7 +16,7 @@
     <rect x="220" y="320" width="560" height="260" fill="#e3f2fd" rx="8"/>
 
     <!-- Text Placeholders -->
-    <text x="400" y="35" font-family="Arial" font-size="20" fill="white" text-anchor="middle">SaleTodayStore Dashboard</text>
+    <text x="400" y="35" font-family="Arial" font-size="20" fill="white" text-anchor="middle">AI StoreX 360 Dashboard</text>
     <text x="100" y="100" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Dashboard</text>
     <text x="100" y="140" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Tenants</text>
     <text x="100" y="180" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Users</text>

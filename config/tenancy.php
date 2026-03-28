@@ -36,7 +36,7 @@ return [
     //     'tenant' => 'tenant-{uuid}', // Makes sure only valid UUIDs are matched
     // ],
 
-    'verification_cname' => env('DOMAIN_VERIFICATION_CNAME', 'verify.saletodaystore.app'),
+    'verification_cname' => env('DOMAIN_VERIFICATION_CNAME', 'verify.aistorex360.com'),
 
 
 

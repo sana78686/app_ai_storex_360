@@ -17,7 +17,7 @@
     ></div>
 
     <div class="mb-2 relative z-10 animate-fade-in">
-      <img :src="logoUrl" alt="SaleTodayStore Logo" class="h-24 w-auto object-contain" />
+      <img :src="logoUrl" :alt="`${appName} logo`" class="h-24 w-auto object-contain" />
     </div>
 
     <div class="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl shadow-indigo-200/60 w-full max-w-[440px] border border-white/50 backdrop-blur-sm relative z-10 transition-transform duration-500 hover:scale-[1.01]">
@@ -32,7 +32,7 @@
             Plan: {{ selectedPlanName }}
           </p>
         </div>
-        <!-- <p class="mt-3 text-slate-500 text-sm leading-relaxed">Join thousands of businesses scaling with Megflux.</p> -->
+        <!-- <p class="mt-3 text-slate-500 text-sm leading-relaxed">Join thousands of businesses scaling with AI StoreX 360.</p> -->
       </div>
 
       <div class="flex flex-col gap-4">
@@ -105,10 +105,12 @@
 import axiosCentral from '@/api/axiosCentral'
 import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
+import { APP_NAME, LOGO_URL } from '@central/brand'
 
 const route = useRoute()
 const router = useRouter()
-const logoUrl = '/assets/logo/saletodaystore-logo.png'
+const appName = APP_NAME
+const logoUrl = LOGO_URL
 
 const selectedPlanId = route.query.plan_id || null
 const selectedPlanName = route.query.plan_name || null

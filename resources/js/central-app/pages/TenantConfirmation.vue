@@ -15,7 +15,7 @@
     ></div>
 
     <div class="mb-2 relative z-10 animate-fade-in">
-      <img :src="logoUrl" alt="SaleTodayStore Logo" class="h-24 w-auto object-contain" />
+      <img :src="logoUrl" :alt="`${appName} logo`" class="h-24 w-auto object-contain" />
     </div>
 
     <div class="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl shadow-indigo-200/60 w-full max-w-[460px] border border-white/50 backdrop-blur-sm relative z-10 transition-transform duration-500 hover:scale-[1.01]">
@@ -80,6 +80,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosCentral from '@/api/axiosCentral';
 import Swal from 'sweetalert2';
+import { APP_NAME, LOGO_URL } from '@central/brand';
 
 export default {
   name: 'TenantConfirmation',
@@ -90,7 +91,8 @@ export default {
     const tenantId = ref(null);
     const isConfirming = ref(false);
     const isResending = ref(false);
-const logoUrl = '/assets/logo/saletodaystore-logo.png'
+    const appName = APP_NAME;
+    const logoUrl = LOGO_URL;
     onMounted(() => {
       tenantId.value = route.query.tenant_id;
       if (!tenantId.value) {
@@ -177,6 +179,7 @@ const logoUrl = '/assets/logo/saletodaystore-logo.png'
     };
 
     return {
+      appName,
       confirmationCode,
       isConfirming,
       isResending,

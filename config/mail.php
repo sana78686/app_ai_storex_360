@@ -86,7 +86,7 @@ return [
     */
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'saifullahkhalid777888@gmail.com'),
-        'name' => env('MAIL_FROM_NAME', 'Admin | SaleTodayStore'),
+        'name' => env('MAIL_FROM_NAME', 'Admin | AI StoreX 360'),
     ],
 
     'support_address' => env('SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', 'hello@example.com')),

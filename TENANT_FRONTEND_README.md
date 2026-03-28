@@ -1,4 +1,4 @@
-# SaleTodayStore Tenant Frontend
+# AI StoreX 360 Tenant Frontend
 
 A modern, responsive e-commerce frontend built with Vue.js, designed to provide a Temu-like shopping experience with full features.
 
@@ -211,7 +211,7 @@ When contributing to the tenant frontend:
 
 ## 📄 License
 
-This project is part of the SaleTodayStore e-commerce platform. Please refer to the main project license for usage terms.
+This project is part of the AI StoreX 360 e-commerce platform. Please refer to the main project license for usage terms.
 
 ---
 

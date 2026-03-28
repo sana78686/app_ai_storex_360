@@ -179,7 +179,7 @@
     "src": "public/assets/logo/Einfachkaufen24.png"
   },
   "resources/js/central-app/main.js": {
-    "file": "assets/central-vIA9IaNj.js",
+    "file": "assets/central-DbT2PDDe.js",
     "name": "central",
     "src": "resources/js/central-app/main.js",
     "isEntry": true,
@@ -196,7 +196,7 @@
       "resources/js/central-app/pages/NotFound.vue"
     ],
     "css": [
-      "assets/central-jYBjuF7T.css"
+      "assets/central-85i3UImS.css"
     ],
     "assets": [
       "assets/fa-brands-400-D_cYUPeE.woff2",
@@ -210,7 +210,7 @@
     ]
   },
   "resources/js/central-app/pages/Login.vue": {
-    "file": "assets/Login-DNkFh3xw.js",
+    "file": "assets/Login-Dd6vKxac.js",
     "name": "Login",
     "src": "resources/js/central-app/pages/Login.vue",
     "isDynamicEntry": true,
@@ -237,7 +237,7 @@
     ]
   },
   "resources/js/central-app/pages/Register.vue": {
-    "file": "assets/Register-BZKzsrby.js",
+    "file": "assets/Register-Dfb3hwAN.js",
     "name": "Register",
     "src": "resources/js/central-app/pages/Register.vue",
     "isDynamicEntry": true,
@@ -247,11 +247,11 @@
       "_preload-helper-BKSJh2K_.js"
     ],
     "css": [
-      "assets/Register-CFzOJDgk.css"
+      "assets/Register-FcMjZTnc.css"
     ]
   },
   "resources/js/central-app/pages/Signup.vue": {
-    "file": "assets/Signup-Bs6FFqEo.js",
+    "file": "assets/Signup-BgRBoLpm.js",
     "name": "Signup",
     "src": "resources/js/central-app/pages/Signup.vue",
     "isDynamicEntry": true,
@@ -261,11 +261,11 @@
       "_preload-helper-BKSJh2K_.js"
     ],
     "css": [
-      "assets/Signup-B1V2UJq0.css"
+      "assets/Signup-8wnTaYSg.css"
     ]
   },
   "resources/js/central-app/pages/SocialiteApiCallback.vue": {
-    "file": "assets/SocialiteApiCallback-vKtNOScI.js",
+    "file": "assets/SocialiteApiCallback-RlwCPZaJ.js",
     "name": "SocialiteApiCallback",
     "src": "resources/js/central-app/pages/SocialiteApiCallback.vue",
     "isDynamicEntry": true,
@@ -276,7 +276,7 @@
     ]
   },
   "resources/js/central-app/pages/TenantConfirmation.vue": {
-    "file": "assets/TenantConfirmation-C2MedFA5.js",
+    "file": "assets/TenantConfirmation-C59UPe6p.js",
     "name": "TenantConfirmation",
     "src": "resources/js/central-app/pages/TenantConfirmation.vue",
     "isDynamicEntry": true,
@@ -286,7 +286,7 @@
       "resources/js/central-app/main.js"
     ],
     "css": [
-      "assets/TenantConfirmation-plJoRC-e.css"
+      "assets/TenantConfirmation-D10yYIAB.css"
     ]
   },
   "resources/js/tenant-admin/auth/ForgetPassword.vue": {

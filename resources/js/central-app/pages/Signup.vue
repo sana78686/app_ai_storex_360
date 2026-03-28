@@ -17,7 +17,7 @@
     ></div>
 
     <div class="mb-2 relative z-10 animate-fade-in">
-      <img :src="logoUrl" alt="SaleTodayStore Logo" class="h-24 w-auto object-contain" />
+      <img :src="logoUrl" :alt="`${appName} logo`" class="h-24 w-auto object-contain" />
     </div>
 
     <div class="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl shadow-indigo-200/60 w-full max-w-[460px] border border-white/50 backdrop-blur-sm relative z-10 transition-transform duration-500 hover:scale-[1.01]">
@@ -33,7 +33,7 @@
         <p v-if="selectedPlanId" class="text-sm font-semibold text-indigo-600 bg-indigo-50/80 inline-block px-4 py-1.5 rounded-full border border-indigo-100 mb-4">
           Selected Plan: {{ selectedPlanName }}
         </p>
-        <!-- <p class="text-slate-500 text-sm">Fill in your details to get started with SaleTodayStore.</p> -->
+        <!-- <p class="text-slate-500 text-sm">Fill in your details to get started with AI StoreX 360.</p> -->
       </div>
 
       <form @submit.prevent="onSubmit" class="space-y-5">
@@ -150,12 +150,14 @@ import { ref } from 'vue'
 // import { useReCaptcha } from 'vue-recaptcha-v3'
 import axiosCentral from '@/api/axiosCentral'
 import { useRouter, useRoute } from 'vue-router'
+import { APP_NAME, LOGO_URL } from '@central/brand'
 
 // const recaptchaToken = ref(null)
 // const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
 // const { executeRecaptcha } = useReCaptcha()
-const logoUrl = '/assets/logo/saletodaystore-logo.png'
+const appName = APP_NAME
+const logoUrl = LOGO_URL
 
 
 const route = useRoute()

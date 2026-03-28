@@ -21,7 +21,7 @@ class CreateDomainsTable extends Migration
             $table->uuid('tenant_id')->index();
 $table->string('verification_token')->nullable();
 $table->string('verification_target')->nullable();
-// e.g. verify.saletodaystore.app
+// e.g. verify.aistorex360.com
 
             $table->boolean('is_primary')->default(false)->index();
          $table->enum('status', [

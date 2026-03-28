@@ -57,8 +57,8 @@ class ProductVariantSeeder extends Seeder
 
         // Create a brand for the products
         $brand = Brand::create([
-            'name' => 'SaleTodayStore',
-            'slug' => 'saletodaystore',
+            'name' => 'AI StoreX 360',
+            'slug' => 'ai-storex-360',
             'logo_url' => null,
         ]);
 

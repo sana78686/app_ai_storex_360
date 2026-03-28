@@ -35,7 +35,7 @@ class TenantConfirmationEmail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Confirm Your SaleTodayStore Account',
+            subject: 'Confirm Your ' . config('app.name') . ' Account',
         );
     }
 

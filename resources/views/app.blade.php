@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SaleTodayStore</title>
+    <title>{{ config('app.name') }}</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/logo/saletodaystore-icon.png">

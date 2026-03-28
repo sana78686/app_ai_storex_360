@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ 'collapsed': isSidebarCollapsed, 'show-sidebar': isSidebarVisible }">
       <div class="sidebar-header">
-        <h2 class="brand">SaleTodayStore</h2>
+        <h2 class="brand">{{ appName }}</h2>
         <button class="toggle-btn" @click="toggleSidebar">
           <i class="fas" :class="isSidebarCollapsed ? 'fa-chevron-right' : 'fa-bars'"></i>
         </button>
@@ -83,7 +83,8 @@
 <script>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
- import axiosCentral from '@/api/axiosCentral'
+import axiosCentral from '@/api/axiosCentral'
+import { APP_NAME } from '@central/brand'
 
 export default {
   name: 'CentralDashboardLayout',
@@ -141,20 +142,20 @@ export default {
       }
     }
 
-    onMounted(() => {
-      const handleResize = () => {
-        windowWidth.value = window.innerWidth
-        if (window.innerWidth <= 768) {
-          isSidebarVisible.value = false
-          isSidebarCollapsed.value = false
-        } else {
-          isSidebarVisible.value = true
-          isSidebarCollapsed.value = false
-        }
+    const handleResize = () => {
+      windowWidth.value = window.innerWidth
+      if (window.innerWidth <= 768) {
+        isSidebarVisible.value = false
+        isSidebarCollapsed.value = false
+      } else {
+        isSidebarVisible.value = true
+        isSidebarCollapsed.value = false
       }
+    }
 
+    onMounted(() => {
       window.addEventListener('resize', handleResize)
-      handleResize() // Call on mount to set initial state
+      handleResize()
     })
 
     onUnmounted(() => {
@@ -162,6 +163,7 @@ export default {
     })
 
     return {
+      appName: APP_NAME,
       isSidebarCollapsed,
       isSidebarVisible,
       windowWidth,
