@@ -27,6 +27,11 @@ class RequireSiteAccessPass
             return $next($request);
         }
 
+        // API routes typically run without session middleware.
+        if ($request->is('api/*')) {
+            return $next($request);
+        }
+
         if ($request->session()->get('site_access_granted') === true) {
             return $next($request);
         }

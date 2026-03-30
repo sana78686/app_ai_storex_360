@@ -19,7 +19,7 @@
       <router-link to="/" class="flex items-center flex-shrink-0">
         <div class="relative h-10 w-auto sm:h-12">
           <img
-            src="/public/assets/logo/Einfachkaufen24.png"
+            :src="storefrontLogoUrl"
             alt="EinfachShop24 Logo"
             class="h-10 w-auto object-contain sm:h-12"
           />
@@ -484,7 +484,7 @@ import { paymentMethods, shippingCarriers } from '@theme-prism/config/paymentShi
 
 const { locale, tm } = useI18n()
 
-
+const storefrontLogoUrl = '/assets/logo/aistorex360-logo.png'
 
 // Payment & Shipping — i18n integrated
 // const paymentMethods = computed(() =>

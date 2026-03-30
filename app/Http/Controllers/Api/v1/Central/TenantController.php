@@ -69,6 +69,37 @@ class TenantController extends Controller
         }
     }
 
+    public function lookupByEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $tenant = Tenant::with('domains')->where('email', $request->email)->first();
+
+        if (!$tenant) {
+            return response()->json([
+                'exists' => false,
+                'message' => "We couldn't find an account for this email. Please sign up first.",
+            ]);
+        }
+
+        $domain = $tenant->domains->first()->domain ?? null;
+
+        return response()->json([
+            'exists' => true,
+            'tenant_id' => $tenant->id,
+            'tenant_domain' => $domain ? TenantUrl::to($domain, '/dashboard') : null,
+        ]);
+    }
+
 
  // Tenant model
 
@@ -486,8 +517,12 @@ public function resendCode(Request $request)
 
 
 
-    public function socialCallback(Request $request)
+    public function socialCallback(Request $request, string $provider)
     {
+        if (!in_array($provider, ['google', 'facebook'])) {
+            return response()->json(['error' => 'Unsupported provider'], 400);
+        }
+
         $code = $request->input('code');
 
         if (!$code) {
@@ -495,14 +530,27 @@ public function resendCode(Request $request)
         }
 
         try {
-            // Exchange code for access token
-            $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
-                'grant_type' => 'authorization_code',
-                'client_id' => config('services.google.client_id'),
-                'client_secret' => config('services.google.client_secret'),
-                'redirect_uri' => config('services.google.redirect'),
-                'code' => $code,
-            ]);
+            $serviceConfig = config("services.{$provider}");
+            if (!$serviceConfig || empty($serviceConfig['client_id']) || empty($serviceConfig['client_secret']) || empty($serviceConfig['redirect'])) {
+                return response()->json(['error' => "Missing {$provider} OAuth configuration"], 500);
+            }
+
+            if ($provider === 'google') {
+                $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+                    'grant_type' => 'authorization_code',
+                    'client_id' => $serviceConfig['client_id'],
+                    'client_secret' => $serviceConfig['client_secret'],
+                    'redirect_uri' => $serviceConfig['redirect'],
+                    'code' => $code,
+                ]);
+            } else {
+                $tokenResponse = Http::get('https://graph.facebook.com/v19.0/oauth/access_token', [
+                    'client_id' => $serviceConfig['client_id'],
+                    'client_secret' => $serviceConfig['client_secret'],
+                    'redirect_uri' => $serviceConfig['redirect'],
+                    'code' => $code,
+                ]);
+            }
 
             if (!$tokenResponse->ok()) {
                 return response()->json(['error' => 'Failed to get access token', 'details' => $tokenResponse->json()], 400);
@@ -513,80 +561,68 @@ public function resendCode(Request $request)
                 return response()->json(['error' => 'Access token missing from response'], 400);
             }
 
-            // Get user info from Google
             try {
-                $socialUser = Socialite::driver('google')->stateless()->userFromToken($accessToken);
+                $socialUser = Socialite::driver($provider)->stateless()->userFromToken($accessToken);
                 $email = $socialUser->getEmail();
             } catch (\Exception $e) {
-                Log::error('Google user info error: ' . $e->getMessage());
+                Log::error(ucfirst($provider) . ' user info error: ' . $e->getMessage());
                 return response()->json(['error' => 'Failed to retrieve user info', 'details' => $e->getMessage()], 400);
             }
 
             if (!$email) {
-                return response()->json(['error' => 'Email not found in Google user info'], 400);
+                return response()->json(['error' => "Email not found in {$provider} user info"], 400);
             }
 
-            // Check if tenant exists
             $tenant = Tenant::where('email', $email)->first();
+            $domain = null;
 
             if (!$tenant) {
                 $tenantId = (string) Str::uuid();
-
-
-                // Generate and log password for debugging
                 $plainPassword = Str::random(16);
-                Log::info('Generated tenant password', ['plain' => $plainPassword]);
 
-                // Create tenant
                 $tenant = Tenant::create([
                     'id' => $tenantId,
                     'email' => $email,
-                    'password' => $plainPassword, // Let mutator hash it
+                    'password' => $plainPassword,
                     'status' => 'inactive',
                     'is_approved' => false,
                     'trial_ends_at' => null,
                     'data' => [
-
+                        'provider' => $provider,
                     ],
                 ]);
 
-
-
-                 // ✅ Create domain
-            $domain = "tenant-$tenantId." . config('app.central_domain');
-            $tenant->domains()->create(['domain' => $domain]);
-
-                // Create tenant database manually
-                // DB::statement("CREATE DATABASE `$databaseName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-
-                // Initialize tenancy so migrations run in the correct DB
-                // tenancy()->initialize($tenant);
-
-                // Run tenant-specific migrations
-                // Artisan::call('tenants:migrate', [
-                //     '--tenants' => [$tenant->id],
-                //     '--force' => true,
-                // ]);
-
-                // Optional: Seed the tenant DB
-                // Artisan::call('tenants:seed', [
-                //     '--tenants' => [$tenant->id],
-                //     '--class' => 'TenantDatabaseSeeder', // If you have a specific seeder
-                // ]);
+                $domain = "tenant-$tenantId." . config('app.central_domain');
+                $tenant->domains()->create(['domain' => $domain]);
+            } else {
+                $domain = $tenant->domains()->first()?->domain;
+                if (!$domain) {
+                    $domain = "tenant-{$tenant->id}." . config('app.central_domain');
+                    $tenant->domains()->create(['domain' => $domain]);
+                }
             }
+
+            tenancy()->initialize($tenant);
+            DB::connection('tenant')->reconnect();
+
+            $tenantUser = \App\Models\Tenant\User::on('tenant')->firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $socialUser->getName() ?: 'Tenant User',
+                    'password' => Hash::make(Str::random(16)),
+                ]
+            );
+            $token = $tenantUser->createToken('tenant_token')->plainTextToken;
 
             return response()->json([
                 'message' => 'Social login successful',
-                'tenant_token' => 'dummy_token', // TODO: Replace with real token if available
-                'user' => [
-                    'email' => $tenant->email,
-                    'id' => $tenant->id,
-                ],
+                'tenant_token' => $token,
+                'user' => $tenantUser,
                 'tenant_id' => $tenant->id,
                 'tenant_domain' => TenantUrl::to($domain)
             ]);
         } catch (\Exception $e) {
-            Log::error('Google login error: ' . $e->getMessage());
+            Log::error(ucfirst($provider) . ' login error: ' . $e->getMessage());
             return response()->json(['error' => 'Login failed', 'message' => $e->getMessage()], 500);
         }
     }

@@ -36,10 +36,15 @@ return [
     ],
 
     'google' => [
-    'client_id' => env('GOOGLE_CLIENT_ID'),
-    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-    'redirect' => env('GOOGLE_REDIRECT_URI'),
-],
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', 'https://my.aistorex360.com/SocialiteApiCallback'),
+    ],
+    'facebook' => [
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+        'redirect' => env('FACEBOOK_REDIRECT_URI', 'https://my.aistorex360.com/SocialiteApiCallback'),
+    ],
 'recaptcha' => [
     'site_key' => env('RECAPTCHA_SITE_KEY'),
     'secret_key' => env('RECAPTCHA_SECRET_KEY'),

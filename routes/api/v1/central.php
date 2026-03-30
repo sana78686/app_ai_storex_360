@@ -31,11 +31,19 @@ Route::prefix('central')->group(function () {
     // });
 
     Route::get('/auth/social/redirect/{provider}', function ($provider) {
-        $frontendRedirectUri = config('services.google.redirect'); // 👈 must match your Google Console redirect
+        if (!in_array($provider, ['google', 'facebook'])) {
+            return response()->json(['error' => 'Unsupported provider'], 400);
+        }
+
+        $frontendRedirectUri = config("services.{$provider}.redirect");
+        if (!$frontendRedirectUri) {
+            return response()->json(['error' => "Missing {$provider} redirect URI config"], 500);
+        }
 
         $loginUrl = Socialite::driver($provider)
             ->stateless()
             ->redirectUrl($frontendRedirectUri)
+            ->scopes(['email'])
             ->redirect()
             ->getTargetUrl();
 
@@ -46,7 +54,7 @@ Route::prefix('central')->group(function () {
 
 
 
-    Route::post('/auth/social/callback/google', [TenantController::class, 'socialCallback']);
+    Route::post('/auth/social/callback/{provider}', [TenantController::class, 'socialCallback']);
 
     // routes/api.php (or central routes)
 
@@ -81,6 +89,7 @@ Route::prefix('central')->group(function () {
     Route::post('/login', [CentralUserController::class, 'Login']);
     Route::post('/signup', [CentralUserController::class, 'Signup']);
     Route::post('/tenants', [TenantController::class, 'store']);
+    Route::match(['get', 'post'], '/tenants/lookup-by-email', [TenantController::class, 'lookupByEmail']);
     Route::post('/contact', [CentralContactController::class, 'store']);
     Route::post('tenants/confirm', [TenantController::class, 'confirmTenant']);
     // resent code

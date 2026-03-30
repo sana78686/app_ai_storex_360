@@ -75,6 +75,12 @@ const routes = [
         meta: { requiresAuth: false }
     },
     {
+        path: '/find-tenant',
+        name: 'find-tenant',
+        component: () => import('@/central-app/pages/TenantLookup.vue'),
+        meta: { requiresAuth: false }
+    },
+    {
       path: '/tenant/confirm',
       name: 'tenant-confirmation',
       component: () => import('@/central-app/pages/TenantConfirmation.vue'),

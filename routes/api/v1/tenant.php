@@ -3,6 +3,7 @@
 
 // declare(strict_types=1);
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\Tenant\GeneralSetting;
 use App\Http\Controllers\Api\v1\Tenant\ProductAnalysisController;
 use Illuminate\Support\Facades\Route;
@@ -251,12 +252,34 @@ Route::middleware([
         // routes/api.php
 
 
+        Route::get('/settings/themes', function () {
+            $defaultTheme = config('themes.storefront.default', 'prism');
+            $available = config('themes.storefront.available', ['prism' => 'Prism']);
+
+            $themes = collect($available)->map(function ($label, $value) {
+                return [
+                    'label' => $label,
+                    'value' => $value,
+                ];
+            })->values();
+
+            return response()->json([
+                'default' => $defaultTheme,
+                'themes' => $themes,
+            ]);
+        });
+
         Route::post('/settings/theme', function (Request $request) {
+            $availableThemes = array_keys(config('themes.storefront.available', ['prism' => 'Prism']));
+            $defaultTheme = config('themes.storefront.default', 'prism');
+
             $request->validate([
-                'theme' => 'required|in:classic,modern,prism',
+                'theme' => ['required', Rule::in($availableThemes)],
             ]);
 
-            $settings = GeneralSetting::firstOrCreate([]);
+            $settings = GeneralSetting::firstOrCreate([], [
+                'theme' => $defaultTheme,
+            ]);
 
             $settings->update([
                 'theme' => $request->theme,

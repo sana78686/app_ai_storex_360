@@ -3,7 +3,10 @@
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ 'collapsed': isSidebarCollapsed, 'show-sidebar': isSidebarVisible }">
       <div class="sidebar-header">
-        <h2 class="brand">{{ appName }}</h2>
+        <div class="brand-wrap">
+          <img :src="logoUrl" :alt="`${appName} logo`" class="sidebar-logo" />
+          <h2 class="brand">{{ appName }}</h2>
+        </div>
         <button class="toggle-btn" @click="toggleSidebar">
           <i class="fas" :class="isSidebarCollapsed ? 'fa-chevron-right' : 'fa-bars'"></i>
         </button>
@@ -84,7 +87,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axiosCentral from '@/api/axiosCentral'
-import { APP_NAME } from '@central/brand'
+import { APP_NAME, LOGO_URL } from '@central/brand'
 
 export default {
   name: 'CentralDashboardLayout',
@@ -164,6 +167,7 @@ export default {
 
     return {
       appName: APP_NAME,
+      logoUrl: LOGO_URL,
       isSidebarCollapsed,
       isSidebarVisible,
       windowWidth,
@@ -214,8 +218,29 @@ export default {
   padding: 0 0.5rem;
 }
 
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-logo {
+  height: 32px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sidebar.collapsed .sidebar-logo {
+  max-width: 44px;
+  height: 28px;
+}
+
 .brand {
-  font-size: 1.8rem;
+  font-size: 1.25rem;
   font-weight: bold;
   color: #fff;
   white-space: nowrap;

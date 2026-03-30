@@ -1,16 +1,22 @@
 <template>
-  <div>
-    <p>Signing you in via Google...</p>
+  <div class="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 px-4">
+    <img :src="logoUrl" :alt="`${appName} logo`" class="h-16 w-auto object-contain" />
+    <p class="text-slate-600">Signing you in...</p>
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import axiosCentral from '@/api/axiosCentral'
+import { APP_NAME, LOGO_URL } from '@central/brand'
+
+const logoUrl = LOGO_URL
+const appName = APP_NAME
 
 onMounted(async () => {
   const params = new URLSearchParams(window.location.search)
   const code = params.get('code')
+  const provider = localStorage.getItem('social_auth_provider') || 'google'
 
   if (!code) {
     alert('No code found in URL. Please try logging in again.')
@@ -18,20 +24,15 @@ onMounted(async () => {
   }
 
   try {
-    // Send code to backend
-    const response = await axiosCentral.post('/auth/social/callback/google', { code })
+    const response = await axiosCentral.post(`/auth/social/callback/${provider}`, { code })
     const data = response.data
 
-    // Save auth token and user info
     if (data.tenant_token && data.user && data.tenant_domain) {
       localStorage.setItem('tenant_token', data.tenant_token)
       localStorage.setItem('tenant_user', JSON.stringify(data.user))
       localStorage.setItem('tenant_id', data.tenant_id)
+      localStorage.removeItem('social_auth_provider')
 
-      // Optional: pass token in query if needed by tenant
-      // const redirectUrl = `${data.tenant_domain}/dashboard?token=${data.tenant_token}`
-
-      // Redirect to tenant's dashboard
       window.location.href = `${data.tenant_domain}/dashboard`
 
     } else {

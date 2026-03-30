@@ -11,7 +11,10 @@ class GeneralSettingsController extends Controller
 {
     public function show()
     {
-        $settings = GeneralSetting::first();
+        $defaultTheme = config('themes.storefront.default', 'prism');
+        $settings = GeneralSetting::firstOrCreate([], [
+            'theme' => $defaultTheme,
+        ]);
         return response()->json($settings);
     }
 

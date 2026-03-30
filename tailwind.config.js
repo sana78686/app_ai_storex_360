@@ -1,5 +1,3 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
@@ -12,7 +10,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                /** Brand UI font — load Ubuntu in resources/css/app.css */
+                sans: ['Ubuntu', 'sans-serif'],
             },
             colors: {
         // brand: '#eb4925ff',

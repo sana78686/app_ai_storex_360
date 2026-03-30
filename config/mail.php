@@ -85,7 +85,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'saifullahkhalid777888@gmail.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Admin | AI StoreX 360'),
     ],
 

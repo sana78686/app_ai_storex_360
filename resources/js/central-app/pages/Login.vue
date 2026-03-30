@@ -1,50 +1,85 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin" novalidate>
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="email" class="sr-only">Email address</label>
-            <input id="email" name="email" type="email" v-model="form.email" required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Email address" />
-            <span v-if="errors.email" class="text-red-500 text-sm">{{ errors.email }}</span>
-          </div>
-          <div>
-            <label for="password" class="sr-only">Password</label>
-            <input id="password" name="password" type="password" v-model="form.password" required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Password" />
-            <span v-if="errors.password" class="text-red-500 text-sm">{{ errors.password }}</span>
-          </div>
+  <div class="central-auth-page">
+    <div class="central-auth-slate-bg" aria-hidden="true" />
+    <div class="central-auth-blobs" aria-hidden="true" />
+    <div class="central-auth-texture" aria-hidden="true" />
+
+    <div class="relative z-10 mb-2 central-auth-fade-in">
+      <img :src="logoUrl" :alt="`${appName} logo`" class="h-24 w-auto object-contain" />
+    </div>
+
+    <div class="central-auth-card">
+      <div class="central-auth-stripe" aria-hidden="true" />
+      <div class="central-auth-card-body">
+        <div class="mb-8 text-center">
+          <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Sign in to your account</h2>
         </div>
 
-        <div class="flex items-center justify-between">
+        <form class="space-y-5" @submit.prevent="handleLogin" novalidate>
+          <div class="form-field-outlined" :class="{ 'is-error': errors.email }">
+            <input
+              id="login-email"
+              v-model="form.email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder=" "
+            />
+            <label for="login-email">Email address</label>
+          </div>
+          <span v-if="errors.email" class="mt-1 block text-sm text-red-600">{{ errors.email }}</span>
+
+          <div class="form-field-outlined" :class="{ 'is-error': errors.password }">
+            <input
+              id="login-password"
+              v-model="form.password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              placeholder=" "
+            />
+            <label for="login-password">Password</label>
+          </div>
+          <span v-if="errors.password" class="mt-1 block text-sm text-red-600">{{ errors.password }}</span>
+
           <div class="flex items-center">
-            <input id="remember" name="remember" type="checkbox" v-model="form.remember"
-              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
-            <label for="remember" class="ml-2 block text-sm text-gray-900">
-              Remember me
-            </label>
+            <input
+              id="remember"
+              v-model="form.remember"
+              name="remember"
+              type="checkbox"
+              class="h-4 w-4 rounded border-slate-300 text-[#0064d2] focus:ring-[#0064d2]"
+            />
+            <label for="remember" class="ml-2 block text-sm text-slate-700">Remember me</label>
           </div>
-        </div>
 
-        <div>
-          <button type="submit" :disabled="loading"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <button type="submit" :disabled="loading" class="central-auth-btn-submit">
             <span v-if="loading">Signing in...</span>
             <span v-else>Sign in</span>
           </button>
+
+          <div v-if="errors.general" class="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm font-medium text-red-600">
+            {{ errors.general }}
+          </div>
+        </form>
+
+        <div class="central-auth-divider">
+          <div class="central-auth-divider-line" />
+          <span class="central-auth-divider-text">or</span>
+          <div class="central-auth-divider-line" />
         </div>
-        <div v-if="errors.general" class="text-red-500 text-sm text-center">
-          {{ errors.general }}
-        </div>
-      </form>
+
+        <p class="central-auth-footer-muted">
+          New here?
+          <router-link to="/signup" class="ebay-link ml-1">Create account</router-link>
+        </p>
+        <p class="central-auth-footer-muted">
+          Already have a tenant?
+          <router-link to="/find-tenant" class="ebay-link ml-1">Find my dashboard</router-link>
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -53,11 +88,14 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axiosCentral from '@/api/axiosCentral'
+import { APP_NAME, LOGO_URL } from '@central/brand'
 
 export default {
   name: 'Login',
   setup() {
     const router = useRouter()
+    const logoUrl = LOGO_URL
+    const appName = APP_NAME
     const loading = ref(false)
     const errors = reactive({
       email: '',
@@ -101,11 +139,6 @@ export default {
     }
 
     const handleLogin = async () => {
-    //   if (event) {
-    //     event.preventDefault()
-    //     event.stopPropagation()
-    //   }
-
       if (!validateForm()) {
         return
       }
@@ -119,7 +152,7 @@ export default {
           remember: form.remember
         }, {
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
           }
         })
@@ -145,9 +178,6 @@ export default {
             errors[key] = error.response.data.errors[key][0]
           })
         } else if (error.response?.data?.message) {
-            // alert('ok');
-            // router.replace({ name: 'login' })
-
           errors.general = error.response.data.message
         } else {
           errors.general = 'Invalid email or password. Please try again.'
@@ -159,145 +189,10 @@ export default {
       form,
       errors,
       loading,
-      handleLogin
+      handleLogin,
+      logoUrl,
+      appName
     }
   }
 }
 </script>
-
-<style scoped>
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 2rem;
-}
-
-.login-container {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.login-header h1 {
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-}
-
-.login-header p {
-  color: #6c757d;
-}
-
-.login-form {
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
-  font-weight: 500;
-}
-
-.form-group input[type="email"],
-.form-group input[type="password"] {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #1976d2;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
-}
-
-.form-group input.is-invalid {
-  border-color: #dc3545;
-}
-
-.invalid-feedback {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.forgot-password {
-  color: #1976d2;
-  text-decoration: none;
-  font-size: 0.875rem;
-}
-
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
-.btn {
-  width: 100%;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-primary {
-  background: #1976d2;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #1565c0;
-}
-
-.btn-primary:disabled {
-  background: #90caf9;
-  cursor: not-allowed;
-}
-
-.login-footer {
-  text-align: center;
-  color: #6c757d;
-}
-
-.login-footer a {
-  color: #1976d2;
-  text-decoration: none;
-}
-
-.login-footer a:hover {
-  text-decoration: underline;
-}
-
-.text-red-500 {
-  color: #ef4444;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  display: block;
-}
-</style>

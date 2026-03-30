@@ -7,7 +7,8 @@ export default defineConfig({
         vue(),
         laravel({
     input: {
-
+      /** Standalone CSS entry (e.g. blades without JS bundle) — same tokens as SPA */
+      app: 'resources/css/app.css',
       central: 'resources/js/central-app/main.js',
       tenantAdmin: 'resources/js/tenant-admin/main.js',
 

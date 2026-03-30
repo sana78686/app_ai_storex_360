@@ -15,7 +15,7 @@
       <router-link to="/" class="flex items-center flex-shrink-0">
         <div class="relative h-10 w-auto sm:h-12">
           <img
-            src="/public/assets/logo/Einfachkaufen24.png"
+            :src="storefrontLogoUrl"
             alt="EinfachShop24 Logo"
             class="h-10 w-auto object-contain sm:h-12"
           />
@@ -590,6 +590,8 @@ import { useNotificationStore } from '@theme-prism/stores/notificationStore'
 const router = useRouter()
 const route = useRoute()
 const { locale, tm } = useI18n()
+
+const storefrontLogoUrl = '/assets/logo/aistorex360-logo.png'
 
 // Pass current page as redirect so after login/register user returns here
 const loginLink = computed(() => {

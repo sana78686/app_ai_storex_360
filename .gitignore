@@ -26,3 +26,6 @@ yarn-error.log
 /.zed
 .DS_Store
 Thumbs.db
+
+# Google / OAuth client JSON downloads — never commit
+/public/assets/console-files/

@@ -3,7 +3,12 @@
 @section('vite')
 {{-- for dynamic theme --}}
     @php
-    $theme = \App\Models\Tenant\GeneralSetting::value('theme') ?? 'classic';
+    $defaultTheme = config('themes.storefront.default', 'prism');
+    $availableThemes = array_keys(config('themes.storefront.available', ['prism' => 'Prism']));
+    $theme = \App\Models\Tenant\GeneralSetting::value('theme') ?? $defaultTheme;
+    if (!in_array($theme, $availableThemes, true)) {
+        $theme = $defaultTheme;
+    }
 @endphp
 
 @vite("resources/themes/{$theme}/main.js")

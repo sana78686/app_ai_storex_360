@@ -361,21 +361,30 @@ const showProfileDropdown = ref(false) // Add this line
 
 // Add click outside logic for the new dropdown
 
-const themes = [
-  { label: 'Classic', value: 'classic' },
-  { label: 'Modern', value: 'modern' },
-  { label: 'Prism', value: 'prism' },
-]
+const themes = ref([])
 
 // Load current theme from backend (recommended)
-const selectedTheme = ref('classic')
+const selectedTheme = ref('prism')
 
 onMounted(async () => {
   try {
     const res = await axiosTenant.get('/settings/general')
-    selectedTheme.value = res.data.theme ?? 'classic'
+    selectedTheme.value = res.data.theme ?? 'prism'
   } catch (e) {
     console.error('Failed to load theme')
+  }
+})
+
+onMounted(async () => {
+  try {
+    const res = await axiosTenant.get('/settings/themes')
+    themes.value = res.data?.themes ?? []
+    if (!themes.value.length) {
+      themes.value = [{ label: 'Prism', value: 'prism' }]
+    }
+  } catch (e) {
+    themes.value = [{ label: 'Prism', value: 'prism' }]
+    console.error('Failed to load theme options')
   }
 })
 
@@ -395,9 +404,6 @@ const changeTheme = async () => {
 </script>
 
 <style scoped>
-.dashboard-font {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name') }}</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/logo/saletodaystore-icon.png">
-    <link rel="shortcut icon" type="image/png" href="assets/logo/saletodaystore-favicon.png">
-    <link rel="apple-touch-icon" href="assets/logo/saletodaystore-favicon.png">
+    <!-- Favicon (AI StoreX 360 — public/assets/logo) -->
+    <link rel="icon" type="image/png" href="{{ asset('assets/logo/favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/logo/favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/logo/favicon.png') }}">
     <!-- Fonts -->
     <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
