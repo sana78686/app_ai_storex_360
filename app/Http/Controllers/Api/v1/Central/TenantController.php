@@ -536,7 +536,12 @@ public function resendCode(Request $request)
             }
 
             if ($provider === 'google') {
-                $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+                $http = Http::asForm();
+                if (app()->environment('local')) {
+                    $http = $http->withoutVerifying();
+                }
+
+                $tokenResponse = $http->post('https://oauth2.googleapis.com/token', [
                     'grant_type' => 'authorization_code',
                     'client_id' => $serviceConfig['client_id'],
                     'client_secret' => $serviceConfig['client_secret'],
@@ -544,7 +549,12 @@ public function resendCode(Request $request)
                     'code' => $code,
                 ]);
             } else {
-                $tokenResponse = Http::get('https://graph.facebook.com/v19.0/oauth/access_token', [
+                $http = Http::withOptions([]);
+                if (app()->environment('local')) {
+                    $http = $http->withoutVerifying();
+                }
+
+                $tokenResponse = $http->get('https://graph.facebook.com/v19.0/oauth/access_token', [
                     'client_id' => $serviceConfig['client_id'],
                     'client_secret' => $serviceConfig['client_secret'],
                     'redirect_uri' => $serviceConfig['redirect'],
@@ -584,8 +594,10 @@ public function resendCode(Request $request)
                     'id' => $tenantId,
                     'email' => $email,
                     'password' => $plainPassword,
-                    'status' => 'inactive',
-                    'is_approved' => false,
+                    // Social signup: no email OTP required.
+                    'status' => 'trial',
+                    'is_approved' => true,
+                    'approved_at' => now(),
                     'trial_ends_at' => null,
                     'data' => [
                         'provider' => $provider,
@@ -600,7 +612,19 @@ public function resendCode(Request $request)
                     $domain = "tenant-{$tenant->id}." . config('app.central_domain');
                     $tenant->domains()->create(['domain' => $domain]);
                 }
+
+                // If the tenant came from email signup and is still unconfirmed,
+                // a successful social login should activate it without OTP.
+                if (($tenant->status ?? null) === 'uncomfirmed') {
+                    $tenant->status = 'trial';
+                    $tenant->is_approved = true;
+                    $tenant->approved_at = now();
+                    $tenant->save();
+                }
             }
+
+            // If any OTP was issued earlier for this tenant id, it's not needed for social signup/login.
+            Cache::forget("tenant_otp_{$tenant->id}");
 
             tenancy()->initialize($tenant);
             DB::connection('tenant')->reconnect();
@@ -627,5 +651,47 @@ public function resendCode(Request $request)
         }
     }
 
+    public function seedTenant(string $tenant)
+    {
+        // Allow calling by tenant id OR by full tenant domain.
+        $tenantModel = null;
+
+        if (is_numeric($tenant) || Str::isUuid($tenant)) {
+            $tenantModel = Tenant::find($tenant);
+        }
+
+        if (! $tenantModel) {
+            $domainModel = \App\Models\Domain::query()
+                ->where('domain', $tenant)
+                ->first();
+
+            $tenantModel = $domainModel?->tenant;
+        }
+
+        if (! $tenantModel) {
+            return response()->json([
+                'message' => 'Tenant not found.',
+            ], 404);
+        }
+
+        try {
+            tenancy()->initialize($tenantModel);
+            DB::connection('tenant')->reconnect();
+
+            Artisan::call('db:seed', [
+                '--class' => \Database\Seeders\Tenant\TenantDatabaseSeeder::class,
+                '--force' => true,
+            ]);
+
+            return response()->json([
+                'message' => 'Tenant seeded successfully.',
+                'tenant_id' => $tenantModel->id,
+                'tenant_domain' => $tenantModel->domains()->first()?->domain,
+                'output' => trim((string) Artisan::output()),
+            ]);
+        } finally {
+            tenancy()->end();
+        }
+    }
 
 }

@@ -1,6 +1,7 @@
 <?php
 
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Api\v1\Central\RoleController;
@@ -30,12 +31,19 @@ Route::prefix('central')->group(function () {
     //     return Socialite::driver($provider)->stateless()->redirect();
     // });
 
-    Route::get('/auth/social/redirect/{provider}', function ($provider) {
+    Route::get('/auth/social/redirect/{provider}', function (Request $request, $provider) {
         if (!in_array($provider, ['google', 'facebook'])) {
             return response()->json(['error' => 'Unsupported provider'], 400);
         }
 
         $frontendRedirectUri = config("services.{$provider}.redirect");
+
+        // Local dev convenience: always return to APP_URL callback.
+        // This avoids redirect_uri_mismatch caused by missing :8000 (or proxies altering Host headers).
+        if (app()->environment('local')) {
+            $frontendRedirectUri = rtrim((string) config('app.url'), '/') . '/SocialiteApiCallback';
+        }
+
         if (!$frontendRedirectUri) {
             return response()->json(['error' => "Missing {$provider} redirect URI config"], 500);
         }
@@ -126,5 +134,10 @@ Route::prefix('central')->group(function () {
             Route::put('/{id}', [PermissionController::class, 'update']);
             Route::delete('/{id}', [PermissionController::class, 'destroy']);
         });
+
+        // Tenant maintenance (protected)
+        // POST /api/central/tenants/{tenant}/seed
+        // {tenant} can be a tenant id or a full tenant domain (e.g. tenant-abc.aistorex360.com)
+        Route::post('/tenants/{tenant}/seed', [TenantController::class, 'seedTenant']);
     });
 });
