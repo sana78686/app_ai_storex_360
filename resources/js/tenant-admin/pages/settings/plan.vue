@@ -73,6 +73,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
 const subscription = ref(null)
 
@@ -101,24 +102,47 @@ async function renewPlan() {
     if (data.checkout_url) {
       window.location.href = data.checkout_url
     } else {
-      alert(data.message || 'Subscription renewed successfully')
+      await Swal.fire({
+        icon: 'success',
+        title: 'Renewed',
+        text: data.message || 'Subscription renewed successfully',
+      })
       location.reload()
     }
   } catch (error) {
-    alert('Renewal failed.')
+    await Swal.fire({
+      icon: 'error',
+      title: 'Renewal failed',
+      text: 'Renewal failed.',
+    })
   }
 }
 
 // ✅ Cancel trial
 async function cancelTrial() {
-  if (confirm('Are you sure you want to cancel your trial?')) {
-    try {
-      await axiosTenant.post('/subscription/cancel')
-      alert('Trial canceled.')
-      location.reload()
-    } catch (error) {
-      alert('Failed to cancel trial.')
-    }
+  const r = await Swal.fire({
+    icon: 'warning',
+    title: 'Cancel trial?',
+    text: 'Are you sure you want to cancel your trial?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, cancel',
+    cancelButtonText: 'Keep trial',
+  })
+  if (!r.isConfirmed) return
+  try {
+    await axiosTenant.post('/subscription/cancel')
+    await Swal.fire({
+      icon: 'success',
+      title: 'Canceled',
+      text: 'Trial canceled.',
+    })
+    location.reload()
+  } catch (error) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Cancel failed',
+      text: 'Failed to cancel trial.',
+    })
   }
 }
 

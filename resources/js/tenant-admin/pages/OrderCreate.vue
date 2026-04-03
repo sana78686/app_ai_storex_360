@@ -156,6 +156,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
 const fulfillmentType = ref('pickup') // pickup or shipping
 const paymentMethod = ref('cash')
@@ -240,11 +241,21 @@ const createOrder = async () => {
   try {
     const response = await axiosTenant.post('/orders', payload)
     if (response.data.success) {
-      alert("Order Created!")
+      await Swal.fire({
+        icon: 'success',
+        title: 'Order created',
+        text: 'Order created successfully.',
+      })
       orderItems.value = []
       customerDetails.value = { name: '', phone: '', email: '', street: '', postcode: '', location: '', country: 'Germany' }
     }
-  } catch (e) { alert("Failed") }
+  } catch (e) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Order failed',
+      text: 'Could not create the order.',
+    })
+  }
 }
 </script>
 

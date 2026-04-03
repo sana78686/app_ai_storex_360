@@ -108,6 +108,7 @@
 
 <script>
 import axiosTenant from '@/api/axiosTenant';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -160,19 +161,35 @@ export default {
     async save() {
       try {
         await axiosTenant.post("/settings/mail", this.form);
-        alert("Mail settings saved!");
+        await Swal.fire({
+          icon: 'success',
+          title: 'Saved',
+          text: 'Mail settings saved!',
+        });
       } catch (err) {
         console.error("Error saving mail settings", err);
-        alert("Failed to save mail settings.");
+        await Swal.fire({
+          icon: 'error',
+          title: 'Save failed',
+          text: 'Failed to save mail settings.',
+        });
       }
     },
 
     async testConfig() {
       try {
         const res = await axiosTenant.post("/settings/mail/test");
-        alert(res.data.message);
+        await Swal.fire({
+          icon: 'info',
+          title: 'Mail test',
+          text: res.data.message,
+        });
       } catch (err) {
-        alert("Mail Test Failed: " + err.response.data.message);
+        await Swal.fire({
+          icon: 'error',
+          title: 'Mail test failed',
+          text: err.response?.data?.message || 'Mail test failed.',
+        });
       }
     }
   }

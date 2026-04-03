@@ -60,6 +60,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import axiosTenant from "@/api/axiosTenant";
+import Swal from "sweetalert2";
 
 const form = reactive({
   prefix: "",
@@ -99,7 +100,11 @@ async function saveSettings() {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  alert("Invoice settings updated!");
+  await Swal.fire({
+    icon: "success",
+    title: "Saved",
+    text: "Invoice settings updated!",
+  });
 }
 
 

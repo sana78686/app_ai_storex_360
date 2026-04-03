@@ -1,143 +1,179 @@
 <template>
-  <div class="register-container">
-    <div class="register-box">
-      <h2>Create Your Account</h2>
-      <form @submit.prevent="handleRegister">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            v-model="form.email"
-            class="form-control"
-            required
-          >
+  <div class="tenant-auth-page">
+    <div class="tenant-auth-card">
+      <h1 class="tenant-auth-card__title">Create your account</h1>
+      <p class="tenant-auth-card__subtitle">
+        Add your store admin user, or sign up faster with Google.
+      </p>
+
+      <form class="space-y-4" @submit.prevent="handleRegister" novalidate>
+        <div class="tenant-float-field" :class="{ 'is-error': !!fieldErrors.name }">
+          <input id="tenant-reg-name" v-model="form.name" type="text" autocomplete="name" required placeholder=" " />
+          <label for="tenant-reg-name">Full name</label>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
+        <span v-if="fieldErrors.name" class="block text-sm text-red-600">{{ fieldErrors.name }}</span>
+
+        <div class="tenant-float-field" :class="{ 'is-error': !!fieldErrors.email }">
+          <input id="tenant-reg-email" v-model="form.email" type="email" autocomplete="email" required placeholder=" " />
+          <label for="tenant-reg-email">Email address</label>
+        </div>
+        <span v-if="fieldErrors.email" class="block text-sm text-red-600">{{ fieldErrors.email }}</span>
+
+        <div class="tenant-float-field" :class="{ 'is-error': !!fieldErrors.password }">
           <input
-            type="password"
-            id="password"
+            id="tenant-reg-password"
             v-model="form.password"
-            class="form-control"
+            type="password"
+            autocomplete="new-password"
             required
-          >
+            placeholder=" "
+          />
+          <label for="tenant-reg-password">Password</label>
+        </div>
+        <span v-if="fieldErrors.password" class="block text-sm text-red-600">{{ fieldErrors.password }}</span>
+
+        <div class="tenant-float-field" :class="{ 'is-error': !!fieldErrors.password_confirmation }">
+          <input
+            id="tenant-reg-password2"
+            v-model="form.password_confirmation"
+            type="password"
+            autocomplete="new-password"
+            required
+            placeholder=" "
+          />
+          <label for="tenant-reg-password2">Confirm password</label>
+        </div>
+        <span v-if="fieldErrors.password_confirmation" class="block text-sm text-red-600">{{
+          fieldErrors.password_confirmation
+        }}</span>
+
+        <button type="submit" class="tenant-auth-btn-primary" :disabled="loading">
+          <span v-if="loading">Creating account…</span>
+          <span v-else>Create account</span>
+        </button>
+
+        <div class="tenant-auth-divider">
+          <div class="tenant-auth-divider__line" />
+          <span class="tenant-auth-divider__text">or</span>
+          <div class="tenant-auth-divider__line" />
         </div>
 
-        <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
-        <div v-if="successMsg" class="success-msg">{{ successMsg }}</div>
-
-        <button type="submit" class="btn btn-primary" :disabled="loading">
-          {{ loading ? 'Creating Account...' : 'Register' }}
+        <button
+          type="button"
+          class="tenant-auth-btn-google"
+          :disabled="loading || googleLoading"
+          @click="handleGoogleRegister"
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt=""
+            class="h-5 w-5"
+            width="20"
+            height="20"
+          />
+          <span v-if="googleLoading">Redirecting…</span>
+          <span v-else>Continue with Google</span>
         </button>
       </form>
 
-      <p class="mt-3">
+      <div v-if="errorMsg" class="mt-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-600">
+        {{ errorMsg }}
+      </div>
+
+      <p class="tenant-auth-footer">
         Already have an account?
-        <router-link to="/login">Login here</router-link>
+        <router-link to="/dashboard/login" class="tenant-auth-link">Sign in</router-link>
       </p>
     </div>
   </div>
 </template>
+
 <script>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
+import { redirectToGoogleTenantAuth } from '@/tenant-admin/helpers/googleTenantAuth'
+
 export default {
   name: 'TenantRegister',
   setup() {
     const router = useRouter()
     const loading = ref(false)
+    const googleLoading = ref(false)
     const errorMsg = ref('')
-    const successMsg = ref('')
-    const form = ref({
+    const form = reactive({
+      name: '',
       email: '',
-      password: ''
+      password: '',
+      password_confirmation: '',
     })
-    const handleRegister = async () => {
+    const fieldErrors = reactive({
+      name: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
+    })
+
+    const clearErrors = () => {
       errorMsg.value = ''
-      successMsg.value = ''
+      fieldErrors.name = ''
+      fieldErrors.email = ''
+      fieldErrors.password = ''
+      fieldErrors.password_confirmation = ''
+    }
+
+    const handleRegister = async () => {
+      clearErrors()
       loading.value = true
-      if (!form.value.email || !form.value.password) {
-        errorMsg.value = 'Email and password are required.'
-        loading.value = false
-        return
-      }
       try {
-        loading.value = true
-        const response = await axiosTenant.post('/signup', form.value)
-        if (response.data.status) {
-          localStorage.setItem('tenant_token', response.data.tenant_token)
+        const response = await axiosTenant.post('/signup', form)
+        if (response.data?.token) {
+          localStorage.setItem('tenant_token', response.data.token)
           localStorage.setItem('tenant_user', JSON.stringify(response.data.user))
           router.push('/dashboard')
         } else {
-          errorMsg.value = response.data.message || 'Signup failed'
+          errorMsg.value = response.data?.message || 'Signup failed'
         }
       } catch (error) {
-        errorMsg.value = error.response?.data?.message || 'Signup failed'
+        const data = error.response?.data
+        if (data && typeof data === 'object' && !data.message) {
+          fieldErrors.name = data.name?.[0] || ''
+          fieldErrors.email = data.email?.[0] || ''
+          fieldErrors.password = data.password?.[0] || ''
+          fieldErrors.password_confirmation = data.password_confirmation?.[0] || ''
+        }
+        errorMsg.value = data?.message || 'Signup failed'
       } finally {
         loading.value = false
       }
     }
+
+    const handleGoogleRegister = async () => {
+      clearErrors()
+      try {
+        googleLoading.value = true
+        await redirectToGoogleTenantAuth()
+      } catch (e) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Google sign-up',
+          text: e.response?.data?.message || e.message || 'Could not start Google sign-up.',
+        })
+      } finally {
+        googleLoading.value = false
+      }
+    }
+
     return {
       form,
       loading,
+      googleLoading,
       errorMsg,
-      successMsg,
-      handleRegister
+      fieldErrors,
+      handleRegister,
+      handleGoogleRegister,
     }
-  }
+  },
 }
 </script>
-
-<style scoped>
-.register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
-.register-box {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.btn {
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.error-msg {
-  color: #d9534f;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.success-msg {
-  color: #28a745;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-</style>

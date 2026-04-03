@@ -56,6 +56,7 @@
 import { ref, onMounted } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
 import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
 
 const plans = ref([])
 const loading = ref(true)
@@ -87,11 +88,19 @@ async function selectPlan(plan) {
     if (data.url) {
       window.location.href = data.url // redirect to Stripe Checkout
     } else {
-      alert('Failed to get checkout link.')
+      await Swal.fire({
+        icon: 'error',
+        title: 'Checkout',
+        text: 'Failed to get checkout link.',
+      })
     }
   } catch (error) {
     console.error('Error creating checkout session:', error)
-    alert('Something went wrong while redirecting to checkout.')
+    await Swal.fire({
+      icon: 'error',
+      title: 'Checkout',
+      text: 'Something went wrong while redirecting to checkout.',
+    })
   }
 }
 

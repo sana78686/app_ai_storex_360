@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Tenant storefront + tenant admin only (imported from those entrypoints) */
+html,
+body,
+body #app,
+#app {
+  font-family: 'Inter', sans-serif !important;
+}

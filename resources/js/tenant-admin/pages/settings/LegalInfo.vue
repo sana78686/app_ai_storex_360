@@ -87,6 +87,7 @@
 
 <script>
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
 export default {
   data() {
@@ -209,10 +210,17 @@ async loadLegalInfo() {
   try {
     console.log("SAVING:", this.form);
     await axiosTenant.post("/legal-info", this.form);
-    alert("Saved successfully!");
+    await Swal.fire({
+      icon: 'success',
+      title: 'Saved',
+      text: 'Saved successfully!',
+    })
   } catch (error) {
-    // Show error message
-    alert(error.response?.data?.message || error.message || "Something went wrong");
+    await Swal.fire({
+      icon: 'error',
+      title: 'Save failed',
+      text: error.response?.data?.message || error.message || 'Something went wrong',
+    })
     console.error(error);
   }
 }

@@ -592,6 +592,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import draggable from 'vuedraggable'
 import Editor from '@tinymce/tinymce-vue'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 const currentLocale = ref('en')
 import { useRoute } from 'vue-router'
 const route = useRoute()
@@ -847,8 +848,12 @@ const handleSubmit = async () => {
   // 1. Validation: Ensure we have an ID for update
   const productId = route.params.id
   if (!productId) {
-    alert("Product ID is missing. Cannot update.");
-    return;
+    await Swal.fire({
+      icon: 'error',
+      title: 'Cannot update',
+      text: 'Product ID is missing. Cannot update.',
+    })
+    return
   }
 
   const formData = new FormData();
@@ -904,12 +909,20 @@ const handleSubmit = async () => {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
 
-    console.log('Update Success:', response.data);
-    alert('Product updated successfully!');
+    console.log('Update Success:', response.data)
+    await Swal.fire({
+      icon: 'success',
+      title: 'Saved',
+      text: 'Product updated successfully!',
+    })
   } catch (err) {
-    console.error('Update Error:', err.response?.data);
-    const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Update failed';
-    alert(errorMsg);
+    console.error('Update Error:', err.response?.data)
+    const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Update failed'
+    await Swal.fire({
+      icon: 'error',
+      title: 'Update failed',
+      text: errorMsg,
+    })
   }
 }
 

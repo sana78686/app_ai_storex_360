@@ -156,6 +156,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 import debounce from 'lodash/debounce' // Recommended: npm install lodash
 
 const orders = ref([])
@@ -223,8 +224,12 @@ const toggleSelectAll = () => {
   selectedOrders.value = isAllSelected.value ? [] : orders.value.map(o => o.id)
 }
 
-const confirmFulfillment = () => {
-  alert(`Successfully fulfilled orders: ${selectedOrders.value.join(', ')}`)
+const confirmFulfillment = async () => {
+  await Swal.fire({
+    icon: 'success',
+    title: 'Fulfilled',
+    text: `Successfully fulfilled orders: ${selectedOrders.value.join(', ')}`,
+  })
   showFulfillModal.value = false
   selectedOrders.value = []
 }

@@ -1,174 +1,157 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-
-      <!-- Header -->
-      <h2 class="text-2xl font-semibold text-gray-900 mb-2">
-        Login to your store
-      </h2>
-      <p class="text-sm text-gray-500 mb-6">
-        Welcome back! Please enter your details.
+  <div class="tenant-auth-page">
+    <div class="tenant-auth-card">
+      <h1 class="tenant-auth-card__title">Sign in to your store</h1>
+      <p class="tenant-auth-card__subtitle">
+        Welcome back. Use your email or continue with Google.
       </p>
 
-      <!-- Form -->
-      <form @submit.prevent="handleLogin" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Email address
-          </label>
+      <form class="space-y-4" @submit.prevent="handleLogin" novalidate>
+        <div class="tenant-float-field" :class="{ 'is-error': !!errors.email }">
           <input
-            type="email"
+            id="tenant-login-email"
             v-model="form.email"
+            type="email"
+            name="email"
+            autocomplete="email"
             required
-            placeholder="you@example.com"
-            class="w-full rounded-lg border border-gray-300 px-4 py-2.5
-                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder=" "
           />
+          <label for="tenant-login-email">Email address</label>
         </div>
+        <span v-if="errors.email" class="block text-sm text-red-600">{{ errors.email }}</span>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Password
-          </label>
+        <div class="tenant-float-field" :class="{ 'is-error': !!errors.password }">
           <input
-            type="password"
+            id="tenant-login-password"
             v-model="form.password"
+            type="password"
+            name="password"
+            autocomplete="current-password"
             required
-            placeholder="••••••••"
-            class="w-full rounded-lg border border-gray-300 px-4 py-2.5
-                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder=" "
           />
+          <label for="tenant-login-password">Password</label>
         </div>
+        <span v-if="errors.password" class="block text-sm text-red-600">{{ errors.password }}</span>
 
-        <!-- Actions -->
-        <div class="flex items-center justify-between text-sm">
-          <router-link
-            to="/forgot-password"
-            class="text-blue-600 font-medium hover:underline"
-          >
+        <div class="flex justify-end text-sm">
+          <router-link to="/dashboard/forgot-password" class="tenant-auth-link">
             Forgot password?
           </router-link>
         </div>
 
+        <button type="submit" class="tenant-auth-btn-primary" :disabled="loading">
+          <span v-if="loading">Signing in…</span>
+          <span v-else>Sign in</span>
+        </button>
+
         <button
-          type="submit"
-          :disabled="loading"
-          class="w-full rounded-lg bg-blue-600 text-white py-2.5 font-medium
-                 hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          type="button"
+          class="tenant-auth-btn-google"
+          :disabled="loading || googleLoading"
+          @click="handleGoogleLogin"
         >
-          <span v-if="loading">Logging in...</span>
-          <span v-else>Login</span>
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt=""
+            class="h-5 w-5"
+            width="20"
+            height="20"
+          />
+          <span v-if="googleLoading">Redirecting…</span>
+          <span v-else>Continue with Google</span>
         </button>
       </form>
 
-      <!-- Error -->
-      <div
-        v-if="errorMsg"
-        class="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg"
-      >
+      <div v-if="errorMsg" class="mt-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-600">
         {{ errorMsg }}
       </div>
 
-      <!-- Footer -->
-      <div class="mt-6 text-center text-sm text-gray-500">
+      <p class="tenant-auth-footer">
         Don’t have an account?
-        <router-link
-          to="/register"
-          class="text-blue-600 font-medium hover:underline"
-        >
-          Register here
-        </router-link>
-      </div>
-
+        <router-link to="/dashboard/register" class="tenant-auth-link">Register</router-link>
+      </p>
     </div>
   </div>
 </template>
 
-
 <script>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
+import { redirectToGoogleTenantAuth } from '@/tenant-admin/helpers/googleTenantAuth'
 
 export default {
   name: 'TenantLogin',
   setup() {
     const router = useRouter()
     const loading = ref(false)
-    const form = ref({
+    const googleLoading = ref(false)
+    const form = reactive({
       email: '',
-      password: ''
+      password: '',
+    })
+    const errors = reactive({
+      email: '',
+      password: '',
     })
     const errorMsg = ref('')
 
     const handleLogin = async () => {
-
       errorMsg.value = ''
+      errors.email = ''
+      errors.password = ''
+
       try {
         loading.value = true
-        const response = await axiosTenant.post('/login', form.value)
-        // console.log('LOGIN RESPONSE', response.data)
-        if (response.data) {
-            // console.log('LOGIN RESPONSE', response.data)
+        const response = await axiosTenant.post('/login', form)
+        if (response.data?.token) {
           localStorage.setItem('tenant_token', response.data.token)
           localStorage.setItem('tenant_user', JSON.stringify(response.data.user))
           router.push('/dashboard')
         } else {
-          errorMsg.value = response.data.message || 'Loginn failed'
+          errorMsg.value = response.data?.message || 'Login failed'
         }
       } catch (error) {
-        errorMsg.value = error.response?.data?.message || 'Login failed'
+        const data = error.response?.data
+        if (data?.errors) {
+          const flat = data.errors
+          errors.email = flat.email?.[0] || ''
+          errors.password = flat.password?.[0] || ''
+        }
+        errorMsg.value = data?.message || 'Login failed'
       } finally {
         loading.value = false
+      }
+    }
+
+    const handleGoogleLogin = async () => {
+      errorMsg.value = ''
+      try {
+        googleLoading.value = true
+        await redirectToGoogleTenantAuth()
+      } catch (e) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Google sign-in',
+          text: e.response?.data?.message || e.message || 'Could not start Google sign-in.',
+        })
+      } finally {
+        googleLoading.value = false
       }
     }
 
     return {
       form,
       loading,
+      googleLoading,
+      errors,
+      errorMsg,
       handleLogin,
-      errorMsg
+      handleGoogleLogin,
     }
-  }
+  },
 }
 </script>
-
-<style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
-.login-box {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.btn {
-  width: 100%;
-  margin-top: 1rem;
-}
-</style>

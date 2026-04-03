@@ -211,6 +211,7 @@
 <script setup>
     import { useRoute } from 'vue-router'
     import axiosTenant from '@/api/axiosTenant'
+    import Swal from 'sweetalert2'
 const route = useRoute()
 /* ... (Logic stays exactly as you provided, keeping all refs and functions) ... */
 import { ref, computed, onMounted, onUnmounted } from 'vue'
@@ -397,7 +398,11 @@ const changeTheme = async () => {
     // 🔥 Hard reload so Blade re-evaluates @vite
     // window.location.reload()
   } catch (e) {
-    alert('Failed to change theme')
+    await Swal.fire({
+      icon: 'error',
+      title: 'Theme',
+      text: 'Failed to change theme.',
+    })
   }
 }
 

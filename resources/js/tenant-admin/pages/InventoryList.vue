@@ -335,6 +335,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 // import axios from 'axios'
 
 // Reactive data
@@ -471,7 +472,15 @@ const bulkUpdateStatus = async (status) => {
 const bulkDelete = async () => {
   if (selectedIds.value.length === 0) return
 
-  if (!confirm(`Are you sure you want to delete ${selectedIds.value.length} product(s)?`)) {
+  const bulkConfirm = await Swal.fire({
+    icon: 'warning',
+    title: 'Delete products?',
+    text: `Are you sure you want to delete ${selectedIds.value.length} product(s)?`,
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete',
+    cancelButtonText: 'Cancel',
+  })
+  if (!bulkConfirm.isConfirmed) {
     return
   }
 
@@ -490,7 +499,15 @@ const bulkDelete = async () => {
 
 // Delete single product
 const deleteProduct = async (id) => {
-  if (!confirm('Are you sure you want to delete this product?')) {
+  const one = await Swal.fire({
+    icon: 'warning',
+    title: 'Delete product?',
+    text: 'Are you sure you want to delete this product?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete',
+    cancelButtonText: 'Cancel',
+  })
+  if (!one.isConfirmed) {
     return
   }
 

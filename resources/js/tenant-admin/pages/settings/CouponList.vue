@@ -42,6 +42,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
 const coupons = ref({ data: [], meta: {}, links: {} })
 
@@ -50,19 +51,35 @@ async function fetchCoupons(page = 1) {
     const response = await axiosTenant.get(`/coupons?page=${page}`)
     coupons.value = response.data
   } catch (err) {
-    alert('Failed to fetch coupons: ' + err.message)
+    await Swal.fire({
+      icon: 'error',
+      title: 'Coupons',
+      text: 'Failed to fetch coupons: ' + err.message,
+    })
   }
 }
 
 async function deleteCoupon(id) {
-  if (!confirm('Are you sure you want to delete this coupon?')) return
+  const r = await Swal.fire({
+    icon: 'warning',
+    title: 'Delete coupon?',
+    text: 'Are you sure you want to delete this coupon?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete',
+    cancelButtonText: 'Cancel',
+  })
+  if (!r.isConfirmed) return
 
   try {
     await axiosTenant.delete(`/coupons/${id}`)
-    alert('Coupon deleted!')
+    await Swal.fire({ icon: 'success', title: 'Deleted', text: 'Coupon deleted.' })
     fetchCoupons(coupons.value.meta.current_page)
   } catch (err) {
-    alert('Failed to delete coupon: ' + (err.response?.data?.message || err.message))
+    await Swal.fire({
+      icon: 'error',
+      title: 'Delete failed',
+      text: err.response?.data?.message || err.message,
+    })
   }
 }
 

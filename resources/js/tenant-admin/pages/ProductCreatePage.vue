@@ -592,6 +592,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import draggable from 'vuedraggable'
 import Editor from '@tinymce/tinymce-vue'
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
 // --- State ---
 // --- Category State ---
@@ -870,17 +871,33 @@ const handleSubmit = async () => {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
     console.log("Product saved successfully:", response.data)
-    alert("Product saved!")
+    await Swal.fire({
+      icon: 'success',
+      title: 'Saved',
+      text: 'Product saved!',
+    })
   } catch (error) {
     console.error("Error saving product:", error.response?.data || error)
-    alert("Failed to save product.")
+    await Swal.fire({
+      icon: 'error',
+      title: 'Save failed',
+      text: 'Failed to save product.',
+    })
   }
 }
 
 
 
-const closeModal = () => {
-    if (confirm("Discard unsaved changes?")) {
+const closeModal = async () => {
+    const r = await Swal.fire({
+      icon: 'warning',
+      title: 'Discard changes?',
+      text: 'Discard unsaved changes?',
+      showCancelButton: true,
+      confirmButtonText: 'Discard',
+      cancelButtonText: 'Keep editing',
+    })
+    if (r.isConfirmed) {
         // Handle closing logic
     }
 }

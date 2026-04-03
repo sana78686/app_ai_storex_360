@@ -1,54 +1,32 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+  <div class="tenant-auth-page">
+    <div class="tenant-auth-card">
+      <h1 class="tenant-auth-card__title">Forgot your password?</h1>
+      <p class="tenant-auth-card__subtitle">Enter your email and we’ll send you a reset link.</p>
 
-      <h2 class="text-2xl font-semibold text-gray-900 mb-2">
-        Forgot your password?
-      </h2>
-      <p class="text-sm text-gray-500 mb-6">
-        Enter your email and we’ll send you a reset link.
-      </p>
-
-      <form @submit.prevent="submit" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Email address
-          </label>
-          <input
-            v-model="email"
-            type="email"
-            placeholder="you@example.com"
-            required
-            class="w-full rounded-lg border border-gray-300 px-4 py-2.5
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+      <form class="space-y-4" @submit.prevent="submit" novalidate>
+        <div class="tenant-float-field">
+          <input id="tenant-forgot-email" v-model="email" type="email" autocomplete="email" required placeholder=" " />
+          <label for="tenant-forgot-email">Email address</label>
         </div>
 
-        <button
-          type="submit"
-          :disabled="loading"
-          class="w-full rounded-lg bg-blue-600 text-white py-2.5 font-medium
-                 hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          <span v-if="loading">Sending link...</span>
+        <button type="submit" class="tenant-auth-btn-primary" :disabled="loading">
+          <span v-if="loading">Sending link…</span>
           <span v-else>Send reset link</span>
         </button>
       </form>
 
-      <!-- Messages -->
-      <div v-if="message" class="mt-4 text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+      <div v-if="message" class="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-800">
         {{ message }}
       </div>
-      <div v-if="error" class="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+      <div v-if="error" class="mt-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-600">
         {{ error }}
       </div>
 
-      <div class="mt-6 text-center text-sm text-gray-500">
+      <p class="tenant-auth-footer">
         Remembered your password?
-        <router-link to="/login" class="text-blue-600 font-medium hover:underline">
-          Back to login
-        </router-link>
-      </div>
+        <router-link to="/dashboard/login" class="tenant-auth-link">Back to sign in</router-link>
+      </p>
     </div>
   </div>
 </template>
@@ -69,7 +47,7 @@ const submit = async () => {
 
   try {
     const res = await axiosTenant.post('/forgot-password', {
-      email: email.value
+      email: email.value,
     })
     message.value = res.data.message
   } catch (e) {

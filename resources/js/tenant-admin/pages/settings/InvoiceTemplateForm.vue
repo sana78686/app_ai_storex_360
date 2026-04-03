@@ -98,6 +98,7 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import Swal from 'sweetalert2'
 
 const showPreview = ref(false)
 const previewHtml = ref('')
@@ -214,7 +215,11 @@ const preview = () => {
 }
 
 const save = async () => {
-  alert('Template Saved Successfully!')
+  await Swal.fire({
+    icon: 'success',
+    title: 'Saved',
+    text: 'Template saved successfully!',
+  })
 }
 </script>
 

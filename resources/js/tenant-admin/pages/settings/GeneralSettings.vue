@@ -117,6 +117,7 @@
 
 <script>
 import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
 export default {
   data() {
@@ -219,7 +220,11 @@ export default {
       this.form.logo = file; // Assign File object for upload
       this.logoPreview = URL.createObjectURL(file); // Generate preview URL
     } else {
-      alert("Please select a valid image file (png, jpg, jpeg, webp).");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid file',
+        text: 'Please select a valid image file (png, jpg, jpeg, webp).',
+      })
       event.target.value = null; // Reset the input
       this.form.logo = null;
       this.logoPreview = null;
@@ -265,7 +270,11 @@ export default {
       }
     });
 
-    alert("Settings updated successfully!");
+    await Swal.fire({
+      icon: 'success',
+      title: 'Saved',
+      text: 'Settings updated successfully!',
+    })
 
     // Reload settings
     this.loadSettings();
@@ -273,9 +282,17 @@ export default {
   } catch (err) {
     // Show backend error message if available
     if (err.response && err.response.data && err.response.data.message) {
-      alert("Error: " + err.response.data.message);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.response.data.message,
+      })
     } else {
-      alert("Failed to save settings.");
+      await Swal.fire({
+        icon: 'error',
+        title: 'Save failed',
+        text: 'Failed to save settings.',
+      })
     }
     console.error("Error saving settings", err);
   }

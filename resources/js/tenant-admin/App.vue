@@ -43,23 +43,34 @@ body {
 }
 
 :root {
-  --primary-color: #ff4c3b;
+  --primary-gradient: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #20c55c 0%, #0f7a70 100%);
+  --primary-color: #25d366;
+  --primary-color-hover: #128c7e;
+  --primary-glow: rgba(37, 211, 102, 0.35);
   --secondary-color: #2c3e50;
   --text-color: #333;
   --light-bg: #f8f9fa;
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background-color: #128c7e;
+  background-image: var(--primary-gradient);
+  border-color: transparent;
   padding: 10px 25px;
-  border-radius: 5px;
-  font-weight: 500;
+  border-radius: 9999px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px var(--primary-glow);
+  transition:
+    background-image 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
 }
 
 .btn-primary:hover {
-  background-color: #e6392a;
-  border-color: #e6392a;
+  background-image: var(--primary-gradient-hover);
+  border-color: transparent;
+  box-shadow: 0 10px 24px var(--primary-glow);
 }
 .pt-22 {
     padding-top: 5rem;
