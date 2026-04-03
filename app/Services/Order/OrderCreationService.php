@@ -32,11 +32,15 @@ class OrderCreationService
     {
         return DB::transaction(function () use ($data) {
 
+            $fulfillment = $data['fulfillment_type'] ?? 'pickup';
+            if ($fulfillment === 'shipping') {
+                $fulfillment = 'delivery';
+            }
+
             $order = Order::create([
                 'order_number'     => Str::uuid(),
                 'order_type'       => 'manual',
-                'fulfillment_type' => 'pickup',
-                // 'customer_id'      => $data['customer_id'],
+                'fulfillment_type' => in_array($fulfillment, ['delivery', 'pickup'], true) ? $fulfillment : 'pickup',
                 'created_by'       => auth()->id(),
                 'status'           => 'confirmed',
                 'subtotal'         => 0,
@@ -46,14 +50,16 @@ class OrderCreationService
             ]);
 
             foreach ($data['items'] as $item) {
+                $qty = (int) ($item['qty'] ?? 1);
+                $unit = (float) ($item['price'] ?? 0);
                 OrderItem::create([
-                    'order_id'     => $order->id,
-                    'product_id'   => $item['id'],
-                    'product_name' => $item['name'],
-                    'product_sku'  => $item['sku'] ?? null,
-                    'price'   => $item['price'],
-                    'quantity'     => $item['qty'],
-                    'total'        => $item['price'] * $item['qty'],
+                    'order_id'      => $order->id,
+                    'product_id'    => $item['id'],
+                    'product_name'  => $item['name'] ?? 'Product',
+                    'product_sku'   => $item['sku'] ?? null,
+                    'unit_price'    => $unit,
+                    'quantity'      => $qty,
+                    'total'         => round($unit * $qty, 2),
                 ]);
             }
 

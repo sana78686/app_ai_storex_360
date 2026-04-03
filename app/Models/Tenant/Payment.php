@@ -9,17 +9,22 @@ class Payment extends Model
 {
     protected $fillable = [
         'order_id',
+        'payment_method',
+        'payment_provider',
+        'transaction_id',
+        'amount',
+        'status',
+        'paid_at',
+        'metadata',
         'provider',
         'provider_payment_id',
-        'status',
-        'amount',
         'currency',
         'provider_payload',
-        'paid_at',
     ];
 
     protected $casts = [
         'provider_payload' => 'array',
+        'metadata' => 'array',
         'paid_at' => 'datetime',
         'amount' => 'decimal:2',
     ];

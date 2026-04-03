@@ -380,7 +380,7 @@
         </div>
         <input
           v-model="option.currentInput"
-          @input="handleInputEffect(index)"
+          @input="processVariants"
           @keydown.enter.prevent="addTag(index)"
           type="text"
           placeholder="Add another value"
@@ -593,6 +593,7 @@ import draggable from 'vuedraggable'
 import Editor from '@tinymce/tinymce-vue'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
+import { formatApiErrorHtml } from '@tenant/helpers/apiErrorMessage'
 const currentLocale = ref('en')
 import { useRoute } from 'vue-router'
 const route = useRoute()
@@ -863,26 +864,40 @@ const handleSubmit = async () => {
   // struggle to parse multipart/form-data on a native PUT request.
   formData.append('_method', 'PUT');
 
-  // 3. Append Main Product Fields
-  Object.keys(form.value).forEach(key => {
-    const value = form.value[key];
+  // 3. Append main product fields (API expects track_quantity, stock, type — not inventory_tracked / quantity)
+  const skipKeys = new Set([
+    'media_files',
+    'inventory_tracked',
+    'quantity',
+    'id',
+  ])
+  Object.keys(form.value).forEach((key) => {
+    if (skipKeys.has(key)) return
+    const value = form.value[key]
 
-    if (key === 'media_files') {
-      form.value.media_files.forEach(file => {
-        // Append actual File objects if they exist
-        if (file instanceof File) {
-          formData.append('images[]', file);
-        } else if (file.file instanceof File) {
-          formData.append('images[]', file.file);
-        }
-      });
-    } else if (key === 'categories_id') {
-      // FIX: Ensure we send a real ID or an empty string (not "null")
-      formData.append(key, value || '');
-    } else if (value !== null && value !== undefined) {
-      formData.append(key, value);
+    if (key === 'categories_id') {
+      formData.append(key, value || '')
+      return
     }
-  });
+    if (value !== null && value !== undefined && value !== '') {
+      formData.append(key, value)
+    }
+  })
+
+  formData.append('type', variants.value.length ? 'variant' : 'simple')
+  formData.append('track_quantity', form.value.inventory_tracked ? '1' : '0')
+  formData.append('stock', String(form.value.quantity ?? 0))
+  formData.append('is_active', form.value.status === 'active' ? '1' : '0')
+  formData.append('is_featured', '0')
+  formData.append('allow_backorder', '0')
+
+  form.value.media_files.forEach((file) => {
+    if (file instanceof File) {
+      formData.append('images[]', file)
+    } else if (file.file instanceof File) {
+      formData.append('images[]', file.file)
+    }
+  })
 
   // 4. Append Variants
   variants.value.forEach((v, i) => {
@@ -893,7 +908,10 @@ const handleSubmit = async () => {
     formData.append(`variants[${i}][sku]`, v.sku || '');
     formData.append(`variants[${i}][barcode]`, v.barcode || '');
 
-    // Variant Media
+    ;(v.options || []).forEach((opt) => {
+      formData.append(`variants[${i}][options][${opt.name}]`, opt.value)
+    })
+
     if (v.media) {
       v.media.forEach(m => {
         if (m.file instanceof File) {
@@ -917,11 +935,11 @@ const handleSubmit = async () => {
     })
   } catch (err) {
     console.error('Update Error:', err.response?.data)
-    const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Update failed'
     await Swal.fire({
       icon: 'error',
       title: 'Update failed',
-      text: errorMsg,
+      html: formatApiErrorHtml(err),
+      width: 520,
     })
   }
 }

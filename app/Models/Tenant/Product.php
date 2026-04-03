@@ -127,7 +127,7 @@ public function affiliates()
         }
 
         return $this->variants()
-            ->where('stock', '>', 0)
+            ->where('quantity', '>', 0)
             ->count() === 0;
     }
 
@@ -137,11 +137,10 @@ public function affiliates()
     public function adjustStock(int $quantity, ProductVariant $variant = null): void
     {
         if ($variant) {
-            $variant->decrement('stock', $quantity);
+            $variant->decrement('quantity', $quantity);
 
-            // Keep aggregate product stock in sync
             $this->update([
-                'stock' => $this->variants()->sum('stock'),
+                'stock' => $this->variants()->sum('quantity'),
             ]);
 
             return;

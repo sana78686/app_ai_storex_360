@@ -55,10 +55,19 @@ return [
     'url' => env('APP_URL', 'http://localhost:8000'),
 
     /*
-    | Hostname used for tenant subdomains (e.g. tenant-{id}.my.aistorex360.com).
-    | Defaults to the host portion of APP_URL. Override with CENTRAL_DOMAIN if needed.
+    | Apex domain for tenant hostnames (wildcard DNS: *.{tenant_base_domain}).
+    | Example: TENANT_BASE_DOMAIN=example.com → tenant admin at tenant-{id}.example.com,
+    | central SaaS UI at APP_URL e.g. https://my.example.com (not covered by the wildcard apex rule for tenants).
     */
-    'central_domain' => env('CENTRAL_DOMAIN') ?: (parse_url((string) env('APP_URL', 'http://localhost:8000'), PHP_URL_HOST) ?: 'localhost'),
+    'tenant_base_domain' => env('TENANT_BASE_DOMAIN'),
+
+    /*
+    | Host suffix when generating default tenant domains: tenant-{id}.{central_domain}
+    | Priority: TENANT_BASE_DOMAIN → CENTRAL_DOMAIN → host from APP_URL (e.g. localhost for local dev).
+    */
+    'central_domain' => env('TENANT_BASE_DOMAIN')
+        ?: env('CENTRAL_DOMAIN')
+        ?: (parse_url((string) env('APP_URL', 'http://localhost:8000'), PHP_URL_HOST) ?: 'localhost'),
 
     /*
     |--------------------------------------------------------------------------

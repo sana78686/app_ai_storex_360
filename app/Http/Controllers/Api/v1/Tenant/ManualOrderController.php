@@ -14,10 +14,13 @@ class ManualOrderController extends Controller
     {
         $request->validate([
             'customer_id' => 'nullable|exists:customers,id',
+            'fulfillment_type' => 'nullable|in:pickup,shipping,delivery',
             'items'       => 'required|array|min:1',
             'items.*.id'  => 'required|exists:products,id',
             'items.*.qty' => 'required|integer|min:1',
-            'items.*.price' => 'required|numeric|min:0'
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.name' => 'nullable|string|max:500',
+            'items.*.sku' => 'nullable|string|max:255',
         ]);
 
         $order = app(OrderCreationService::class)
@@ -36,8 +39,10 @@ class ManualOrderController extends Controller
             'method' => 'required|in:cash,card,bank_transfer'
         ]);
 
+        $method = $request->input('method');
+
         $payment = app(PaymentService::class)
-            ->pay($order, $request->method);
+            ->pay($order, $method);
 
         return response()->json([
             'message' => 'Payment successful',

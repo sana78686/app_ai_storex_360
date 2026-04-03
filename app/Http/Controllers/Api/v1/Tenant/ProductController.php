@@ -66,7 +66,7 @@ public function index(Request $request)
                     $q->where('locale', $locale);
                 }
             ])
-            ->limit($categoryId ? 100 : 10) // More results when filtering by category
+            ->when($search, fn ($q) => $q->limit(80), fn ($q) => $q->limit($categoryId ? 100 : 25))
             ->get()
             // ... (rest of your mapping logic remains the same)
             ->map(function ($product) use ($locale) {
@@ -259,7 +259,8 @@ public function updateStatus(Request $request, $id)
              'brand_id','status'
          ]);
 
-
+            $data['name'] = $request->input('name') ?: 'Untitled';
+            $data['detailed_description'] = $request->input('detailed_description');
 
             $product = Product::create($data);
             // Generate slug manually

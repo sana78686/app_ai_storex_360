@@ -50,7 +50,13 @@
           </div>
           <div v-if="!editMode">
             <label>Password</label>
-            <input v-model="form.password" type="password" required />
+            <input
+              v-model="form.password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
           </div>
           <div>
             <label>Roles</label>

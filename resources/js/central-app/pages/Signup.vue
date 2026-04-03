@@ -47,6 +47,7 @@
             >
               <input
                 id="signup-password"
+                name="password"
                 :type="showPassword ? 'text' : 'password'"
                 v-model="password"
                 autocomplete="new-password"

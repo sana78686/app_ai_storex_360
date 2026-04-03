@@ -805,3 +805,127 @@
 #app .tenant-data-table tbody tr:hover {
   background: rgb(243 244 246 / 0.65);
 }
+
+/* Inline help for forms (product create, settings, etc.) */
+#app .tenant-field-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+#app .tenant-field-tip__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: rgb(39 90 25 / 0.1);
+  color: #275a19;
+  cursor: help;
+  flex-shrink: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+#app .tenant-field-tip__trigger:hover,
+#app .tenant-field-tip__trigger:focus-visible {
+  background: rgb(39 90 25 / 0.2);
+  color: #1f4814;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tenant-input-focus-ring);
+}
+
+#app .tenant-field-tip__icon {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+#app .tenant-field-tip__popover {
+  position: absolute;
+  z-index: 80;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  width: min(18rem, 85vw);
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  background: #1f2937;
+  color: #f9fafb;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  box-shadow:
+    0 10px 25px -5px rgb(0 0 0 / 0.25),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+#app .tenant-field-tip__label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(167 243 208 / 0.95);
+  margin: 0 0 0.35rem;
+}
+
+#app .tenant-field-tip__text {
+  margin: 0;
+  color: #e5e7eb;
+}
+
+.tenant-tip-fade-enter-active,
+.tenant-tip-fade-leave-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.tenant-tip-fade-enter-from,
+.tenant-tip-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Product editor shell */
+#app .tenant-product-editor {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f4f6f4 0%, #eef1ee 100%);
+  font-family:
+    'Inter',
+    system-ui,
+    sans-serif;
+  color: #1c1f1e;
+}
+
+#app .tenant-product-editor__header {
+  border-bottom: 1px solid #e2e8e4;
+  background: rgb(255 255 255 / 0.92);
+  backdrop-filter: blur(8px);
+}
+
+#app .tenant-product-editor__section {
+  border: 1px solid #e2e8e4;
+  border-radius: 0.875rem;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+#app .tenant-product-editor__section-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.01em;
+}
+
+#app .tenant-product-editor__eyebrow {
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #275a19;
+}

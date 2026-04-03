@@ -1,30 +1,45 @@
 <template>
-  <div class="min-h-screen bg-[#f1f1f1] pb-20 font-sans text-[#303030]">
-    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
-      <div class="flex items-center gap-4">
-        <button @click="closeModal" class="p-1.5 hover:bg-gray-100 rounded-md transition text-gray-500">
+  <div class="tenant-product-editor pb-16 text-[15px] leading-relaxed">
+    <header class="tenant-product-editor__header sticky top-0 z-50 px-4 sm:px-6 py-3 flex flex-wrap gap-3 justify-between items-center shadow-sm">
+      <div class="flex items-center gap-3 min-w-0">
+        <button type="button" @click="closeModal" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition shrink-0" aria-label="Back">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
         </button>
-        <h1 class="text-sm font-bold">{{ form.name || 'Unsaved Product' }}</h1>
-        <span class="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Draft</span>
+        <div class="min-w-0">
+          <p class="tenant-product-editor__eyebrow mb-0.5">Products</p>
+          <h1 class="text-base font-bold text-gray-900 truncate">{{ form.name || 'New product' }}</h1>
+        </div>
+        <span class="tenant-badge tenant-badge--pending text-[10px] shrink-0">Draft</span>
       </div>
-      <div class="flex gap-3">
-        <button @click="closeModal" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 bg-white">Discard</button>
-        <button @click="handleSubmit" class="px-3 py-1.5 bg-[#1a1a1a] text-white rounded-lg text-sm font-semibold hover:bg-black transition-colors shadow-sm">Save</button>
+      <div class="flex gap-2 shrink-0">
+        <button type="button" @click="closeModal" class="tenant-btn-secondary tenant-btn-sm">Discard</button>
+        <button type="button" @click="handleSubmit" class="tenant-btn-submit tenant-btn-sm">Save product</button>
       </div>
     </header>
 
-    <main class="max-w-[1150px] mx-auto mt-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <main class="max-w-[1180px] mx-auto mt-6 px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <div class="lg:col-span-2 space-y-6">
+      <div class="lg:col-span-2 space-y-5">
 
-        <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
-          <div>
-            <label class="block text-xs font-semibold mb-1.5">Title</label>
-            <input v-model="form.name" type="text" placeholder="Short sleeve t-shirt" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-black outline-none transition-all" />
+        <section class="tenant-product-editor__section p-5 space-y-4">
+          <div class="flex items-center flex-wrap gap-1">
+            <h2 class="tenant-product-editor__section-title">Details</h2>
+            <TenantFieldTip
+              text="The title and description appear on the product page in your storefront. Clear titles help customers find this product in search and category listings."
+            />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-1.5">Description</label>
+            <div class="flex items-center gap-1 mb-1.5">
+              <label class="text-xs font-semibold text-gray-800">Title</label>
+              <TenantFieldTip text="Shown as the main product name on the storefront, cart, checkout, and order emails." />
+            </div>
+            <input v-model="form.name" type="text" placeholder="e.g. Short sleeve t-shirt" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#275a19]/25 focus:border-[#275a19] outline-none transition-all bg-white" />
+          </div>
+          <div>
+            <div class="flex items-center gap-1 mb-1.5">
+              <label class="text-xs font-semibold text-gray-800">Description</label>
+              <TenantFieldTip text="Full product story: features, sizing, care instructions. This rich text is shown on the product detail page below the title and price." />
+            </div>
             <Editor
               api-key="gxuz0hko2aulkfi1oewoca3b7oz93uo8ib39y3gx0ahwf9va"
               v-model="form.detailed_description"
@@ -32,8 +47,11 @@
             />
           </div>
          <div>
-  <label class="block text-xs font-semibold text-gray-700 mb-1.5">Product Organization</label>
-  <div class="space-y-3">
+  <div class="flex items-center gap-1 mb-1.5">
+    <label class="text-xs font-semibold text-gray-800">Categories</label>
+    <TenantFieldTip text="Controls where this product appears in your store navigation and filters. Shoppers browse by these category levels on the storefront." />
+  </div>
+  <div class="space-y-2.5">
     <select v-model="selectedL1" @change="handleL1Change" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
       <option value="">Select Main Category</option>
       <option v-for="cat in categoriesL1" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
@@ -52,10 +70,11 @@
 </div>
         </section>
 
-        <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-  <div class="flex justify-between items-center mb-4 min-h-[24px]">
+        <section class="tenant-product-editor__section p-5">
+  <div class="flex justify-between items-center mb-3 min-h-[24px]">
     <div v-if="selectedIndices.length === 0" class="flex items-center gap-2">
-      <h3 class="text-sm font-semibold">Media</h3>
+      <h3 class="tenant-product-editor__section-title">Media</h3>
+      <TenantFieldTip text="The first image is the main photo on product cards and at the top of the product page. Additional images appear in the gallery for shoppers to browse." />
     </div>
 
     <div v-else class="flex items-center justify-between w-full">
@@ -93,7 +112,7 @@
   <draggable
     v-else
     v-model="form.media_files"
-    item-key="id"
+    item-key="_clientKey"
     class="flex flex-wrap gap-3"
     ghost-class="opacity-40"
     animation="250"
@@ -133,9 +152,12 @@
   </draggable>
 </section>
 
-       <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+       <section class="tenant-product-editor__section overflow-hidden">
   <div class="p-5">
-    <h3 class="text-sm font-semibold mb-4">Price</h3>
+    <div class="flex items-center gap-2 mb-3">
+      <h3 class="tenant-product-editor__section-title">Pricing</h3>
+      <TenantFieldTip text="The price shown to customers on the storefront, cart, and checkout. Compare-at can show a ‘was’ price if your theme supports it." />
+    </div>
 
     <div class="mb-4 max-w-[240px]">
       <div class="relative group">
@@ -266,11 +288,14 @@
   </div>
 </section>
 
-        <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-  <div class="p-5 pb-4 flex justify-between items-center">
-    <h3 class="text-sm font-semibold text-gray-900">Inventory</h3>
+        <section class="tenant-product-editor__section overflow-hidden">
+  <div class="p-5 pb-3 flex justify-between items-center gap-3 flex-wrap">
     <div class="flex items-center gap-2">
-      <span class="text-xs text-gray-500">Inventory tracked</span>
+      <h3 class="tenant-product-editor__section-title">Inventory</h3>
+      <TenantFieldTip text="When tracking is on, sold quantity reduces available stock and can hide ‘add to cart’ when out of stock (unless you allow selling when out of stock)." />
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-gray-600 font-medium">Track quantity</span>
       <label class="relative inline-flex items-center cursor-pointer">
         <input type="checkbox" v-model="form.inventory_tracked" class="sr-only peer">
         <div class="w-8 h-4 bg-gray-300 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>
@@ -280,12 +305,11 @@
 
   <div class="px-5 pb-5">
     <div class="border border-gray-200 rounded-xl overflow-hidden mb-4">
-      <div class="bg-gray-50/80 border-b border-gray-100 px-4 py-2 flex justify-between items-center">
-        <span class="text-[11px] font-bold text-blue-700 tracking-tight">Quantity</span>
-        <span class="text-[11px] font-bold text-blue-700 tracking-tight">Quantity</span>
+      <div class="bg-gray-50/80 border-b border-gray-100 px-4 py-2">
+        <span class="text-[11px] font-bold text-gray-600 tracking-tight uppercase">Available quantity</span>
       </div>
       <div class="px-4 py-3 flex justify-between items-center bg-white">
-        <span class="text-sm text-gray-700">Shop location</span>
+        <span class="text-sm text-gray-700">Default location</span>
         <input
           v-model.number="form.quantity"
           type="number"
@@ -337,9 +361,10 @@
   </div>
 
 </section>
-<section class="bg-white border  border-gray-200 rounded-xl shadow-sm overflow-hidden">
-  <div class="p-5 pb-4 border-b border-gray-100  ">
-    <h3 class="  text-sm font-semibold text-gray-900">Variants</h3>
+<section class="tenant-product-editor__section overflow-hidden">
+  <div class="p-5 pb-3 border-b border-gray-100 flex items-center gap-2">
+    <h3 class="tenant-product-editor__section-title">Variants</h3>
+    <TenantFieldTip text="Options like size or color create separate purchasable combinations. Each variant can have its own price, stock, SKU, and images on the storefront." />
     <!-- <button
       v-if="options.length < 1"
       @click="addOption"
@@ -380,7 +405,7 @@
         </div>
         <input
           v-model="option.currentInput"
-          @input="handleInputEffect(index)"
+          @input="processVariants"
           @keydown.enter.prevent="addTag(index)"
           type="text"
           placeholder="Add another value"
@@ -554,13 +579,16 @@
       </div>
 
       <div class="space-y-6">
-        <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-          <h3 class="text-xs font-bold uppercase text-gray-500 mb-3 tracking-wider">Status</h3>
-          <select v-model="form.status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
+        <section class="tenant-product-editor__section p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="tenant-product-editor__eyebrow !text-gray-600 !tracking-widest">Status</h3>
+            <TenantFieldTip text="Draft: hidden from customers. Active: visible in your catalog (subject to theme and collection rules)." />
+          </div>
+          <select v-model="form.status" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#275a19]/25 focus:border-[#275a19] bg-white">
             <option value="active">Active</option>
             <option value="draft">Draft</option>
           </select>
-          <p class="mt-2 text-[11px] text-gray-500">This product will be hidden from all sales channels.</p>
+          <p class="mt-2 text-xs text-gray-500 leading-snug">Draft products are not shown to shoppers until you activate them.</p>
         </section>
 
         <!-- <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
@@ -593,6 +621,8 @@ import draggable from 'vuedraggable'
 import Editor from '@tinymce/tinymce-vue'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
+import { formatApiErrorHtml } from '@tenant/helpers/apiErrorMessage'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
 
 // --- State ---
 // --- Category State ---
@@ -635,7 +665,8 @@ const form = ref({
     barcode: '',
     vendor: '',
     collection: '',
-    tags: ''
+    tags: '',
+    continue_selling: false,
 })
 
 // --- Pricing Logic ---
@@ -670,10 +701,17 @@ const calculatedMargin = computed(() => {
 // --- Media Methods ---
 const triggerFileInput = () => fileInput.value.click()
 
+function ensureMediaClientKey(file) {
+  if (!file._clientKey) {
+    file._clientKey = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `m-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+  }
+  return file
+}
+
 const handleFileSelect = (event) => {
     const files = Array.from(event.target.files).map(file => {
         file.preview = URL.createObjectURL(file)
-        return file
+        return ensureMediaClientKey(file)
     })
     form.value.media_files.push(...files)
 }
@@ -681,7 +719,7 @@ const handleFileSelect = (event) => {
 const handleFileDrop = (event) => {
     const files = Array.from(event.dataTransfer.files).map(file => {
         file.preview = URL.createObjectURL(file)
-        return file
+        return ensureMediaClientKey(file)
     })
     form.value.media_files.push(...files)
 }
@@ -828,60 +866,78 @@ const processVariants = () => {
 
 // --- Submit ---
 const handleSubmit = async () => {
+  const f = form.value
+  const name = (f.name || '').trim()
+  if (!name) {
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Title required',
+      text: 'Please enter a product title before saving.',
+    })
+    return
+  }
+
   const formData = new FormData()
+  const productType = variants.value.length ? 'variant' : 'simple'
 
-  // 1. Append variants
+  formData.append('name', name)
+  formData.append('detailed_description', f.detailed_description || '')
+  formData.append('sku', f.sku || '')
+  formData.append('barcode', f.barcode || '')
+  formData.append('price', String(f.price ?? 0))
+  if (f.compare_at_price != null && f.compare_at_price !== '') {
+    formData.append('compare_at_price', String(f.compare_at_price))
+  }
+  formData.append('status', f.status || 'draft')
+  formData.append('type', productType)
+  formData.append('track_quantity', f.inventory_tracked ? '1' : '0')
+  formData.append('stock', String(f.quantity ?? 0))
+  formData.append('is_active', f.status === 'active' ? '1' : '0')
+  formData.append('is_featured', '0')
+  formData.append('allow_backorder', f.continue_selling ? '1' : '0')
+  if (f.categories_id !== '' && f.categories_id != null) {
+    formData.append('categories_id', String(f.categories_id))
+  }
+
   variants.value.forEach((v, i) => {
-    formData.append(`variants[${i}][title]`, v.title)
-    formData.append(`variants[${i}][price]`, v.price)
-    formData.append(`variants[${i}][qty]`, v.qty)
-    formData.append(`variants[${i}][sku]`, v.sku)
+    formData.append(`variants[${i}][title]`, v.title || '')
+    formData.append(`variants[${i}][price]`, String(v.price ?? 0))
+    formData.append(`variants[${i}][qty]`, String(v.qty ?? 0))
+    formData.append(`variants[${i}][sku]`, v.sku || '')
     formData.append(`variants[${i}][barcode]`, v.barcode || '')
-
-    // Protect against undefined options
-    // if (v.options) {
-    //   Object.entries(v.options).forEach(([k, val]) => {
-    //     formData.append(`variants[${i}][options][${k}]`, val)
-    //   })
-    // }
-    v.options.forEach(opt => {
-  formData.append(`variants[${i}][options][${opt.name}]`, opt.value)
-})
-
-
-    // Variant media
-    v.media.forEach((img) => {
-      formData.append(`variants[${i}][media][]`, img.file)
+    ;(v.options || []).forEach((opt) => {
+      formData.append(`variants[${i}][options][${opt.name}]`, opt.value)
+    })
+    ;(v.media || []).forEach((img) => {
+      if (img.file instanceof File) {
+        formData.append(`variants[${i}][media][]`, img.file)
+      }
     })
   })
 
-  // 2. Append main product fields
-  Object.keys(form.value).forEach(key => {
-    if (key === 'media_files') {
-      form.value.media_files.forEach(file => {
-        formData.append('images[]', file)
-      })
-    } else {
-      formData.append(key, form.value[key])
+  f.media_files.forEach((item) => {
+    const file = item instanceof File ? item : item?.file
+    if (file instanceof File) {
+      formData.append('images[]', file)
     }
   })
 
   try {
-    const response = await axiosTenant.post('/products', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    await axiosTenant.post('/products', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
-    console.log("Product saved successfully:", response.data)
     await Swal.fire({
       icon: 'success',
       title: 'Saved',
       text: 'Product saved!',
     })
   } catch (error) {
-    console.error("Error saving product:", error.response?.data || error)
+    console.error('Error saving product:', error.response?.data || error)
     await Swal.fire({
       icon: 'error',
       title: 'Save failed',
-      text: 'Failed to save product.',
+      html: formatApiErrorHtml(error),
+      width: 520,
     })
   }
 }

@@ -26,7 +26,14 @@
         <label for="mail-smtp-user">SMTP username</label>
       </div>
       <div class="tenant-float-field">
-        <input id="mail-smtp-pass" v-model="form.smtp_password" type="password" placeholder=" " autocomplete="current-password" />
+        <input
+          id="mail-smtp-pass"
+          v-model="form.smtp_password"
+          name="smtp_password"
+          type="password"
+          placeholder=" "
+          autocomplete="off"
+        />
         <label for="mail-smtp-pass">SMTP password</label>
       </div>
       <div class="tenant-float-field is-always-floated">
@@ -52,7 +59,14 @@
         <label for="mail-mg-domain">Sending domain</label>
       </div>
       <div class="tenant-float-field">
-        <input id="mail-mg-key" v-model="form.mailgun_api_key" type="password" placeholder=" " />
+        <input
+          id="mail-mg-key"
+          v-model="form.mailgun_api_key"
+          name="mailgun_api_key"
+          type="password"
+          placeholder=" "
+          autocomplete="off"
+        />
         <label for="mail-mg-key">Mailgun private API key</label>
       </div>
     </template>
@@ -67,21 +81,42 @@
         <label for="mail-ms-tenant">Tenant ID</label>
       </div>
       <div class="tenant-float-field">
-        <input id="mail-ms-secret" v-model="form.microsoft_client_secret" type="password" placeholder=" " />
+        <input
+          id="mail-ms-secret"
+          v-model="form.microsoft_client_secret"
+          name="microsoft_client_secret"
+          type="password"
+          placeholder=" "
+          autocomplete="off"
+        />
         <label for="mail-ms-secret">Client secret</label>
       </div>
     </template>
 
     <template v-if="form.provider === 'sendgrid'">
       <div class="tenant-float-field">
-        <input id="mail-sg-key" v-model="form.sendgrid_api_key" type="password" placeholder=" " />
+        <input
+          id="mail-sg-key"
+          v-model="form.sendgrid_api_key"
+          name="sendgrid_api_key"
+          type="password"
+          placeholder=" "
+          autocomplete="off"
+        />
         <label for="mail-sg-key">SendGrid API key</label>
       </div>
     </template>
 
     <template v-if="form.provider === 'sparkpost'">
       <div class="tenant-float-field">
-        <input id="mail-sp-key" v-model="form.sparkpost_api_key" type="password" placeholder=" " />
+        <input
+          id="mail-sp-key"
+          v-model="form.sparkpost_api_key"
+          name="sparkpost_api_key"
+          type="password"
+          placeholder=" "
+          autocomplete="off"
+        />
         <label for="mail-sp-key">SparkPost API key</label>
       </div>
     </template>

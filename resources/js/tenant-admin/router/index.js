@@ -320,15 +320,33 @@ const router = createRouter({
 // })
 
 // ================================
-// AUTH GUARD
+// AUTH GUARD (tenant admin SPA)
 // ================================
+const PUBLIC_DASHBOARD_NAMES = new Set([
+  'admin-login',
+  'admin-forgot-password',
+  'admin-reset-password',
+  'tenant-register',
+])
+
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(route => route.meta.requiresAuth)) {
-    const token = localStorage.getItem('tenant_token')
-    if (!token) {
-      return next({ name: 'admin-login' })
-    }
+  if (PUBLIC_DASHBOARD_NAMES.has(to.name)) {
+    return next()
   }
+
+  const needsAuth = to.matched.some((record) => record.meta.requiresAuth === true)
+  if (!needsAuth) {
+    return next()
+  }
+
+  const token = localStorage.getItem('tenant_token')
+  if (!token) {
+    return next({
+      name: 'admin-login',
+      query: { redirect: to.fullPath },
+    })
+  }
+
   next()
 })
 

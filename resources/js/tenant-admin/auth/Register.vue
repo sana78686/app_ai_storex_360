@@ -23,6 +23,7 @@
           <input
             id="tenant-reg-password"
             v-model="form.password"
+            name="password"
             type="password"
             autocomplete="new-password"
             required
@@ -36,6 +37,7 @@
           <input
             id="tenant-reg-password2"
             v-model="form.password_confirmation"
+            name="password_confirmation"
             type="password"
             autocomplete="new-password"
             required

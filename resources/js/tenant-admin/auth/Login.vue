@@ -87,6 +87,15 @@ export default {
   name: 'TenantLogin',
   setup() {
     const router = useRouter()
+    const route = useRoute()
+
+    function postLoginPath() {
+      const r = route.query.redirect
+      if (typeof r === 'string' && r.startsWith('/') && !r.startsWith('//')) {
+        return r
+      }
+      return '/dashboard'
+    }
     const loading = ref(false)
     const googleLoading = ref(false)
     const form = reactive({
@@ -110,7 +119,7 @@ export default {
         if (response.data?.token) {
           localStorage.setItem('tenant_token', response.data.token)
           localStorage.setItem('tenant_user', JSON.stringify(response.data.user))
-          router.push('/dashboard')
+          router.push(postLoginPath())
         } else {
           errorMsg.value = response.data?.message || 'Login failed'
         }

@@ -9,6 +9,7 @@
           <input
             id="tenant-reset-pass"
             v-model="password"
+            name="password"
             type="password"
             autocomplete="new-password"
             required
@@ -21,6 +22,7 @@
           <input
             id="tenant-reset-pass2"
             v-model="password_confirmation"
+            name="password_confirmation"
             type="password"
             autocomplete="new-password"
             required

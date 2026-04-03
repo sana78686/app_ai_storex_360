@@ -29,7 +29,8 @@ return [
     // 👇 This is critical
     'tenant_finder' => Stancl\Tenancy\TenantFinder\DomainTenantFinder::class,
 
-    // Hostnames only (no scheme). Must match Request::getHost(). Built from APP_URL + CENTRAL_DOMAINS.
+    // Hostnames only (no scheme). Must match Request::getHost().
+    // Set APP_URL to your central UI host (e.g. https://my.domain.com). Tenant hosts use TENANT_BASE_DOMAIN (e.g. tenant-*.domain.com).
     'central_domains' => $centralDomainList,
 
     // 'path_identifiers' => [
