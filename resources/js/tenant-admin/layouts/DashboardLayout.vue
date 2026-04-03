@@ -317,7 +317,7 @@
         class="gull-main min-h-[calc(100vh-4rem)] w-full flex-1 transition-[margin] duration-300 ease-out lg:ml-[17.5rem]"
         :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
       >
-        <div class="mx-auto max-w-[1600px] px-3 py-4 sm:px-5 sm:py-6 lg:px-8">
+        <div class="tenant-dashboard-body mx-auto max-w-[1800px] px-3 py-3 sm:px-4 sm:py-4 lg:px-5">
           <slot />
         </div>
       </main>

@@ -1,0 +1,1 @@
+import{a as e}from"./axiosCentral-CNHDxknY.js";async function t(){localStorage.setItem("social_auth_provider","google");const{data:o}=await e.get("/auth/social/redirect/google");if(o!=null&&o.url){window.location.href=o.url;return}throw new Error("Failed to get Google sign-in URL")}export{t as r};

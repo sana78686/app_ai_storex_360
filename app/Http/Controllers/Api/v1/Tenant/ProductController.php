@@ -37,12 +37,29 @@ public function index(Request $request)
         $locale = config('app.fallback_locale', 'en');
         $search = $request->get('search'); // Get the search query from Vue
         $categoryId = $request->get('category_id');
+        $brandIds = $request->input('brand_ids');
+        if (is_string($brandIds)) {
+            $brandIds = array_filter(explode(',', $brandIds));
+        }
+        if (! is_array($brandIds)) {
+            $brandIds = [];
+        }
+        $brandIds = array_values(array_filter(array_map('intval', $brandIds)));
+
+        $limit = (int) $request->get('limit', 0);
+        if ($limit < 1) {
+            $limit = $search ? 80 : ($categoryId ? 120 : 60);
+        }
+        $limit = min(max($limit, 1), 200);
 
         $products = Product::query()
             ->when($categoryId, function ($query) use ($categoryId) {
                 $query->whereHas('categories', function ($q) use ($categoryId) {
                     $q->where('categories.id', $categoryId);
                 });
+            })
+            ->when(count($brandIds) > 0, function ($query) use ($brandIds) {
+                $query->whereIn('brand_id', $brandIds);
             })
             ->when($search, function ($query) use ($search, $locale) {
                 $query->where(function ($q) use ($search, $locale) {
@@ -60,13 +77,14 @@ public function index(Request $request)
                     $q->where('locale', $locale);
                 },
                 'categories',
+                'brand',
                 'media',
                 'variants.media',
                 'variants.optionValues.translations' => function ($q) use ($locale) {
                     $q->where('locale', $locale);
                 }
             ])
-            ->when($search, fn ($q) => $q->limit(80), fn ($q) => $q->limit($categoryId ? 100 : 25))
+            ->limit($limit)
             ->get()
             // ... (rest of your mapping logic remains the same)
             ->map(function ($product) use ($locale) {

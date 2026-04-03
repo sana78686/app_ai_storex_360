@@ -929,3 +929,42 @@
   text-transform: uppercase;
   color: #275a19;
 }
+
+/* Dashboard pages: breadcrumb + main white panel (Gull-like body) */
+#app .tenant-dashboard-page {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+#app .tenant-dashboard-page__breadcrumb {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #275a19;
+}
+
+#app .tenant-dashboard-page__title {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #111827;
+  line-height: 1.2;
+}
+
+#app .tenant-dashboard-panel {
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.06);
+}
+
+#app .tenant-pos-filter-heading {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
