@@ -300,4 +300,48 @@ header: {
   },
 },
 
+  adminLayout: {
+    searchPlaceholder: 'Funktionen, Produkte oder Hilfe durchsuchen',
+    notifications: 'Benachrichtigungen',
+    storeTheme: 'Store-Theme',
+    settings: 'Einstellungen',
+    yourProfile: 'Ihr Profil',
+    signOut: 'Abmelden',
+    menu: 'Menü',
+    settingsNav: {
+      general: 'Allgemein',
+      generalTitle: 'Allgemeine Einstellungen',
+      localization: 'Lokalisierung',
+      localizationTitle: 'Lokalisierung',
+      legalInfo: 'Rechtliches',
+      legalTitle: 'Rechtliche Angaben',
+      emailNotifications: 'E-Mail-Benachrichtigungen',
+      emailTitle: 'E-Mail-Benachrichtigungen',
+      coupons: 'Gutscheine & Rabatte',
+      couponsTitle: 'Gutscheine & Rabatte',
+      invoices: 'Rechnungen',
+      invoicesTitle: 'Rechnungseinstellungen',
+      domains: 'Domains',
+      domainsTitle: 'Eigene Domains',
+    },
+    nav: {
+      home: 'Start',
+      overview: 'Übersicht',
+      orders: 'Bestellungen',
+      orderList: 'Alle Bestellungen',
+      drafts: 'Entwürfe',
+      abandonedCheckouts: 'Abgebrochene Checkouts',
+      products: 'Produkte',
+      addProduct: 'Produkt hinzufügen',
+      customers: 'Kunden',
+    },
+  },
+
+  dashboardHome: {
+    title: 'Dashboard',
+    lead:
+      'Willkommen in Ihrem Seller-Central-Dashboard. Verwalten Sie Produkte, verfolgen Sie Bestellungen und behalten Sie die Performance im Blick.',
+    sub: 'Weitere Widgets und Auswertungen folgen schrittweise.',
+  },
+
 };

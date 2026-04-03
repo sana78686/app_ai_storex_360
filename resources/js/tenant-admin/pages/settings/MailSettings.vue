@@ -1,108 +1,95 @@
 <template>
-  <div class="modal-content p-3" style="max-width: 550px;">
-
-    <h4 class="mb-3">Configure Mail Provider</h4>
-
-    <!-- Provider Selection -->
-    <div class="mb-3">
-      <label class="form-label fw-bold">Mail Provider</label>
-      <select class="form-select" v-model="form.provider">
-        <option value="php">PHP Mail (Default)</option>
+  <div class="mail-settings-form max-w-xl tenant-settings-stack">
+    <div class="tenant-float-field is-always-floated">
+      <select id="mail-provider" v-model="form.provider">
+        <option value="php">PHP Mail (default)</option>
         <option value="smtp">SMTP</option>
         <option value="mailgun">Mailgun</option>
         <option value="microsoft">Microsoft</option>
         <option value="sendgrid">SendGrid</option>
         <option value="sparkpost">SparkPost</option>
       </select>
+      <label for="mail-provider">Mail provider</label>
     </div>
 
-    <!-- SMTP Fields -->
     <template v-if="form.provider === 'smtp'">
-      <div class="mb-3">
-        <label class="form-label fw-bold">SMTP Host</label>
-        <input type="text" class="form-control" v-model="form.smtp_host">
+      <div class="tenant-float-field">
+        <input id="mail-smtp-host" v-model="form.smtp_host" type="text" placeholder=" " />
+        <label for="mail-smtp-host">SMTP host</label>
       </div>
-      <div class="mb-3">
-        <label class="form-label fw-bold">SMTP Port</label>
-        <input type="text" class="form-control" v-model="form.smtp_port">
+      <div class="tenant-float-field">
+        <input id="mail-smtp-port" v-model="form.smtp_port" type="text" placeholder=" " />
+        <label for="mail-smtp-port">SMTP port</label>
       </div>
-      <div class="mb-3">
-        <label class="form-label fw-bold">SMTP Username</label>
-        <input type="text" class="form-control" v-model="form.smtp_username">
+      <div class="tenant-float-field">
+        <input id="mail-smtp-user" v-model="form.smtp_username" type="text" placeholder=" " autocomplete="username" />
+        <label for="mail-smtp-user">SMTP username</label>
       </div>
-      <div class="mb-3">
-        <label class="form-label fw-bold">SMTP Password</label>
-        <input type="password" class="form-control" v-model="form.smtp_password">
+      <div class="tenant-float-field">
+        <input id="mail-smtp-pass" v-model="form.smtp_password" type="password" placeholder=" " autocomplete="current-password" />
+        <label for="mail-smtp-pass">SMTP password</label>
       </div>
-      <div class="mb-3">
-        <label class="form-label fw-bold">Encryption</label>
-        <select class="form-select" v-model="form.smtp_encryption">
+      <div class="tenant-float-field is-always-floated">
+        <select id="mail-smtp-enc" v-model="form.smtp_encryption">
           <option value="">None</option>
           <option value="ssl">SSL</option>
           <option value="tls">TLS</option>
         </select>
+        <label for="mail-smtp-enc">Encryption</label>
       </div>
     </template>
 
-    <!-- Mailgun Fields -->
     <template v-if="form.provider === 'mailgun'">
-      <div class="mb-3">
-        <label class="form-label fw-bold">Mailgun Region</label>
-        <select class="form-select" v-model="form.mailgun_region">
+      <div class="tenant-float-field is-always-floated">
+        <select id="mail-mg-region" v-model="form.mailgun_region">
           <option value="us">US</option>
           <option value="eu">EU</option>
         </select>
+        <label for="mail-mg-region">Mailgun region</label>
       </div>
-
-      <div class="mb-3">
-        <label class="form-label fw-bold">Sending Domain</label>
-        <input type="text" class="form-control" v-model="form.mailgun_domain">
+      <div class="tenant-float-field">
+        <input id="mail-mg-domain" v-model="form.mailgun_domain" type="text" placeholder=" " />
+        <label for="mail-mg-domain">Sending domain</label>
       </div>
-
-      <div class="mb-3">
-        <label class="form-label fw-bold">Mailgun Private API Key</label>
-        <input type="password" class="form-control" v-model="form.mailgun_api_key">
+      <div class="tenant-float-field">
+        <input id="mail-mg-key" v-model="form.mailgun_api_key" type="password" placeholder=" " />
+        <label for="mail-mg-key">Mailgun private API key</label>
       </div>
     </template>
 
-    <!-- Microsoft Fields -->
     <template v-if="form.provider === 'microsoft'">
-      <div class="mb-3">
-        <label class="form-label fw-bold">Client ID</label>
-        <input type="text" class="form-control" v-model="form.microsoft_client_id">
+      <div class="tenant-float-field">
+        <input id="mail-ms-client" v-model="form.microsoft_client_id" type="text" placeholder=" " />
+        <label for="mail-ms-client">Client ID</label>
       </div>
-      <div class="mb-3">
-        <label class="form-label fw-bold">Tenant ID</label>
-        <input type="text" class="form-control" v-model="form.microsoft_tenant_id">
+      <div class="tenant-float-field">
+        <input id="mail-ms-tenant" v-model="form.microsoft_tenant_id" type="text" placeholder=" " />
+        <label for="mail-ms-tenant">Tenant ID</label>
       </div>
-      <div class="mb-3">
-        <label class="form-label fw-bold">Client Secret</label>
-        <input type="password" class="form-control" v-model="form.microsoft_client_secret">
+      <div class="tenant-float-field">
+        <input id="mail-ms-secret" v-model="form.microsoft_client_secret" type="password" placeholder=" " />
+        <label for="mail-ms-secret">Client secret</label>
       </div>
     </template>
 
-    <!-- SendGrid -->
     <template v-if="form.provider === 'sendgrid'">
-      <div class="mb-3">
-        <label class="form-label fw-bold">SendGrid API Key</label>
-        <input type="password" class="form-control" v-model="form.sendgrid_api_key">
+      <div class="tenant-float-field">
+        <input id="mail-sg-key" v-model="form.sendgrid_api_key" type="password" placeholder=" " />
+        <label for="mail-sg-key">SendGrid API key</label>
       </div>
     </template>
 
-    <!-- SparkPost -->
     <template v-if="form.provider === 'sparkpost'">
-      <div class="mb-3">
-        <label class="form-label fw-bold">SparkPost API Key</label>
-        <input type="password" class="form-control" v-model="form.sparkpost_api_key">
+      <div class="tenant-float-field">
+        <input id="mail-sp-key" v-model="form.sparkpost_api_key" type="password" placeholder=" " />
+        <label for="mail-sp-key">SparkPost API key</label>
       </div>
     </template>
 
-    <!-- Footer Buttons -->
-    <div class="d-flex justify-content-between mt-4">
-      <button class="btn btn-secondary" @click="testConfig">Test Configuration</button>
-      <button class="btn btn-primary" @click="save">Save</button>
+    <div class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+      <button type="button" class="tenant-btn-secondary" @click="testConfig">Test configuration</button>
+      <button type="button" class="tenant-btn-submit" @click="save">Save</button>
     </div>
-
   </div>
 </template>
 
@@ -195,10 +182,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.modal-content {
-  border-radius: 6px;
-  background: white;
-}
-</style>

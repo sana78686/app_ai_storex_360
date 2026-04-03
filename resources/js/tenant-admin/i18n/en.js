@@ -301,4 +301,48 @@ header: {
     },
   },
 
+  adminLayout: {
+    searchPlaceholder: 'Search for features, products or help',
+    notifications: 'Notifications',
+    storeTheme: 'Store theme',
+    settings: 'Settings',
+    yourProfile: 'Your profile',
+    signOut: 'Sign out',
+    menu: 'Menu',
+    settingsNav: {
+      general: 'General',
+      generalTitle: 'General Settings',
+      localization: 'Localization',
+      localizationTitle: 'Localization',
+      legalInfo: 'Legal Info',
+      legalTitle: 'Legal Information',
+      emailNotifications: 'Email Notifications',
+      emailTitle: 'Email Notifications',
+      coupons: 'Coupons & Discounts',
+      couponsTitle: 'Coupons & Discounts',
+      invoices: 'Invoices',
+      invoicesTitle: 'Invoice Settings',
+      domains: 'Domains',
+      domainsTitle: 'Custom Domains',
+    },
+    nav: {
+      home: 'Home',
+      overview: 'Overview',
+      orders: 'Orders',
+      orderList: 'All orders',
+      drafts: 'Drafts',
+      abandonedCheckouts: 'Abandoned checkouts',
+      products: 'Products',
+      addProduct: 'Add product',
+      customers: 'Customers',
+    },
+  },
+
+  dashboardHome: {
+    title: 'Dashboard',
+    lead:
+      'Welcome to your Seller Central–style dashboard. Manage products, track orders, and monitor performance from one place.',
+    sub: 'More widgets and analytics will appear here as we expand the dashboard.',
+  },
+
 };

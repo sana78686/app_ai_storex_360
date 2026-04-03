@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h3>Localization Settings</h3>
-    <p>This is the Localization tab content.</p>
-  </div>
+  <p class="text-sm leading-relaxed text-gray-600">
+    Configure languages, regional formats, and storefront defaults. More options will appear here as this section is
+    expanded.
+  </p>
 </template>

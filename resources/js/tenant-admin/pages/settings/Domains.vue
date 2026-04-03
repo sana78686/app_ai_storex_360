@@ -1,147 +1,140 @@
 <template>
-  <div class="p-4">
-
-    <h3 class="mb-4">🌍 Custom Domains</h3>
-
-    <!-- ADD DOMAIN -->
-    <div class="card p-3 mb-4">
-      <div class="d-flex">
+  <div class="domains-settings space-y-6 text-[0.9375rem] leading-relaxed text-gray-700">
+    <!-- Add domain -->
+    <div class="rounded-xl border border-gray-200 bg-gray-50/40 p-4 sm:p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
         <input
           v-model="newDomain"
-          class="form-control me-2"
+          type="text"
           placeholder="example.com or www.example.com"
+          class="min-h-[44px] min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-[#275a19] focus:outline-none focus:ring-2 focus:ring-[#275a19]/20"
         />
-
         <button
-          class="btn btn-primary"
+          type="button"
+          class="tenant-btn-submit inline-flex shrink-0 items-center justify-center gap-2 sm:px-8"
+          :disabled="loading"
           @click="addDomain"
-          :disabled="loading">
-          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+        >
+          <span
+            v-if="loading"
+            class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"
+            aria-hidden="true"
+          />
           Add Domain
         </button>
       </div>
     </div>
 
-    <!-- DNS SETUP BOX -->
-    <div v-if="dnsInfo" class="card border-warning mb-4">
+    <!-- DNS setup -->
+    <div
+      v-if="dnsInfo"
+      class="rounded-xl border border-amber-200/90 bg-amber-50/50 p-4 sm:p-5"
+    >
+      <h2 class="text-sm font-bold text-amber-900">DNS setup required</h2>
+      <p class="mt-2 text-[0.9375rem] leading-relaxed text-amber-900/85">
+        Add this DNS record at your domain provider (Cloudflare, GoDaddy, etc.).
+      </p>
 
-      <div class="card-body">
-
-        <h5 class="text-warning mb-3">⚠ DNS Setup Required</h5>
-
-        <p class="mb-2">
-          Add this DNS record in your domain provider (Cloudflare, GoDaddy, etc)
-        </p>
-
-        <table class="table table-sm table-bordered text-center align-middle">
+      <div class="tenant-data-table-wrap mt-4">
+        <table class="tenant-data-table">
           <thead>
             <tr>
               <th>Type</th>
               <th>Host</th>
               <th>Value</th>
-              <th></th>
+              <th class="w-28 text-right sm:text-left" />
             </tr>
           </thead>
-
           <tbody>
             <tr>
-              <td>{{ dnsInfo.type }}</td>
-              <td>{{ dnsInfo.name }}</td>
-              <td>{{ dnsInfo.value }}</td>
-              <td>
-                <button class="btn btn-sm btn-outline-dark"
-                        @click="copy(dnsInfo.value)">
+              <td class="font-mono text-sm">{{ dnsInfo.type }}</td>
+              <td class="font-mono text-sm">{{ dnsInfo.name }}</td>
+              <td class="max-w-[200px] truncate font-mono text-xs text-gray-600 sm:max-w-none">
+                {{ dnsInfo.value }}
+              </td>
+              <td class="text-right sm:text-left">
+                <button type="button" class="tenant-btn-secondary tenant-btn-sm" @click="copy(dnsInfo.value)">
                   Copy
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-
-        <small class="text-muted">
-          DNS propagation may take 5–30 minutes. Click verify after setup.
-        </small>
       </div>
+
+      <p class="mt-3 text-sm text-amber-800/80">
+        DNS propagation can take 5–30 minutes. Use Verify after the record is live.
+      </p>
     </div>
 
-    <!-- DOMAIN LIST -->
-    <div class="card">
-      <table class="table mb-0 table-hover align-middle">
-
-        <thead class="table-light">
+    <!-- Domain list -->
+    <div v-if="domains.length" class="tenant-data-table-wrap">
+      <table class="tenant-data-table">
+        <thead>
           <tr>
             <th>Domain</th>
             <th>Status</th>
             <th>Primary</th>
-            <th width="260">Actions</th>
+            <th class="min-w-[220px]">Actions</th>
           </tr>
         </thead>
-
         <tbody>
-
           <tr v-for="d in domains" :key="d.id">
-
-            <!-- DOMAIN -->
             <td>
-              <a :href="'https://' + d.domain" target="_blank">
+              <a
+                :href="'https://' + d.domain"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-medium text-[#275a19] underline-offset-2 hover:underline"
+              >
                 {{ d.domain }}
               </a>
             </td>
-
-            <!-- STATUS -->
             <td>
               <span
-                :class="[
-                  'badge',
-                  d.status === 'active'
-                    ? 'bg-success'
-                    : d.status === 'pending'
-                      ? 'bg-warning text-dark'
-                      : 'bg-danger'
-                ]">
+                class="tenant-badge"
+                :class="statusBadgeClass(d.status)"
+              >
                 {{ d.status }}
               </span>
             </td>
-
-            <!-- PRIMARY -->
             <td>
-              <span v-if="d.is_primary" class="badge bg-primary">
-                Primary
-              </span>
+              <span v-if="d.is_primary" class="tenant-badge tenant-badge--primary">Primary</span>
+              <span v-else class="text-sm text-gray-400">—</span>
             </td>
-
-            <!-- ACTIONS -->
             <td>
-
-              <button
-                v-if="d.status === 'pending'"
-                class="btn btn-sm btn-success me-2"
-                @click="verify(d)">
-                Verify
-              </button>
-
-              <button
-                v-if="d.status === 'active' && !d.is_primary"
-                class="btn btn-sm btn-secondary me-2"
-                @click="makePrimary(d)">
-                Make Primary
-              </button>
-
-              <button
-                class="btn btn-sm btn-danger"
-                @click="remove(d)">
-                Delete
-              </button>
-
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  v-if="d.status === 'pending'"
+                  type="button"
+                  class="tenant-btn-outline-accent tenant-btn-sm"
+                  @click="verify(d)"
+                >
+                  Verify
+                </button>
+                <button
+                  v-if="d.status === 'active' && !d.is_primary"
+                  type="button"
+                  class="tenant-btn-secondary tenant-btn-sm"
+                  @click="makePrimary(d)"
+                >
+                  Make primary
+                </button>
+                <button type="button" class="tenant-btn-danger tenant-btn-sm" @click="remove(d)">
+                  Delete
+                </button>
+              </div>
             </td>
-
           </tr>
-
         </tbody>
-
       </table>
     </div>
-
+    <div
+      v-else
+      class="rounded-xl border border-dashed border-gray-200 bg-gray-50/50 px-4 py-12 text-center text-[0.9375rem] text-gray-500"
+    >
+      No domains yet. Add your first domain above.
+    </div>
   </div>
 </template>
 
@@ -149,13 +142,12 @@
 import axiosTenant from '@/api/axiosTenant'
 
 export default {
-
   data() {
     return {
       domains: [],
       newDomain: '',
       dnsInfo: null,
-      loading: false
+      loading: false,
     }
   },
 
@@ -164,6 +156,11 @@ export default {
   },
 
   methods: {
+    statusBadgeClass(status) {
+      if (status === 'active') return 'tenant-badge--success'
+      if (status === 'pending') return 'tenant-badge--pending'
+      return 'tenant-badge--error'
+    },
 
     async load() {
       const res = await axiosTenant.get('/domains')
@@ -177,7 +174,7 @@ export default {
 
       try {
         const res = await axiosTenant.post('/domains', {
-          domain: this.newDomain
+          domain: this.newDomain,
         })
 
         this.dnsInfo = res.data.dns
@@ -205,7 +202,7 @@ export default {
 
     copy(text) {
       navigator.clipboard.writeText(text)
-    }
-  }
+    },
+  },
 }
 </script>

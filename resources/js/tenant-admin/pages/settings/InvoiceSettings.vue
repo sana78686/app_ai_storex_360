@@ -1,121 +1,96 @@
 <template>
-  <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
-    <h2 class="text-2xl font-bold mb-4">Invoice Settings</h2>
+  <form class="tenant-settings-stack max-w-2xl" @submit.prevent="saveSettings">
+    <div class="tenant-float-field">
+      <input id="inv-prefix" v-model="form.prefix" type="text" placeholder=" " />
+      <label for="inv-prefix">Invoice prefix</label>
+    </div>
 
-    <form @submit.prevent="saveSettings" class="space-y-6">
+    <div class="tenant-float-field">
+      <input id="inv-next" v-model="form.next_number" type="number" min="1" placeholder=" " />
+      <label for="inv-next">Next invoice number</label>
+    </div>
 
-      <!-- Prefix -->
-      <div>
-        <label class="block font-medium mb-1">Invoice Prefix</label>
-        <input v-model="form.prefix" class="input" placeholder="INV" />
-      </div>
+    <div class="tenant-float-field is-always-floated">
+      <select id="inv-currency" v-model="form.default_currency">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="PKR">PKR</option>
+        <option value="GBP">GBP</option>
+        <option value="AED">AED</option>
+      </select>
+      <label for="inv-currency">Default currency</label>
+    </div>
 
-      <!-- Next Number -->
-      <div>
-        <label class="block font-medium mb-1">Next Invoice Number</label>
-        <input type="number" v-model="form.next_number" class="input" />
-      </div>
+    <div class="tenant-float-field tenant-float-field--compact-textarea">
+      <textarea id="inv-intro" v-model="form.intro_text" placeholder=" " rows="2" />
+      <label for="inv-intro">Intro text</label>
+    </div>
 
-      <!-- Currency -->
-      <div>
-        <label class="block font-medium mb-1">Default Currency</label>
-        <select v-model="form.default_currency" class="input">
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="PKR">PKR</option>
-          <option value="GBP">GBP</option>
-          <option value="AED">AED</option>
-        </select>
-      </div>
+    <div class="tenant-float-field tenant-float-field--compact-textarea">
+      <textarea id="inv-footer" v-model="form.footer_text" placeholder=" " rows="2" />
+      <label for="inv-footer">Footer text</label>
+    </div>
 
+    <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800">
+      <input
+        v-model="form.auto_generate_on_paid"
+        type="checkbox"
+        class="h-4 w-4 rounded border-gray-300 text-[#275a19] focus:ring-[#275a19]"
+      />
+      <span>Auto-generate invoice when order is paid</span>
+    </label>
 
-
-      <!-- Intro Text -->
-      <div>
-        <label class="block font-medium mb-1">Intro Text</label>
-        <textarea v-model="form.intro_text" rows="2" class="input"></textarea>
-      </div>
-
-      <!-- Footer Text -->
-      <div>
-        <label class="block font-medium mb-1">Footer Text</label>
-        <textarea v-model="form.footer_text" rows="2" class="input"></textarea>
-      </div>
-
-      <!-- Auto-generate -->
-      <div class="flex items-center gap-2">
-        <input type="checkbox" v-model="form.auto_generate_on_paid" />
-        <label class="font-medium">Auto-generate invoice when order is paid</label>
-      </div>
-
-      <!-- Save Button -->
-      <div class="flex justify-end">
-        <button type="submit" class="btn-primary">Save Settings</button>
-      </div>
-
-    </form>
-  </div>
+    <div class="flex flex-wrap gap-2 border-t border-gray-100 pt-3">
+      <button type="submit" class="tenant-btn-submit">Save settings</button>
+      <button type="button" class="tenant-btn-secondary" @click="revertForm">Cancel</button>
+    </div>
+  </form>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import axiosTenant from "@/api/axiosTenant";
-import Swal from "sweetalert2";
+import { reactive, onMounted } from 'vue'
+import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
 const form = reactive({
-  prefix: "",
+  prefix: '',
   next_number: 1,
-  default_currency: "USD",
-  intro_text: "",
-  footer_text: "",
+  default_currency: 'USD',
+  intro_text: '',
+  footer_text: '',
   auto_generate_on_paid: false,
+})
 
-});
-
-
-
-// Fetch existing settings
 async function loadSettings() {
-  const res = await axiosTenant.get("/invoice-settings");
-  Object.assign(form, res.data);
-
-
+  const res = await axiosTenant.get('/invoice-settings')
+  Object.assign(form, res.data)
 }
 
-
-
-// Save settings
 async function saveSettings() {
-  const fd = new FormData();
+  const fd = new FormData()
 
   Object.keys(form).forEach((key) => {
-    if (typeof form[key] === "boolean") {
-      fd.append(key, form[key] ? 1 : 0); // ✅ Send boolean properly
+    if (typeof form[key] === 'boolean') {
+      fd.append(key, form[key] ? 1 : 0)
     } else {
-      fd.append(key, form[key]);
+      fd.append(key, form[key])
     }
-  });
+  })
 
-  await axiosTenant.post("/invoice-settings", fd, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  await axiosTenant.post('/invoice-settings', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
 
   await Swal.fire({
-    icon: "success",
-    title: "Saved",
-    text: "Invoice settings updated!",
-  });
+    icon: 'success',
+    title: 'Saved',
+    text: 'Invoice settings updated!',
+  })
 }
 
+function revertForm() {
+  loadSettings()
+}
 
-onMounted(() => loadSettings());
+onMounted(() => loadSettings())
 </script>
-
-<style scoped>
-.input {
-  @apply w-full border px-3 py-2 rounded focus:ring focus:ring-blue-200 focus:border-blue-500;
-}
-.btn-primary {
-  @apply bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700;
-}
-</style>

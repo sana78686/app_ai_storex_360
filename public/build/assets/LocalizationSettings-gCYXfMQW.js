@@ -1,0 +1,1 @@
+import{_ as e}from"./preload-helper-7JyZdbQp.js";import{o as t,c as o}from"./vendor-Drt-fBBn.js";const a={},s={class:"text-sm leading-relaxed text-gray-600"};function r(n,c){return t(),o("p",s," Configure languages, regional formats, and storefront defaults. More options will appear here as this section is expanded. ")}const f=e(a,[["render",r]]);export{f as default};

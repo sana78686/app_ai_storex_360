@@ -1,7 +1,10 @@
 <template>
   <TenantDashboardLayout>
-    <!-- Router view for child routes -->
-    <router-view />
+    <router-view v-slot="{ Component }">
+      <transition name="gull-page" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </TenantDashboardLayout>
 </template>
 
@@ -10,6 +13,16 @@ import TenantDashboardLayout from '@/tenant-admin/layouts/DashboardLayout.vue'
 </script>
 
 <style scoped>
-/* Using Tailwind CSS for responsive design */
-</style>
+.gull-page-enter-active,
+.gull-page-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
 
+.gull-page-enter-from,
+.gull-page-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+</style>

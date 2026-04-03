@@ -1,116 +1,94 @@
 <template>
-  <div class="container mt-3">
-    <h3>General Settings</h3>
-    <div class="card mt-3">
-      <div class="card-body">
+  <div class="tenant-settings-stack settings-form">
+    <div class="tenant-float-field">
+      <input id="gs-company" v-model="form.company_name" type="text" placeholder=" " autocomplete="organization" />
+      <label for="gs-company">Company name</label>
+    </div>
 
-        <!-- Company Name -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Company Name</label>
-          <input type="text" class="form-control" v-model="form.company_name">
-        </div>
-
-<!-- Logo Upload -->
-<div class="mb-3">
-  <label class="form-label fw-bold">Company Logo</label>
-  <input type="file" class="form-control" @change="handleLogoUpload" >
-  <!-- Preview if logo is uploaded or exists -->
-  <div v-if="logoPreview" class="mt-2">
-    <img :src="logoPreview" alt="Logo" style="max-width: 150px; max-height: 80px;">
-  </div>
-</div>
-
-
-
-        <!-- Default Email -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Default Email</label>
-          <input type="email" class="form-control" v-model="form.default_email">
-        </div>
-
-        <!-- Country -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Country</label>
-          <input type="text" class="form-control" v-model="form.country" >
-        </div>
-
-        <!-- State -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">State</label>
-          <input type="text" class="form-control" v-model="form.state">
-        </div>
-
-        <!-- City -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">City</label>
-          <input type="text" class="form-control" v-model="form.city">
-        </div>
-
-        <!-- Zip -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">ZIP / Postal Code</label>
-          <input type="text" class="form-control" v-model="form.zip">
-        </div>
-
-        <!-- Currency -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Currency</label>
-          <input type="text" class="form-control" v-model="form.currency" >
-        </div>
-
-        <!-- Calling Code -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Calling Code</label>
-          <input type="text" class="form-control" v-model="form.calling_code" >
-        </div>
-
-        <!-- Timezone -->
-        <!-- <div class="mb-3">
-          <label class="form-label fw-bold">Timezone</label>
-          <select class="form-select" v-model="form.timezone">
-            <option v-for="tz in timezones" :key="tz">{{ tz }}</option>
-          </select>
-        </div> -->
-
-        <!-- Date Format -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Timezone</label>
-          <input type="text" class="form-control" v-model="form.timezone">
-        </div>
-        <!-- <div class="mb-3">
-          <label class="form-label fw-bold">Date Format</label>
-          <input type="text" class="form-control" v-model="form.date_format">
-        </div> -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Date Format</label>
-          <select class="form-select" v-model="form.date_format">
-            <option v-for="tz in date_format" :key="tz">{{ tz }}</option>
-          </select>
-        </div>
-
-        <!-- DateTime Format -->
-        <!-- <div class="mb-3">
-          <label class="form-label fw-bold">Datetime Format</label>
-          <input type="text" class="form-control" v-model="form.datetime_format">
-        </div> -->
-
-         <div class="mb-3">
-          <label class="form-label fw-bold">Datetime Format</label>
-          <select class="form-select" v-model="form.datetime_format">
-            <option v-for="tz in datetime_format" :key="tz">{{ tz }}</option>
-          </select>
-        </div>
-
-        <!-- Maintenance Mode -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Maintenance Mode</label>
-          <input type="checkbox" v-model="form.maintenance_mode"> Enable
-          <input class="form-control mt-2" placeholder="Message" v-model="form.maintenance_message" />
-        </div>
-
-        <button class="btn btn-primary px-4" @click="saveSettings">Save</button>
-
+    <div class="tenant-settings-file">
+      <span class="tenant-settings-file__label">Company logo</span>
+      <input
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        class="block w-full cursor-pointer text-sm text-gray-600 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[#275a19]/10 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[#275a19] hover:file:bg-[#275a19]/15"
+        @change="handleLogoUpload"
+      />
+      <div v-if="logoPreview" class="mt-2 rounded-lg border border-gray-100 bg-gray-50 p-2">
+        <img :src="logoPreview" alt="" class="max-h-16 max-w-[140px] object-contain" />
       </div>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-email" v-model="form.default_email" type="email" placeholder=" " autocomplete="email" />
+      <label for="gs-email">Default email</label>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-country" v-model="form.country" type="text" placeholder=" " autocomplete="country-name" />
+      <label for="gs-country">Country</label>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-state" v-model="form.state" type="text" placeholder=" " autocomplete="address-level1" />
+      <label for="gs-state">State</label>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-city" v-model="form.city" type="text" placeholder=" " autocomplete="address-level2" />
+      <label for="gs-city">City</label>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-zip" v-model="form.zip" type="text" placeholder=" " autocomplete="postal-code" />
+      <label for="gs-zip">ZIP / Postal code</label>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-currency" v-model="form.currency" type="text" placeholder=" " />
+      <label for="gs-currency">Currency</label>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-calling" v-model="form.calling_code" type="text" placeholder=" " />
+      <label for="gs-calling">Calling code</label>
+    </div>
+
+    <div class="tenant-float-field">
+      <input id="gs-tz" v-model="form.timezone" type="text" placeholder=" " />
+      <label for="gs-tz">Timezone</label>
+    </div>
+
+    <div class="tenant-float-field is-always-floated">
+      <select id="gs-datefmt" v-model="form.date_format">
+        <option v-for="tz in date_format" :key="tz" :value="tz">{{ tz }}</option>
+      </select>
+      <label for="gs-datefmt">Date format</label>
+    </div>
+
+    <div class="tenant-float-field is-always-floated">
+      <select id="gs-dtfmt" v-model="form.datetime_format">
+        <option v-for="tz in datetime_format" :key="tz" :value="tz">{{ tz }}</option>
+      </select>
+      <label for="gs-dtfmt">Datetime format</label>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 bg-gray-50/70 p-3">
+      <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800">
+        <input
+          v-model="form.maintenance_mode"
+          type="checkbox"
+          class="h-4 w-4 rounded border-gray-300 text-[#275a19] focus:ring-[#275a19]"
+        />
+        <span>Maintenance mode — enable</span>
+      </label>
+      <div class="tenant-float-field mt-2">
+        <input id="gs-maint-msg" v-model="form.maintenance_message" type="text" placeholder=" " />
+        <label for="gs-maint-msg">Maintenance message</label>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2 pt-1">
+      <button type="button" class="tenant-btn-submit" @click="saveSettings">Save</button>
     </div>
   </div>
 </template>

@@ -160,7 +160,7 @@ const menu = [
   { path: '/dashboard/permissions', icon: 'fas fa-key', label: 'Permissions' },
   { path: '/dashboard/roles', icon: 'fas fa-user-shield', label: 'Roles' },
   { path: '/dashboard/attributes', icon: 'fas fa-list', label: 'Attributes' },
-  { path: '/dashboard/settings', icon: 'fas fa-cog', label: 'Settings' },
+  { path: '/dashboard/settings/general', icon: 'fas fa-cog', label: 'Settings' },
 ]
 </script>
 

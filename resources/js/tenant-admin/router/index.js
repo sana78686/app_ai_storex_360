@@ -83,12 +83,12 @@ const systemRoutes = [
                 component: () => import('@/tenant-admin/pages/ProductCreatePage.vue'),
                 meta: { requiresAuth: true }
             },
-            // router
-{
-  path: '/dashboard/products/:id/edit',
-  name: 'product/edit',
-   component: () => import('@/tenant-admin/pages/ProductEdit.vue'),
-},
+            {
+                path: 'products/:id/edit',
+                name: 'product/edit',
+                component: () => import('@/tenant-admin/pages/ProductEdit.vue'),
+                meta: { requiresAuth: true }
+            },
             {
                 path: 'products',
                 name: 'product-list',
@@ -156,14 +156,58 @@ const systemRoutes = [
                 component: () => import('@/tenant-admin/pages/settings/InvoiceTemplateForm.vue'),
                 meta: { requiresAuth: true }
             },
+            {
+                path: 'settings',
+                component: () => import('@/tenant-admin/layouts/Settingslayout.vue'),
+                meta: { requiresAuth: true },
+                redirect: { name: 'settings-general' },
+                children: [
+                    {
+                        path: 'general',
+                        name: 'settings-general',
+                        component: () => import('@/tenant-admin/pages/settings/GeneralSettings.vue'),
+                        meta: { requiresAuth: true },
+                    },
+                    {
+                        path: 'localization',
+                        name: 'settings-localization',
+                        component: () => import('@/tenant-admin/pages/settings/LocalizationSettings.vue'),
+                        meta: { requiresAuth: true },
+                    },
+                    {
+                        path: 'legal',
+                        name: 'settings-legal',
+                        component: () => import('@/tenant-admin/pages/settings/LegalInfo.vue'),
+                        meta: { requiresAuth: true },
+                    },
+                    {
+                        path: 'email',
+                        name: 'settings-email',
+                        component: () => import('@/tenant-admin/pages/settings/MailSettings.vue'),
+                        meta: { requiresAuth: true },
+                    },
+                    {
+                        path: 'coupons',
+                        name: 'settings-coupons',
+                        component: () => import('@/tenant-admin/pages/settings/CouponParent.vue'),
+                        meta: { requiresAuth: true },
+                    },
+                    {
+                        path: 'invoices',
+                        name: 'settings-invoices',
+                        component: () => import('@/tenant-admin/pages/settings/InvoiceSettings.vue'),
+                        meta: { requiresAuth: true },
+                    },
+                    {
+                        path: 'domains',
+                        name: 'settings-domains',
+                        component: () => import('@/tenant-admin/pages/settings/Domains.vue'),
+                        meta: { requiresAuth: true },
+                    },
+                ],
+            },
         ]
     },
-     {
-                path: '/dashboard/settings',
-                name: 'settings',
-                component: () => import('@/tenant-admin/layouts/Settingslayout.vue'),
-                meta: { requiresAuth: true }
-            },
 
     // {
     //     path: '/:pathMatch(.*)*',
@@ -282,7 +326,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(route => route.meta.requiresAuth)) {
     const token = localStorage.getItem('tenant_token')
     if (!token) {
-      return next({ name: 'frontend-login' })
+      return next({ name: 'admin-login' })
     }
   }
   next()

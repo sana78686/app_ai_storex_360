@@ -435,6 +435,113 @@
   border-color: #ef4444;
 }
 
+/* Select: same shell as input (use .is-always-floated when value is always set) */
+#app .tenant-float-field select {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--tf-border);
+  border-radius: 0.625rem;
+  background-color: var(--tf-input-bg);
+  color: #1a1e27;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  outline: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    padding 0.2s ease;
+  appearance: auto;
+}
+
+#app .tenant-float-field select:focus {
+  border-color: var(--tf-border-focus);
+  box-shadow: 0 0 0 3px var(--tenant-input-focus-ring);
+}
+
+#app .tenant-float-field.is-always-floated select,
+#app .tenant-float-field.is-always-floated input[type='datetime-local'] {
+  padding: 1.15rem 0.75rem 0.55rem;
+}
+
+#app .tenant-float-field.is-always-floated > label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tenant-input-accent);
+  background-color: var(--tf-label-notch-bg);
+  padding: 0 0.35rem;
+}
+
+#app .tenant-float-field textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+#app .tenant-float-field--compact-textarea textarea {
+  min-height: 4.25rem;
+}
+
+/* Settings pages: consistent vertical rhythm (compact) */
+#app .tenant-settings-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#app .tenant-settings-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+#app .tenant-settings-hint {
+  margin: 0;
+  padding: 0 0.15rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #6b7280;
+}
+
+#app .tenant-settings-file {
+  border: 1px solid #d8dee8;
+  border-radius: 0.625rem;
+  padding: 0.75rem 0.85rem;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#app .tenant-settings-file:focus-within {
+  border-color: var(--tenant-input-accent);
+  box-shadow: 0 0 0 3px var(--tenant-input-focus-ring);
+}
+
+#app .tenant-settings-file__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tenant-input-accent);
+}
+
+#app .tenant-settings-page-body {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #374151;
+}
+
+#app .tenant-settings-page-body p {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #4b5563;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Outlined inputs (settings / shared markup) inside tenant #app              */
 /* -------------------------------------------------------------------------- */
@@ -464,4 +571,237 @@
 #app .form-select:focus {
   border-color: var(--tenant-input-accent);
   box-shadow: 0 0 0 0.2rem var(--tenant-input-focus-ring);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Tenant admin: primary submit, secondary (cancel), danger, badges, tables   */
+/* -------------------------------------------------------------------------- */
+#app .tenant-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #fff;
+  border: none;
+  background: var(--tenant-submit-gradient);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.12s ease;
+}
+
+#app .tenant-btn-submit:hover:not(:disabled) {
+  opacity: 0.94;
+}
+
+#app .tenant-btn-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+#app .tenant-btn-submit:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #128c7e;
+}
+
+#app .tenant-btn-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+#app .tenant-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #374151;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+#app .tenant-btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  color: #1f2937;
+}
+
+#app .tenant-btn-secondary:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--tenant-input-focus-ring);
+}
+
+#app .tenant-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#app .tenant-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+#app .tenant-btn-danger:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+#app .tenant-btn-danger:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgb(185 28 28 / 0.25);
+}
+
+#app .tenant-btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  border-radius: 0.625rem;
+}
+
+#app .tenant-btn-outline-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #275a19;
+  background: #fff;
+  border: 1px solid rgb(39 90 25 / 0.38);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+#app .tenant-btn-outline-accent:hover:not(:disabled) {
+  background: rgb(39 90 25 / 0.07);
+  border-color: #275a19;
+}
+
+#app .tenant-btn-outline-accent:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--tenant-input-focus-ring);
+}
+
+#app .tenant-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+#app .tenant-badge--success {
+  background: rgb(39 90 25 / 0.12);
+  color: #275a19;
+}
+
+#app .tenant-badge--pending {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+}
+
+#app .tenant-badge--error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+#app .tenant-badge--primary {
+  background: rgb(39 90 25 / 0.14);
+  color: #1f3d14;
+  border: 1px solid rgb(39 90 25 / 0.28);
+}
+
+#app .tenant-badge--neutral {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+#app .tenant-data-table-wrap {
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+#app .tenant-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+#app .tenant-data-table thead {
+  background: #f9fafb;
+}
+
+#app .tenant-data-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+#app .tenant-data-table td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+#app .tenant-data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+#app .tenant-data-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+#app .tenant-data-table tbody tr:hover {
+  background: rgb(243 244 246 / 0.65);
 }

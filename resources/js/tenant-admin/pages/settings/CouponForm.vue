@@ -1,160 +1,132 @@
 <template>
-  <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-8">
-    <h2 class="text-3xl font-semibold mb-6 border-b pb-3">
-      {{ isEdit ? 'Edit Promotion / Coupon' : 'Create New Promotion' }}
-    </h2>
+  <div class="coupon-form mx-auto max-w-3xl">
+    <p class="mb-3 text-[0.9375rem] leading-relaxed text-gray-600">
+      {{ isEdit ? 'Update promotion details below.' : 'Create a discount code for your storefront.' }}
+    </p>
 
-    <form class="grid grid-cols-2 gap-6" @submit.prevent="submit">
-
-      <!-- Promotion Code -->
-      <div class="col-span-2">
-        <label class="label">Promotion Code</label>
-        <div class="flex gap-2">
-          <input v-model="form.code" required class="input" placeholder="Enter code e.g., SAVE10"/>
-          <button type="button" @click="generateCode" class="btn-secondary">Auto Generate</button>
+    <form class="tenant-settings-stack" @submit.prevent="submit">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
+        <div class="tenant-float-field min-w-0 flex-1">
+          <input id="coupon-code" v-model="form.code" required type="text" placeholder=" " />
+          <label for="coupon-code">Promotion code</label>
         </div>
+        <button type="button" class="tenant-btn-secondary tenant-btn-sm shrink-0 sm:mt-0" @click="generateCode">
+          Auto generate
+        </button>
       </div>
 
-      <!-- Type -->
-      <div>
-        <label class="label">Discount Type</label>
-        <select v-model="form.type" class="input">
+      <div class="tenant-float-field is-always-floated">
+        <select id="coupon-type" v-model="form.type">
           <option value="percentage">Percentage</option>
-          <option value="fixed">Fixed Amount</option>
-          <option value="free_shipping">Free Shipping</option>
+          <option value="fixed">Fixed amount</option>
+          <option value="free_shipping">Free shipping</option>
         </select>
+        <label for="coupon-type">Discount type</label>
       </div>
 
-      <!-- Discount Value -->
-      <div v-if="form.type !== 'free_shipping'">
-        <label class="label">Value</label>
-        <input type="number" v-model="form.value" class="input" placeholder="e.g., 10 (means 10%)"/>
+      <div v-if="form.type !== 'free_shipping'" class="tenant-float-field">
+        <input id="coupon-value" v-model="form.value" type="number" placeholder=" " />
+        <label for="coupon-value">Value (e.g. 10 for 10%)</label>
       </div>
 
-      <!-- Recurring -->
-      <div>
-        <label class="label">Recurring</label>
-        <select v-model="form.recurring" class="input">
-          <option value="once">One Time</option>
+      <div class="tenant-float-field is-always-floated">
+        <select id="coupon-recurring" v-model="form.recurring">
+          <option value="once">One time</option>
           <option value="repeating">Repeating</option>
           <option value="forever">Forever</option>
         </select>
+        <label for="coupon-recurring">Recurring</label>
       </div>
 
-      <div v-if="form.recurring === 'repeating'">
-        <label class="label">For how many months?</label>
-        <input type="number" v-model="form.repeating_months" class="input"/>
+      <div v-if="form.recurring === 'repeating'" class="tenant-float-field">
+        <input id="coupon-months" v-model="form.repeating_months" type="number" placeholder=" " />
+        <label for="coupon-months">Months (repeating)</label>
       </div>
 
-      <!-- Apply To -->
-      <!-- Applies To (Categories) -->
-<!-- Applies To (Categories with Checkboxes) -->
-<div class="col-span-2">
-  <label class="label mb-2">Applies To Categories</label>
-
-  <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border p-3 rounded">
-    <div
-      v-for="cat in categories"
-      :key="cat.id"
-      class="flex items-center gap-2"
-    >
-      <input
-        type="checkbox"
-        :value="cat.id"
-        v-model="form.applies_to"
-        class="h-4 w-4"
-      />
-      <label>{{ cat.name }}</label>
-    </div>
-  </div>
-</div>
-
-
-
-      <!-- Minimum Spend -->
-      <div>
-        <label class="label">Minimum Order Amount</label>
-        <input type="number" v-model="form.min_order_amount" class="input" placeholder="Optional"/>
-      </div>
-
-      <!-- Maximum Discount -->
-      <div>
-        <label class="label">Maximum Discount (Optional)</label>
-        <input type="number" v-model="form.max_discount" class="input"/>
-      </div>
-
-      <!-- Start Date -->
-      <div>
-        <label class="label">Start Date</label>
-        <input type="datetime-local" v-model="form.start_date" class="input"/>
-      </div>
-
-      <!-- End Date -->
-      <div>
-        <label class="label">End Date</label>
-        <input type="datetime-local" v-model="form.end_date" class="input"/>
-      </div>
-
-      <!-- Status -->
-      <div class="flex items-center gap-2 mt-4">
-        <input type="checkbox" v-model="form.active" class="h-4 w-4"/>
-        <label class="font-medium">Active</label>
-      </div>
-
-      <!-- Usage Restrictions -->
-      <div class="col-span-2 border-t pt-4 mt-4">
-        <h3 class="font-semibold text-lg mb-3">Usage Restrictions</h3>
-
-        <div class="grid grid-cols-2 gap-4">
-
-          <div class="flex gap-2">
-            <input type="checkbox" v-model="form.first_order_only"/>
-            <label>First order only</label>
+      <div class="tenant-settings-field-group">
+        <span class="tenant-settings-file__label">Applies to categories</span>
+        <div class="max-h-40 overflow-y-auto rounded-lg border border-gray-200 p-3">
+          <div
+            v-for="cat in categories"
+            :key="cat.id"
+            class="flex items-center gap-2 py-0.5"
+          >
+            <input
+              v-model="form.applies_to"
+              type="checkbox"
+              :value="cat.id"
+              class="h-4 w-4 rounded border-gray-300 text-[#275a19] focus:ring-[#275a19]"
+            />
+            <label class="text-sm text-gray-700">{{ cat.name }}</label>
           </div>
-
-          <div class="flex gap-2">
-            <input type="checkbox" v-model="form.logged_in_only"/>
-            <label>Only for logged-in customers</label>
-          </div>
-
-          <div class="flex gap-2">
-            <input type="checkbox" v-model="form.apply_once_per_order"/>
-            <label>Apply once per order</label>
-          </div>
-
-          <div class="flex gap-2">
-            <input type="checkbox" v-model="form.apply_only_if_products_match"/>
-            <label>Customer must have all items in cart</label>
-          </div>
-
         </div>
       </div>
 
-      <!-- Usage Limits -->
-      <div class="col-span-2 border-t pt-4 mt-4">
-        <h3 class="font-semibold text-lg mb-3">Usage Limits</h3>
+      <div class="tenant-float-field">
+        <input id="coupon-min" v-model="form.min_order_amount" type="number" placeholder=" " />
+        <label for="coupon-min">Minimum order amount (optional)</label>
+      </div>
 
-        <div class="grid grid-cols-2 gap-6">
+      <div class="tenant-float-field">
+        <input id="coupon-maxd" v-model="form.max_discount" type="number" placeholder=" " />
+        <label for="coupon-maxd">Maximum discount (optional)</label>
+      </div>
 
-          <div>
-            <label class="label">Usage Limit Overall</label>
-            <input type="number" v-model="form.usage_limit" class="input" placeholder="Unlimited if empty"/>
-          </div>
+      <div class="tenant-float-field is-always-floated">
+        <input id="coupon-start" v-model="form.start_date" type="datetime-local" />
+        <label for="coupon-start">Start date</label>
+      </div>
 
-          <div>
-            <label class="label">Usage Per Customer</label>
-            <input type="number" v-model="form.usage_per_customer" class="input" placeholder="Unlimited if empty"/>
-          </div>
+      <div class="tenant-float-field is-always-floated">
+        <input id="coupon-end" v-model="form.end_date" type="datetime-local" />
+        <label for="coupon-end">End date</label>
+      </div>
 
+      <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800">
+        <input v-model="form.active" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#275a19] focus:ring-[#275a19]" />
+        <span>Active</span>
+      </label>
+
+      <div class="border-t border-gray-100 pt-3">
+        <h3 class="mb-2 text-sm font-bold uppercase tracking-wide text-gray-500">Usage restrictions</h3>
+        <div class="tenant-settings-stack">
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="form.first_order_only" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#275a19]" />
+            First order only
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="form.logged_in_only" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#275a19]" />
+            Logged-in customers only
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="form.apply_once_per_order" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#275a19]" />
+            Apply once per order
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="form.apply_only_if_products_match" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#275a19]" />
+            Customer must have all cart items
+          </label>
         </div>
       </div>
 
-      <!-- Submit Buttons -->
-      <div class="col-span-2 flex justify-end gap-3 mt-8">
-        <button type="button" @click="$emit('cancel')" class="btn-secondary">Cancel</button>
-        <button type="submit" class="btn-primary">{{ isEdit ? 'Update' : 'Save' }}</button>
+      <div class="border-t border-gray-100 pt-3">
+        <h3 class="mb-2 text-sm font-bold uppercase tracking-wide text-gray-500">Usage limits</h3>
+        <div class="tenant-settings-stack">
+          <div class="tenant-float-field">
+            <input id="coupon-ulimit" v-model="form.usage_limit" type="number" placeholder=" " />
+            <label for="coupon-ulimit">Usage limit overall (optional)</label>
+          </div>
+          <div class="tenant-float-field">
+            <input id="coupon-ulimit-c" v-model="form.usage_per_customer" type="number" placeholder=" " />
+            <label for="coupon-ulimit-c">Usage per customer (optional)</label>
+          </div>
+        </div>
       </div>
 
+      <div class="flex flex-wrap justify-end gap-2 border-t border-gray-100 pt-3">
+        <button type="button" class="tenant-btn-secondary" @click="$emit('cancel')">Cancel</button>
+        <button type="submit" class="tenant-btn-submit">{{ isEdit ? 'Update' : 'Save' }}</button>
+      </div>
     </form>
   </div>
 </template>
@@ -239,17 +211,3 @@ watch(() => props.couponId, fetchCoupon)
 
 
 
-<style scoped>
-.label {
-  @apply block text-sm font-medium mb-1;
-}
-.input {
-  @apply w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200 focus:border-blue-500;
-}
-.btn-primary {
-  @apply px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700;
-}
-.btn-secondary {
-  @apply px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300;
-}
-</style>

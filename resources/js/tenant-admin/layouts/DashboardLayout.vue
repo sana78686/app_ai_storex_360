@@ -1,392 +1,620 @@
 <template>
-  <div class="min-h-screen bg-[#F0F2F2] dashboard-font text-[#0F1111]">
-    <header class="fixed top-0 left-0 right-0 z-50 shadow-sm">
-      <div class="flex items-center justify-between px-4 bg-[#131921] h-14">
-        <div class="flex items-center space-x-4">
+  <div class="gull-admin min-h-screen bg-[#f3f4f6] text-gray-800 antialiased">
+    <!-- Top bar — white, full width (Gull-style) -->
+    <header
+      class="gull-header fixed left-0 right-0 top-0 z-50 flex h-16 items-center gap-3 border-b border-gray-200/90 bg-white px-3 shadow-sm sm:px-4 lg:pl-[17.5rem] lg:pr-6"
+      style="padding-top: env(safe-area-inset-top, 0px)"
+    >
+      <button
+        type="button"
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-gray-600 transition-colors hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19]/40 lg:hidden"
+        :aria-label="t('adminLayout.menu')"
+        @click="toggleSidebar"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+
+      <router-link
+        to="/dashboard"
+        class="flex shrink-0 items-center gap-2 rounded-xl py-1 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19]/40 lg:hidden"
+      >
+        <img
+          :src="logoUrl"
+          alt=""
+          class="h-8 max-w-[120px] object-contain sm:h-9"
+        />
+      </router-link>
+
+      <router-link
+        to="/dashboard"
+        class="hidden shrink-0 items-center gap-2 rounded-xl py-1 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19]/40 lg:flex"
+      >
+        <img
+          :src="logoUrl"
+          alt=""
+          class="h-8 max-w-[120px] object-contain sm:h-9"
+        />
+      </router-link>
+
+      <div class="mx-2 hidden min-w-0 flex-1 justify-center md:flex">
+        <div
+          class="flex w-full max-w-xl items-center gap-2 rounded-full border border-gray-200/80 bg-gray-100/90 px-3 py-1.5 shadow-inner"
+        >
+          <svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            type="search"
+            class="min-w-0 flex-1 border-0 bg-transparent text-sm text-gray-800 placeholder:text-gray-500 focus:outline-none focus:ring-0"
+            :placeholder="t('adminLayout.searchPlaceholder')"
+            autocomplete="off"
+          />
           <button
-  @click="toggleSidebar"
-  class="md:hidden p-2 text-white rounded-sm transition-all hover:outline hover:outline-1 hover:outline-white"
->
-  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-      d="M4 6h16M4 12h16M4 18h16" />
-  </svg>
-</button>
+            type="button"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#275a19] text-white shadow-sm transition-transform hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19] focus-visible:ring-offset-2"
+            :aria-label="t('search')"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
 
-
-          <div class="flex items-center space-x-3">
-  <router-link to="/dashboard" class="flex items-center">
-    <img
-      :src="logoUrl"
-      alt="Logo"
-      class="h-8 brightness-0 invert object-contain cursor-pointer"
-    />
-  </router-link>
-</div>
-
+      <div class="ml-auto flex min-w-0 shrink-0 items-center gap-1 sm:gap-2">
+        <div class="flex min-w-0 items-center gap-1.5">
+          <label class="sr-only" for="tenant-header-store-theme">{{ t('adminLayout.storeTheme') }}</label>
+          <i class="fas fa-palette hidden shrink-0 text-xs text-gray-400 sm:block" aria-hidden="true" />
+          <select
+            id="tenant-header-store-theme"
+            v-model="selectedTheme"
+            class="max-w-[5.75rem] truncate rounded-lg border border-gray-200 bg-gray-50 py-1.5 pl-2 pr-7 text-[11px] font-medium text-gray-800 focus:border-[#275a19] focus:outline-none focus:ring-2 focus:ring-[#275a19]/15 sm:max-w-[10rem] sm:text-xs"
+            :title="t('adminLayout.storeTheme')"
+            @change="changeTheme"
+          >
+            <option v-for="th in themes" :key="th.value" :value="th.value">
+              {{ th.label }}
+            </option>
+          </select>
         </div>
 
-        <div class="hidden lg:flex items-center flex-1 max-w-xl mx-8">
-          <div class="flex w-full group">
-            <input type="text" placeholder="Search for features, products or help"
-              class="flex-1 bg-white px-4 py-2 text-sm focus:outline-none rounded-l-sm border-2 border-transparent focus:border-orange-500" />
-            <button class="bg-[#febd69] hover:bg-[#f3a847] px-1 rounded-r-sm transition-colors">
-              <svg class="w-5 h-5 text-[#131921]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
+        <div class="relative header-language-dropdown">
+          <button
+            type="button"
+            class="flex items-center gap-1 rounded-xl px-2.5 py-2 text-xs font-bold uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19]/40"
+            @click.stop="showHeaderLanguageDropdown = !showHeaderLanguageDropdown"
+          >
+            <span>{{ locale }}</span>
+            <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div
+            v-if="showHeaderLanguageDropdown"
+            class="absolute right-0 top-full z-[60] mt-1 min-w-[160px] rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+          >
+            <button
+              v-for="lang in availableLanguages"
+              :key="lang.code"
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-gray-800 hover:bg-gray-50"
+              @click="switchLanguage(lang.code)"
+            >
+              <span class="font-medium">{{ lang.name }}</span>
+              <span v-if="locale === lang.code" class="font-bold text-[#275a19]">✓</span>
             </button>
           </div>
         </div>
 
-        <div class="flex items-center space-x-2 md:space-x-5">
-  <div class="relative header-language-dropdown group">
-    <button @click="showHeaderLanguageDropdown = !showHeaderLanguageDropdown"
-      class="flex items-center space-x-1 px-2 py-1.5  text-white text-xs font-bold transition-all">
-      <span class="uppercase">{{ locale }}</span>
-      <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
-    </button>
-    <div v-if="showHeaderLanguageDropdown" class="absolute top-full right-0 mt-1 bg-white border border-gray-200 shadow-xl z-50 min-w-[140px] rounded-sm py-2">
-      <button v-for="lang in availableLanguages" :key="lang.code" @click="switchLanguage(lang.code)"
-        class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 flex items-center justify-between">
-        <span class="font-medium">{{ lang.name }}</span>
-        <span v-if="locale === lang.code" class="text-orange-500 font-bold">✓</span>
-      </button>
-    </div>
-  </div>
-
-  <button class="hidden sm:block text-white hover:text-orange-400">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-  </button>
-
-  <div class="h-8 w-px bg-gray-700 hidden md:block"></div>
-
-  <div class="relative profile-dropdown">
-  <button @click="showProfileDropdown = !showProfileDropdown"
-    class="flex items-center space-x-3 px-2 py-1  transition-all">
-
-    <div class="w-8 h-8 rounded-full bg-[#008B9C] flex items-center justify-center text-white font-bold text-sm border border-white/20">
-      {{ userInitial }}
-    </div>
-
-    <!-- <div class="hidden md:block text-left">
-      <p class="text-[10px] text-gray-400 leading-none">Hello, {{ displayName }}</p>
-      <p class="text-xs text-white font-bold flex items-center">
-        Account & Lists
-        <svg class="w-3 h-3 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </p>
-    </div> -->
-  </button>
-
-  <div v-if="showProfileDropdown" class="absolute top-full right-0 mt-1 bg-white border border-gray-200 shadow-2xl z-50 min-w-[220px] rounded-sm overflow-hidden animate-in fade-in slide-in-from-top-1">
-    <div class="p-4 bg-gray-50 border-b border-gray-100">
-      <p class="text-sm font-bold text-gray-900 capitalize">{{ displayName }}</p>
-      <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
-    </div>
-
-    <div class="py-1">
-      <router-link to="/profile" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 no-underline">
-        <i class="fas fa-user-circle w-5 mr-3 text-gray-400"></i>
-        Your Profile
-      </router-link>
-
-      <button @click="handleLogout" class="w-full flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 no-underline border-none bg-transparent cursor-pointer">
-        <i class="fas fa-sign-out-alt w-5 mr-3 text-red-400"></i>
-        Sign Out
-      </button>
-    </div>
-  </div>
-</div>
-</div>
-      </div>
-
-
-    </header>
-
-    <div class="flex pt-14 min-h-screen">
-     <aside
-  :class="[
-    'fixed left-0 top-14 bottom-0 w-64 bg-white border-r border-gray-200 z-40 flex flex-col justify-between transition-transform duration-300',
-    sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-  ]"
->
-  <!-- Menu items -->
-  <nav class="flex-1 overflow-y-auto p-2">
-    <div v-for="item in menu" :key="item.path" class="mb-1">
-      <router-link
-        :to="item.path"
-        class="flex items-center px-3 py-2 text-sm rounded transition-colors no-underline group"
-        :class="[
-          isActive(item) ? 'bg-gray-100 font-semibold text-black' : 'text-gray-700 hover:bg-gray-100'
-        ]"
-      >
-        <i :class="[item.icon, 'w-5 mr-3', isActive(item) ? 'text-black' : 'text-gray-500 group-hover:text-black']"></i>
-        <span class="flex-1">{{ item.label }}</span>
-      </router-link>
-
-      <div v-if="item.children && isActive(item)" class="mt-1 ml-8 space-y-1">
-        <router-link
-          v-for="child in item.children"
-          :key="child.path"
-          :to="child.path"
-          class="block px-3 py-1.5 text-sm rounded no-underline"
-          :class="[
-            route.path === child.path ? 'bg-white font-medium text-black' : 'text-gray-600 hover:bg-gray-100'
-          ]"
+        <button
+          type="button"
+          class="relative hidden rounded-xl p-2 text-gray-600 transition-colors hover:bg-gray-100 sm:flex"
+          :aria-label="t('adminLayout.notifications')"
         >
-          {{ child.label }}
-        </router-link>
-      </div>
-    </div>
-  </nav>
-<!-- Theme Selector -->
-<div class="px-3 py-3 border-t border-gray-200">
-  <label class="block text-xs font-semibold text-gray-500 mb-1">
-    Store Theme
-  </label>
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+            />
+          </svg>
+          <span
+            class="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#275a19] ring-2 ring-white"
+            aria-hidden="true"
+          />
+        </button>
 
-  <select
-    v-model="selectedTheme"
-    @change="changeTheme"
-    class="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-orange-400"
-  >
-    <option v-for="theme in themes" :key="theme.value" :value="theme.value">
-      {{ theme.label }}
-    </option>
-  </select>
-</div>
-  <!-- Sticky bottom button -->
-  <div class="p-4 border-t border-gray-200 lg:mt-auto">
-    <router-link
-      to="/dashboard/settings"
-      class="flex items-center no-underline px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded transition-colors"
-      active-class="bg-gray-100 font-semibold text-black"
-    >
-      <i class="fas fa-cog w-5 mr-3 text-gray-500 group-hover:text-black"></i>
-      <span>Settings</span>
-    </router-link>
-  </div>
-</aside>
-
-
-      <main class="flex-1 lg:ml-64 p-4 md:p-8 flex flex-col">
-        <div class="flex-grow">
-          <slot />
-        </div>
-
-        <!-- <footer class="mt-12 border-t border-gray-300 pt-8 pb-12">
-          <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center px-4">
-            <div class="flex flex-wrap justify-center md:justify-start gap-6 text-[11px] font-bold text-[#0066c0]">
-              <a href="#" class="hover:underline hover:text-orange-600">Help</a>
-              <a href="#" class="hover:underline hover:text-orange-600">Policies</a>
-
-              <div class="relative language-dropdown">
-                <button @click="showLanguageDropdown = !showLanguageDropdown" class="flex items-center space-x-1 text-gray-500">
-                  <span>{{ currentLanguage }}</span>
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div v-if="showLanguageDropdown" class="absolute bottom-full left-0 mb-2 bg-white border border-gray-300 shadow-lg p-2 min-w-[120px]">
-                   <button v-for="lang in availableLanguages" :key="lang.code" @click="switchLanguage(lang.code)"
-                    class="block w-full text-left px-2 py-1 hover:bg-gray-100">
-                    {{ lang.name }}
-                  </button>
-                </div>
-              </div>
+        <div class="relative profile-dropdown">
+          <button
+            type="button"
+            class="flex items-center rounded-full p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19] focus-visible:ring-offset-2"
+            @click.stop="showProfileDropdown = !showProfileDropdown"
+          >
+            <span
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#275a19] to-[#1a4012] text-sm font-bold text-white shadow-md ring-2 ring-white"
+            >
+              {{ userInitial }}
+            </span>
+          </button>
+          <div
+            v-if="showProfileDropdown"
+            class="absolute right-0 top-full z-[60] mt-2 w-[min(calc(100vw-2rem),260px)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl"
+          >
+            <div class="border-b border-gray-100 bg-gray-50 px-4 py-3">
+              <p class="truncate text-sm font-bold capitalize text-gray-900">{{ displayName }}</p>
+              <p class="truncate text-xs text-gray-500">{{ user?.email }}</p>
             </div>
-
-            <div class="mt-6 md:mt-0 flex items-center space-x-4">
-              <img :src="logoUrl" alt="Logo" class="h-5 opacity-50 grayscale" />
-              <p class="text-[11px] text-gray-500 font-medium">© 2026 Einfachkaufen24. All rights reserved.</p>
+            <div class="py-1">
+              <router-link
+                to="/profile"
+                class="flex items-center px-4 py-2.5 text-sm text-gray-700 no-underline hover:bg-gray-50"
+                @click="showProfileDropdown = false"
+              >
+                <i class="fas fa-user-circle mr-3 w-5 text-center text-gray-400" />
+                {{ t('adminLayout.yourProfile') }}
+              </router-link>
+              <button
+                type="button"
+                class="flex w-full cursor-pointer items-center border-0 bg-transparent px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
+                @click="handleLogout"
+              >
+                <i class="fas fa-sign-out-alt mr-3 w-5 text-center text-red-400" />
+                {{ t('adminLayout.signOut') }}
+              </button>
             </div>
           </div>
-        </footer> -->
+        </div>
+      </div>
+    </header>
+
+    <div class="flex pt-16">
+      <!-- Desktop: Gull dual rail (primary hover → secondary pages) -->
+      <div
+        class="gull-dual-rail fixed bottom-0 left-0 top-16 z-40 hidden h-[calc(100vh-4rem)] w-[17.5rem] flex-row border-r border-gray-200/90 bg-white shadow-sm lg:flex"
+        style="padding-bottom: env(safe-area-inset-bottom, 0px)"
+        @mouseenter="cancelHideHover"
+        @mouseleave="scheduleHideHover"
+      >
+        <nav
+          class="no-scrollbar flex w-[4.5rem] shrink-0 flex-col items-stretch gap-0.5 overflow-y-auto border-r border-gray-100 py-2"
+          aria-label="Main modules"
+        >
+          <button
+            v-for="section in navSections"
+            :key="section.id"
+            type="button"
+            class="gull-primary-item relative flex flex-col items-center gap-1 rounded-lg border-0 px-1 py-2.5 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19]/40"
+            :class="primaryItemClass(section)"
+            @mouseenter="hoveredSectionId = section.id"
+            @click="onPrimaryClick(section)"
+            @focus="hoveredSectionId = section.id"
+          >
+            <i
+              :class="[
+                section.icon,
+                'text-[17px] leading-none',
+                isPrimaryActive(section) ? 'text-[#275a19]' : 'text-gray-400',
+              ]"
+              aria-hidden="true"
+            />
+            <span
+              class="max-w-full truncate px-0.5 text-[9px] font-semibold leading-tight"
+              :class="isPrimaryActive(section) ? 'text-[#275a19]' : 'text-gray-500'"
+            >
+              {{ section.label }}
+            </span>
+            <span
+              v-if="isPrimaryActive(section)"
+              class="gull-primary-notch pointer-events-none absolute right-0 top-1/2 z-10 -translate-y-1/2"
+              aria-hidden="true"
+            />
+          </button>
+        </nav>
+
+        <aside
+          v-if="visibleSection"
+          class="no-scrollbar flex min-w-0 flex-1 flex-col overflow-y-auto bg-white py-3 pl-2 pr-1"
+          aria-label="Section pages"
+        >
+          <p
+            class="mb-2 truncate px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400"
+          >
+            {{ visibleSection.label }}
+          </p>
+          <div class="flex flex-col gap-0.5">
+            <router-link
+              v-for="child in visibleSection.children"
+              :key="child.path"
+              :to="child.path"
+              class="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium no-underline transition-colors"
+              :class="
+                isChildActive(child.path)
+                  ? 'bg-[#275a19]/10 font-semibold text-[#275a19]'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              "
+            >
+              <i
+                v-if="child.icon"
+                :class="[child.icon, 'w-4 shrink-0 text-center text-[13px] text-gray-400']"
+                aria-hidden="true"
+              />
+              <span class="min-w-0 leading-snug">{{ child.label }}</span>
+            </router-link>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Mobile drawer -->
+      <aside
+        :class="[
+          'gull-sidebar-mobile fixed bottom-0 left-0 top-16 z-40 flex w-[min(19rem,calc(100vw-2.5rem))] flex-col border-r border-gray-200/90 bg-white shadow-xl transition-transform duration-300 ease-out lg:hidden',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+        ]"
+        :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
+      >
+        <nav class="no-scrollbar flex-1 space-y-1 overflow-y-auto p-2" aria-label="Main">
+          <div v-for="section in navSections" :key="section.id" class="rounded-xl border border-gray-100">
+            <button
+              type="button"
+              class="flex w-full items-center gap-2 rounded-t-xl border-0 bg-gray-50/80 px-3 py-2.5 text-left text-sm font-semibold text-gray-800"
+              @click="toggleMobileSection(section.id)"
+            >
+              <i :class="[section.icon, 'w-5 shrink-0 text-center text-[#275a19]']" aria-hidden="true" />
+              <span class="min-w-0 flex-1">{{ section.label }}</span>
+              <svg
+                class="h-4 w-4 shrink-0 text-gray-400 transition-transform"
+                :class="expandedMobileSectionId === section.id ? 'rotate-180' : ''"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div
+              v-show="expandedMobileSectionId === section.id"
+              class="space-y-0.5 border-t border-gray-100 p-2"
+            >
+              <router-link
+                v-for="child in section.children"
+                :key="child.path"
+                :to="child.path"
+                class="block rounded-lg px-3 py-2 text-sm font-medium no-underline transition-colors"
+                :class="
+                  isChildActive(child.path)
+                    ? 'bg-[#275a19]/10 font-semibold text-[#275a19]'
+                    : 'text-gray-600 hover:bg-gray-50'
+                "
+                @click="closeSidebarMobile"
+              >
+                {{ child.label }}
+              </router-link>
+            </div>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <main
+        class="gull-main min-h-[calc(100vh-4rem)] w-full flex-1 transition-[margin] duration-300 ease-out lg:ml-[17.5rem]"
+        :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
+      >
+        <div class="mx-auto max-w-[1600px] px-3 py-4 sm:px-5 sm:py-6 lg:px-8">
+          <slot />
+        </div>
       </main>
     </div>
 
-    <div v-if="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+    <div
+      v-if="sidebarOpen"
+      class="fixed inset-0 z-30 bg-gray-900/40 backdrop-blur-[2px] lg:hidden"
+      aria-hidden="true"
+      @click="sidebarOpen = false"
+    />
   </div>
 </template>
 
 <script setup>
-    import { useRoute } from 'vue-router'
-    import axiosTenant from '@/api/axiosTenant'
-    import Swal from 'sweetalert2'
-const route = useRoute()
-/* ... (Logic stays exactly as you provided, keeping all refs and functions) ... */
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
 
-const { locale } = useI18n()
+const SITE_LANG_KEY = 'site-lang'
+
+const route = useRoute()
+const router = useRouter()
+const { locale, t } = useI18n()
+
 const sidebarOpen = ref(false)
-const currentSlide = ref(0)
-const totalSlides = ref(2)
-const showLanguageDropdown = ref(false)
 const showHeaderLanguageDropdown = ref(false)
+const showProfileDropdown = ref(false)
+const user = ref(null)
+const hoveredSectionId = ref(null)
+const expandedMobileSectionId = ref(null)
+let hideHoverTimer = null
 
 const availableLanguages = [
   { code: 'en', name: 'English' },
-  { code: 'de', name: 'Deutsch' }
+  { code: 'de', name: 'Deutsch' },
 ]
 
-const currentLanguage = computed(() => {
-  const currentLang = availableLanguages.find(lang => lang.code === locale.value)
-  return currentLang ? currentLang.name : 'English'
+const logoUrl = '/assets/logo/Einfachkaufen24.png'
+
+const navSections = computed(() => [
+  {
+    id: 'home',
+    icon: 'fas fa-th-large',
+    label: t('adminLayout.nav.home'),
+    defaultPath: '/dashboard',
+    children: [{ path: '/dashboard', label: t('adminLayout.nav.overview'), icon: 'fas fa-home' }],
+  },
+  {
+    id: 'orders',
+    icon: 'fas fa-shopping-bag',
+    label: t('adminLayout.nav.orders'),
+    defaultPath: '/dashboard/orderlist',
+    extraMatch: (p) => {
+      if (!p.startsWith('/dashboard/orders/')) return false
+      if (p.startsWith('/dashboard/orders/drafts')) return false
+      if (p.startsWith('/dashboard/orders/abandoned')) return false
+      return true
+    },
+    children: [
+      { path: '/dashboard/orderlist', label: t('adminLayout.nav.orderList'), icon: 'fas fa-list' },
+      { path: '/dashboard/orders/drafts', label: t('adminLayout.nav.drafts'), icon: 'fas fa-file-alt' },
+      {
+        path: '/dashboard/orders/abandoned',
+        label: t('adminLayout.nav.abandonedCheckouts'),
+        icon: 'fas fa-shopping-cart',
+      },
+    ],
+  },
+  {
+    id: 'catalog',
+    icon: 'fas fa-tags',
+    label: t('adminLayout.nav.products'),
+    defaultPath: '/dashboard/products',
+    children: [
+      { path: '/dashboard/products', label: t('adminLayout.nav.products'), icon: 'fas fa-box-open' },
+      {
+        path: '/dashboard/products/create',
+        label: t('adminLayout.nav.addProduct'),
+        icon: 'fas fa-plus-circle',
+      },
+    ],
+  },
+  {
+    id: 'customers',
+    icon: 'fas fa-users',
+    label: t('adminLayout.nav.customers'),
+    defaultPath: '/customers',
+    children: [{ path: '/customers', label: t('adminLayout.nav.customers'), icon: 'fas fa-user-friends' }],
+  },
+  {
+    id: 'settings',
+    icon: 'fas fa-sliders-h',
+    label: t('adminLayout.settings'),
+    defaultPath: '/dashboard/settings/general',
+    extraMatch: (p) => p === '/dashboard/settings' || p.startsWith('/dashboard/settings/'),
+    children: [
+      { path: '/dashboard/settings/general', label: t('adminLayout.settingsNav.general'), icon: 'fas fa-cog' },
+      {
+        path: '/dashboard/settings/localization',
+        label: t('adminLayout.settingsNav.localization'),
+        icon: 'fas fa-globe',
+      },
+      { path: '/dashboard/settings/legal', label: t('adminLayout.settingsNav.legalInfo'), icon: 'fas fa-file-alt' },
+      {
+        path: '/dashboard/settings/email',
+        label: t('adminLayout.settingsNav.emailNotifications'),
+        icon: 'fas fa-envelope',
+      },
+      { path: '/dashboard/settings/coupons', label: t('adminLayout.settingsNav.coupons'), icon: 'fas fa-ticket-alt' },
+      {
+        path: '/dashboard/settings/invoices',
+        label: t('adminLayout.settingsNav.invoices'),
+        icon: 'fas fa-file-invoice-dollar',
+      },
+      { path: '/dashboard/settings/domains', label: t('adminLayout.settingsNav.domains'), icon: 'fas fa-globe-americas' },
+    ],
+  },
+])
+
+const pinnedSectionId = computed(() => {
+  const path = route.path
+  let bestId = 'home'
+  let bestLen = -1
+  for (const s of navSections.value) {
+    if (s.extraMatch?.(path)) {
+      return s.id
+    }
+    for (const c of s.children) {
+      if (path === c.path || path.startsWith(`${c.path}/`)) {
+        if (c.path.length > bestLen) {
+          bestLen = c.path.length
+          bestId = s.id
+        }
+      }
+    }
+  }
+  return bestId
 })
+
+const visibleSection = computed(() => {
+  const id = hoveredSectionId.value || pinnedSectionId.value
+  return navSections.value.find((s) => s.id === id) ?? navSections.value[0]
+})
+
+function isPrimaryActive(section) {
+  return visibleSection.value?.id === section.id
+}
+
+function primaryItemClass(section) {
+  if (isPrimaryActive(section)) {
+    return 'bg-[#275a19]/8 text-[#275a19]'
+  }
+  return 'bg-transparent text-gray-600 hover:bg-gray-50'
+}
+
+function isChildActive(childPath) {
+  const path = route.path
+  if (path === childPath) return true
+  if (childPath === '/dashboard' && (path === '/dashboard' || path === '/dashboard/')) return true
+  if (childPath !== '/dashboard' && path.startsWith(`${childPath}/`)) return true
+  return false
+}
+
+function cancelHideHover() {
+  if (hideHoverTimer) {
+    clearTimeout(hideHoverTimer)
+    hideHoverTimer = null
+  }
+}
+
+function scheduleHideHover() {
+  cancelHideHover()
+  hideHoverTimer = setTimeout(() => {
+    hoveredSectionId.value = null
+    hideHoverTimer = null
+  }, 160)
+}
+
+function onPrimaryClick(section) {
+  const target = section.defaultPath ?? section.children[0]?.path
+  if (target) router.push(target)
+}
+
+function toggleMobileSection(id) {
+  expandedMobileSectionId.value = expandedMobileSectionId.value === id ? null : id
+}
 
 const switchLanguage = (langCode) => {
   locale.value = langCode
-  showLanguageDropdown.value = false
+  try {
+    localStorage.setItem(SITE_LANG_KEY, langCode)
+  } catch (_) {
+    /* ignore */
+  }
   showHeaderLanguageDropdown.value = false
 }
 
-const toggleSidebar = () => { sidebarOpen.value = !sidebarOpen.value }
-const nextSlide = () => { currentSlide.value = (currentSlide.value + 1) % totalSlides.value }
-const previousSlide = () => { currentSlide.value = currentSlide.value === 0 ? totalSlides.value - 1 : currentSlide.value - 1 }
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value
+}
 
+const closeSidebarMobile = () => {
+  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+    sidebarOpen.value = false
+  }
+}
 
+watch(
+  () => route.fullPath,
+  () => {
+    closeSidebarMobile()
+  }
+)
 
-
-
-const user = ref(null)
-
-// Parse user data from localStorage on component mount
-onMounted(() => {
-  const storedUser = localStorage.getItem('tenant_user')
-  if (storedUser) {
-    try {
-      user.value = JSON.parse(storedUser)
-    } catch (e) {
-      console.error("Failed to parse user data", e)
-    }
+watch(sidebarOpen, (open) => {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return
+  document.body.classList.toggle('overflow-hidden', open && window.innerWidth < 1024)
+  if (open && window.innerWidth < 1024) {
+    expandedMobileSectionId.value = pinnedSectionId.value
   }
 })
 
-// Dynamic display name: Use name if available, otherwise use part of email before @
+watch(pinnedSectionId, (id) => {
+  if (typeof window !== 'undefined' && window.innerWidth < 1024 && sidebarOpen.value) {
+    expandedMobileSectionId.value = id
+  }
+})
+
 const displayName = computed(() => {
   if (user.value?.name) return user.value.name
   if (user.value?.email) return user.value.email.split('@')[0]
   return 'User'
 })
 
-// Dynamic Initial for the Avatar
-const userInitial = computed(() => {
-  return displayName.value.charAt(0).toUpperCase()
-})
+const userInitial = computed(() => displayName.value.charAt(0).toUpperCase())
 
-// Logout Functionality
 const handleLogout = async () => {
   try {
-    // 1. Call the logout API
-    // This typically invalidates the token on the server side
     await axiosTenant.post('/logout')
   } catch (error) {
     console.error('Logout API error:', error.response?.data?.message || error.message)
-    // We continue with local logout even if the server call fails
   } finally {
-    // 2. Clear local storage
-    // Matches your login keys: 'tenant_token' and 'tenant_user'
     localStorage.removeItem('tenant_token')
     localStorage.removeItem('tenant_user')
-
-    // Optional: Clear any other leftover auth keys
     localStorage.removeItem('token')
-
-    // 3. Close the UI dropdown
     showProfileDropdown.value = false
-
-    // 4. Redirect to login page
-    router.push('/login')
+    router.push('/dashboard/login')
   }
 }
 
 const handleClickOutside = (event) => {
-
   if (!event.target.closest('.profile-dropdown')) showProfileDropdown.value = false
-  if (!event.target.closest('.language-dropdown')) showLanguageDropdown.value = false
   if (!event.target.closest('.header-language-dropdown')) showHeaderLanguageDropdown.value = false
 }
 
-onMounted(() => { document.addEventListener('click', handleClickOutside) })
-onUnmounted(() => { document.removeEventListener('click', handleClickOutside) })
-
-const logoUrl = '/assets/logo/Einfachkaufen24.png'
-
-//     const menu = [
-//   { path: '/dashboard', icon: 'fas fa-tachometer-alt', label: 'Home' },
-//    { path: '/dashboard/orderlist', icon: 'fas fa-shopping-cart', label: 'Orders' },
-//   { path: '/dashboard/products', icon: 'fas fa-box', label: 'Products' },
-// //   { path: '/dashboard/products/create', icon: 'fas fa-plus', label: 'Add Product' },
-//   { path: '/customers', icon: 'fas fa-users', label: 'Customers' },
-//   { path: '/dashboard/users', icon: 'fas fa-user', label: 'Users' },
-// //   { path: '/dashboard/category', icon: 'fas fa-tags', label: 'Category' },
-//   { path: '/dashboard/permissions', icon: 'fas fa-key', label: 'Permissions' },
-//   { path: '/dashboard/roles', icon: 'fas fa-user-shield', label: 'Roles' },
-// //   { path: '/dashboard/attributes', icon: 'fas fa-list', label: 'Attributes' },
-//   { path: '/dashboard/settings', icon: 'fas fa-cog', label: 'Settings' },
-//   { path: '/dashboard/payments', icon: 'fas fa-cog', label: 'payments' },
-// //   { path: '/dashboard/orderlist', icon: 'fas fa-cog', label: 'orderlist' },
-//   { path: '/dashboard/invoicetemplateform', icon: 'fas fa-cog', label: 'invoicetemplateform' },
-// ]
-const menu = [
-  { path: '/dashboard', icon: 'fas fa-home', label: 'Home' },
-  {
-    path: '/dashboard/orderlist',
-    icon: 'fas fa-shopping-bag',
-    label: 'Orders',
-    children: [
-    //   { path: '/dashboard/orderlist', label: 'Orders' }, // Main index
-      { path: '/dashboard/orders/drafts', label: 'Drafts' },
-      { path: '/dashboard/orders/abandoned', label: 'Abandoned checkouts' }
-    ]
-  },
-  { path: '/dashboard/products', icon: 'fas fa-tag', label: 'Products' },
-  { path: '/customers', icon: 'fas fa-users', label: 'Customers' },
-//   { path: '/dashboard/settings', icon: 'fas fa-cog', label: 'Settings' },
-  // ... rest of your items
-]
-
-// Generic active check
-const isActive = (item) => {
-  if (!item.children) return route.path === item.path
-
-  // Parent is active if current path equals parent path or starts with any child's path
-  return (
-    route.path === item.path ||
-    (item.children && item.children.some(child => route.path.startsWith(child.path)))
-  )
-}
-
-// ... existing imports
-const showProfileDropdown = ref(false) // Add this line
-
-// Add click outside logic for the new dropdown
-
 const themes = ref([])
-
-// Load current theme from backend (recommended)
 const selectedTheme = ref('prism')
 
-onMounted(async () => {
-  try {
-    const res = await axiosTenant.get('/settings/general')
-    selectedTheme.value = res.data.theme ?? 'prism'
-  } catch (e) {
-    console.error('Failed to load theme')
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+
+  const storedUser = localStorage.getItem('tenant_user')
+  if (storedUser) {
+    try {
+      user.value = JSON.parse(storedUser)
+    } catch (e) {
+      console.error('Failed to parse user data', e)
+    }
   }
+
+  ;(async () => {
+    try {
+      const res = await axiosTenant.get('/settings/general')
+      selectedTheme.value = res.data.theme ?? 'prism'
+    } catch (e) {
+      console.error('Failed to load theme')
+    }
+    try {
+      const res = await axiosTenant.get('/settings/themes')
+      themes.value = res.data?.themes ?? []
+      if (!themes.value.length) {
+        themes.value = [{ label: 'Prism', value: 'prism' }]
+      }
+    } catch (e) {
+      themes.value = [{ label: 'Prism', value: 'prism' }]
+      console.error('Failed to load theme options')
+    }
+  })()
 })
 
-onMounted(async () => {
-  try {
-    const res = await axiosTenant.get('/settings/themes')
-    themes.value = res.data?.themes ?? []
-    if (!themes.value.length) {
-      themes.value = [{ label: 'Prism', value: 'prism' }]
-    }
-  } catch (e) {
-    themes.value = [{ label: 'Prism', value: 'prism' }]
-    console.error('Failed to load theme options')
-  }
+onUnmounted(() => {
+  cancelHideHover()
+  document.removeEventListener('click', handleClickOutside)
+  document.body.classList.remove('overflow-hidden')
 })
 
 const changeTheme = async () => {
@@ -394,9 +622,6 @@ const changeTheme = async () => {
     await axiosTenant.post('/settings/theme', {
       theme: selectedTheme.value,
     })
-
-    // 🔥 Hard reload so Blade re-evaluates @vite
-    // window.location.reload()
   } catch (e) {
     await Swal.fire({
       icon: 'error',
@@ -405,7 +630,6 @@ const changeTheme = async () => {
     })
   }
 }
-
 </script>
 
 <style scoped>
@@ -415,5 +639,14 @@ const changeTheme = async () => {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.gull-primary-notch {
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 7px solid #275a19;
+  margin-right: -1px;
 }
 </style>

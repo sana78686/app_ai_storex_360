@@ -1,88 +1,97 @@
 <template>
-  <div class="legal-form">
+  <form class="legal-form tenant-settings-stack max-w-2xl" @submit.prevent="save">
+    <div class="tenant-settings-field-group">
+      <div class="tenant-float-field">
+        <input id="legal-company" v-model="form.company_name" type="text" placeholder=" " />
+        <label for="legal-company">Full legal company name</label>
+      </div>
+      <p class="tenant-settings-hint">Official registered name of the company.</p>
+    </div>
 
-    <h2 class="title">Legal Information</h2>
+    <div class="tenant-settings-field-group">
+      <div class="tenant-float-field is-always-floated">
+        <select id="legal-form" v-model="form.legal_form">
+          <option value="UG">UG</option>
+          <option value="GmbH">GmbH</option>
+          <option value="SARL">SARL</option>
+          <option value="Sole Trader">Sole Trader</option>
+          <option value="Ltd">Ltd</option>
+          <option value="BV">BV</option>
+          <option value="OÜ">OÜ</option>
+        </select>
+        <label for="legal-form">Legal form</label>
+      </div>
+      <p class="tenant-settings-hint">Your company’s legal structure.</p>
+    </div>
 
-    <form @submit.prevent="save" class="form-container">
-
-      <!-- COMPANY NAME -->
-      <label class="form-label">Full Legal Company Name</label>
-      <p class="desc">Official registered name of the company.</p>
-      <input class="form-input" v-model="form.company_name" placeholder="Ex: Example GmbH">
-
-      <!-- LEGAL FORM -->
-      <label class="form-label">Legal Form</label>
-      <p class="desc">Select your company’s legal structure.</p>
-      <select class="form-input" v-model="form.legal_form">
-        <option>UG</option>
-        <option>GmbH</option>
-        <option>SARL</option>
-        <option>Sole Trader</option>
-        <option>Ltd</option>
-        <option>BV</option>
-        <option>OÜ</option>
-      </select>
-
-      <!-- ADDRESS AUTOCOMPLETE -->
-      <label class="form-label">Registered Address</label>
-      <p class="desc">Enter your official address.</p>
-
-      <div class="autocomplete-wrapper">
-        <input
-          type="text"
-          class="form-input"
-          v-model="search"
-          placeholder="Search address"
-          @input="fetchSuggestions"
-          @focus="showList = true"
-          @blur="hideList"
-        />
-
-        <ul v-if="showList && suggestions.length" class="suggestion-list">
+    <div class="tenant-settings-field-group">
+      <div class="legal-autocomplete relative">
+        <div class="tenant-float-field">
+          <input
+            id="legal-addr-search"
+            v-model="search"
+            type="text"
+            placeholder=" "
+            autocomplete="off"
+            @input="fetchSuggestions"
+            @focus="showList = true"
+            @blur="hideList"
+          />
+          <label for="legal-addr-search">Registered address</label>
+        </div>
+        <p class="tenant-settings-hint">Search and select your official address.</p>
+        <ul v-if="showList && suggestions.length" class="legal-autocomplete__list">
           <li
             v-for="item in suggestions"
             :key="item.place_id"
-            class="suggestion-item"
+            class="legal-autocomplete__item"
             @mousedown.prevent="selectSuggestion(item)"
           >
             {{ item.description }}
           </li>
         </ul>
       </div>
+    </div>
 
-      <!-- REPRESENTATIVE -->
-      <label class="form-label">Authorized Representative</label>
-      <input class="form-input" v-model="form.authorized_representative">
+    <div class="tenant-float-field">
+      <input id="legal-rep" v-model="form.authorized_representative" type="text" placeholder=" " />
+      <label for="legal-rep">Authorized representative</label>
+    </div>
 
-      <!-- EMAIL -->
-      <label class="form-label">Email</label>
-      <input class="form-input" v-model="form.email">
+    <div class="tenant-float-field">
+      <input id="legal-email" v-model="form.email" type="email" placeholder=" " autocomplete="email" />
+      <label for="legal-email">Email</label>
+    </div>
 
-      <!-- PHONE -->
-      <label class="form-label">Phone</label>
-      <input class="form-input" v-model="form.phone">
+    <div class="tenant-float-field">
+      <input id="legal-phone" v-model="form.phone" type="text" placeholder=" " autocomplete="tel" />
+      <label for="legal-phone">Phone</label>
+    </div>
 
-      <!-- REG COURT -->
-      <label class="form-label">Registration Court</label>
-      <input class="form-input" v-model="form.registration_court">
+    <div class="tenant-float-field">
+      <input id="legal-court" v-model="form.registration_court" type="text" placeholder=" " />
+      <label for="legal-court">Registration court</label>
+    </div>
 
-      <!-- COMMERCIAL REGISTER NUMBER -->
-      <label class="form-label">Commercial Register Number</label>
-      <input class="form-input" v-model="form.commercial_register_number">
+    <div class="tenant-float-field">
+      <input id="legal-regno" v-model="form.commercial_register_number" type="text" placeholder=" " />
+      <label for="legal-regno">Commercial register number</label>
+    </div>
 
-      <!-- VAT -->
-      <label class="form-label">VAT ID</label>
-      <input class="form-input" v-model="form.vat_id">
+    <div class="tenant-float-field">
+      <input id="legal-vat" v-model="form.vat_id" type="text" placeholder=" " />
+      <label for="legal-vat">VAT ID</label>
+    </div>
 
-      <!-- OSS -->
-      <label class="mt-3">
-        <input type="checkbox" v-model="form.oss">
-        <span>Part of the EU OSS Scheme</span>
-      </label>
+    <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800">
+      <input v-model="form.oss" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#275a19] focus:ring-[#275a19]" />
+      <span>Part of the EU OSS scheme</span>
+    </label>
 
-      <button type="submit" class="btn-save">Save Data</button>
-    </form>
-  </div>
+    <div class="pt-1">
+      <button type="submit" class="tenant-btn-submit">Save</button>
+    </div>
+  </form>
 </template>
 
 <script>
@@ -92,186 +101,126 @@ import Swal from 'sweetalert2'
 export default {
   data() {
     return {
-      search: "",
+      search: '',
       suggestions: [],
       showList: false,
       autocompleteService: null,
       placesService: null,
 
       form: {
-        company_name: "",
-        legal_form: "",
-        registered_address: "",
-        authorized_representative: "",
-        email: "",
-        phone: "",
-        registration_court: "",
-        commercial_register_number: "",
-        vat_id: "",
+        company_name: '',
+        legal_form: '',
+        registered_address: '',
+        authorized_representative: '',
+        email: '',
+        phone: '',
+        registration_court: '',
+        commercial_register_number: '',
+        vat_id: '',
         oss: false,
-      }
-    };
+      },
+    }
   },
 
   mounted() {
-    this.loadGoogle();
-    this.loadLegalInfo();
+    this.loadGoogle()
+    this.loadLegalInfo()
   },
 
   methods: {
-
-async loadLegalInfo() {
+    async loadLegalInfo() {
       try {
-        const { data } = await axiosTenant.get("/legal-info");
-
-        if (!data || data.length === 0) return;
-
-        const info = data[0];
-
-        this.form = {
-          company_name: info.company_name || "",
-          legal_form: info.legal_form || "",
-          registered_address: info.registered_address || "",
-          authorized_representative: info.authorized_representative || "",
-          email: info.email || "",
-          phone: info.phone || "",
-          registration_court: info.registration_court || "",
-          commercial_register_number: info.commercial_register_number || "",
-          vat_id: info.vat_id || "",
-          oss: !!info.oss,
-        };
-
-        this.search = info.registered_address;
-
-      } catch (error) {
-        console.error("Failed to load legal info", error);
+        const res = await axiosTenant.get('/legal-info')
+        if (res.data) {
+          this.form = { ...this.form, ...res.data }
+          this.search = res.data.registered_address || ''
+        }
+      } catch (e) {
+        console.error(e)
       }
     },
 
-
-    /** Load Google Places API */
     loadGoogle() {
-      if (window.google && window.google.maps) {
-        this.initServices();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src =
-        `https://maps.google.com/maps/api/js?key=AIzaSyCZDgTTb7vm0co-2yHGinkgSs_yDTNtbSo&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = this.initServices;
-
-      document.head.appendChild(script);
-    },
-
-    initServices() {
-      this.autocompleteService = new google.maps.places.AutocompleteService();
-      this.placesService = new google.maps.places.PlacesService(document.createElement("div"));
+      if (!window.google?.maps?.places) return
+      this.autocompleteService = new google.maps.places.AutocompleteService()
+      this.placesService = new google.maps.places.PlacesService(document.createElement('div'))
     },
 
     fetchSuggestions() {
-      if (!this.search) {
-        this.suggestions = [];
-        return;
+      if (!this.autocompleteService || !this.search) {
+        this.suggestions = []
+        return
       }
-
-      this.autocompleteService.getPlacePredictions(
-        {
-          input: this.search,
-          types: ["address"],
-        },
-        (predictions) => {
-          this.suggestions = predictions || [];
-        }
-      );
+      this.autocompleteService.getPlacePredictions({ input: this.search }, (preds) => {
+        this.suggestions = preds || []
+      })
     },
 
     selectSuggestion(item) {
-      this.search = item.description;
-      this.showList = false;
-
-      this.placesService.getDetails(
-        { placeId: item.place_id },
-        (place) => {
-          this.form.registered_address = place.formatted_address; // FIXED
+      if (!this.placesService) return
+      this.placesService.getDetails({ placeId: item.place_id }, (place) => {
+        if (place?.formatted_address) {
+          this.form.registered_address = place.formatted_address
+          this.search = place.formatted_address
         }
-      );
+        this.suggestions = []
+        this.showList = false
+      })
     },
 
     hideList() {
       setTimeout(() => {
-        this.showList = false;
-      }, 200);
+        this.showList = false
+      }, 200)
     },
 
-   async save() {
-  try {
-    console.log("SAVING:", this.form);
-    await axiosTenant.post("/legal-info", this.form);
-    await Swal.fire({
-      icon: 'success',
-      title: 'Saved',
-      text: 'Saved successfully!',
-    })
-  } catch (error) {
-    await Swal.fire({
-      icon: 'error',
-      title: 'Save failed',
-      text: error.response?.data?.message || error.message || 'Something went wrong',
-    })
-    console.error(error);
-  }
+    async save() {
+      try {
+        await axiosTenant.post('/legal-info', this.form)
+        await Swal.fire({
+          icon: 'success',
+          title: 'Saved',
+          text: 'Saved successfully!',
+        })
+      } catch (error) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Save failed',
+          text: error.response?.data?.message || error.message || 'Something went wrong',
+        })
+        console.error(error)
+      }
+    },
+  },
 }
-
-
-  }
-};
 </script>
 
-
-
-
-
-
-<style>
-.legal-form { max-width: 600px; margin: auto; }
-.form-label { font-weight: bold; margin-top: 15px; }
-.desc { margin: 2px 0 10px; font-size: 0.85rem; color: #666; }
-.form-input { width: 100%; padding: 10px; margin-bottom: 10px; }
-.btn-save {
-  margin-top: 20px; padding: 10px 15px; background: #3b82f6;
-  color: white; border: none; cursor: pointer; border-radius: 4px;
-}
-
-
-
-
-.autocomplete-wrapper {
-  position: relative;
-}
-
-.suggestion-list {
+<style scoped>
+.legal-autocomplete__list {
   position: absolute;
-  background: white;
-  list-style: none;
-  padding: 0;
-  margin: 5px 0 0;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  left: 0;
+  right: 0;
+  top: 100%;
   z-index: 50;
+  margin: 0.25rem 0 0;
+  list-style: none;
+  padding: 0.25rem 0;
+  border-radius: 0.625rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 10px 25px -10px rgb(15 23 42 / 0.15);
+  max-height: 220px;
+  overflow-y: auto;
 }
 
-.suggestion-item {
-  padding: 12px;
+.legal-autocomplete__item {
+  padding: 0.65rem 0.85rem;
   cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
 }
 
-.suggestion-item:hover {
-  background: #f2f2f2;
+.legal-autocomplete__item:hover {
+  background: #f3f4f6;
 }
-
 </style>
