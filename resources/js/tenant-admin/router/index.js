@@ -75,7 +75,7 @@ const systemRoutes = [
                 path: 'order/create',
                 name: 'order-create',
                 component: () => import('@/tenant-admin/pages/OrderCreate.vue'),
-                meta: { requiresAuth: true }
+                meta: { requiresAuth: true, fullscreenPos: true }
             },
             {
                 path: 'products/create',

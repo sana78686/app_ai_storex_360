@@ -358,7 +358,6 @@ const selectedProduct = ref(null)
 const selectedItemsForReturn = ref([])
 const returnReason = ref('')
 
-const { t } = useI18n()
 const breadcrumbItems = computed(() => [
   { label: t('customerDashboard.breadcrumbHome'), to: '/' },
   { label: t('customerDashboard.breadcrumbAccount'), to: '/konto' },

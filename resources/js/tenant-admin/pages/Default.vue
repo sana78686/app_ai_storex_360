@@ -1,15 +1,25 @@
 <template>
-  <TenantDashboardLayout>
+  <TenantDashboardLayout v-if="!isFullscreenPos">
     <router-view v-slot="{ Component }">
       <transition name="gull-page" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
   </TenantDashboardLayout>
+  <router-view v-else v-slot="{ Component }">
+    <transition name="gull-page" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import TenantDashboardLayout from '@/tenant-admin/layouts/DashboardLayout.vue'
+
+const route = useRoute()
+const isFullscreenPos = computed(() => route.meta.fullscreenPos === true)
 </script>
 
 <style scoped>

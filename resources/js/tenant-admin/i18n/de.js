@@ -301,6 +301,7 @@ header: {
 },
 
   adminLayout: {
+    pos: 'POS',
     searchPlaceholder: 'Funktionen, Produkte oder Hilfe durchsuchen',
     notifications: 'Benachrichtigungen',
     storeTheme: 'Store-Theme',
@@ -331,17 +332,48 @@ header: {
       orderList: 'Alle Bestellungen',
       drafts: 'Entwürfe',
       abandonedCheckouts: 'Abgebrochene Checkouts',
+      posCreateOrder: 'POS — Neuer Verkauf',
       products: 'Produkte',
       addProduct: 'Produkt hinzufügen',
       customers: 'Kunden',
     },
   },
 
+  pos: {
+    backToOrders: 'Zurück zu Bestellungen',
+  },
+
   dashboardHome: {
-    title: 'Dashboard',
+    title: 'Shop-Übersicht',
     lead:
       'Willkommen in Ihrem Seller-Central-Dashboard. Verwalten Sie Produkte, verfolgen Sie Bestellungen und behalten Sie die Performance im Blick.',
-    sub: 'Weitere Widgets und Auswertungen folgen schrittweise.',
+    sub: 'Die folgenden Zahlen sind Beispieldaten, bis Live-Analysen angebunden sind.',
+    stats: {
+      revenue: 'Umsatz (30 Tage)',
+      orders: 'Bestellungen heute',
+      aov: 'Ø Bestellwert',
+      visitors: 'Shop-Besucher',
+    },
+    cards: {
+      pendingFulfillment: 'Ausstehende Fulfillment',
+      lowStock: 'Niedriger Lagerbestand',
+      abandoned: 'Abgebrochene Warenkörbe',
+      returns: 'Retouren (30 Tage)',
+    },
+    chartTitle: 'Umsatzverlauf (Beispiel)',
+    recentOrders: 'Letzte Bestellungen',
+    recentSub: 'Beispielzeilen — später mit Ihrer Bestellliste verknüpft.',
+    table: {
+      order: 'Bestellung',
+      customer: 'Kunde',
+      total: 'Summe',
+      status: 'Status',
+    },
+    statuses: {
+      paid: 'Bezahlt',
+      processing: 'In Bearbeitung',
+      shipped: 'Versendet',
+    },
   },
 
 };

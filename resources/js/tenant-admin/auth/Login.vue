@@ -78,7 +78,7 @@
 
 <script>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
 import { redirectToGoogleTenantAuth } from '@/tenant-admin/helpers/googleTenantAuth'

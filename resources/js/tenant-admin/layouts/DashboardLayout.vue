@@ -2,7 +2,7 @@
   <div class="gull-admin min-h-screen bg-[#f3f4f6] text-gray-800 antialiased">
     <!-- Top bar — white, full width (Gull-style) -->
     <header
-      class="gull-header fixed left-0 right-0 top-0 z-50 flex h-16 items-center gap-3 border-b border-gray-200/90 bg-white px-3 shadow-sm sm:px-4 lg:pl-[17.5rem] lg:pr-6"
+      class="gull-header fixed left-0 right-0 top-0 z-50 flex h-16 items-center gap-3 border-b border-gray-200/90 bg-white px-3 shadow-sm sm:px-4 lg:pl-[4.5rem] lg:pr-6"
       style="padding-top: env(safe-area-inset-top, 0px)"
     >
       <button
@@ -79,6 +79,13 @@
       </div>
 
       <div class="ml-auto flex min-w-0 shrink-0 items-center gap-1 sm:gap-2">
+        <router-link
+          to="/dashboard/order/create"
+          class="flex shrink-0 items-center rounded-xl bg-[#275a19] px-3 py-2 text-xs font-bold text-white no-underline shadow-sm transition-colors hover:bg-[#1f4814] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19]/50"
+        >
+          {{ t('adminLayout.pos') }}
+        </router-link>
+
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="sr-only" for="tenant-header-store-theme">{{ t('adminLayout.storeTheme') }}</label>
           <i class="fas fa-palette hidden shrink-0 text-xs text-gray-400 sm:block" aria-hidden="true" />
@@ -186,15 +193,15 @@
     </header>
 
     <div class="flex pt-16">
-      <!-- Desktop: Gull dual rail (primary hover → secondary pages) -->
+      <!-- Desktop: icon rail always visible; flyout opens on hover only -->
       <div
-        class="gull-dual-rail fixed bottom-0 left-0 top-16 z-40 hidden h-[calc(100vh-4rem)] w-[17.5rem] flex-row border-r border-gray-200/90 bg-white shadow-sm lg:flex"
+        class="gull-dual-rail fixed bottom-0 left-0 top-16 z-40 hidden h-[calc(100vh-4rem)] w-[4.5rem] flex-row border-r border-gray-200/90 bg-white shadow-sm lg:flex"
         style="padding-bottom: env(safe-area-inset-bottom, 0px)"
         @mouseenter="cancelHideHover"
         @mouseleave="scheduleHideHover"
       >
         <nav
-          class="no-scrollbar flex w-[4.5rem] shrink-0 flex-col items-stretch gap-0.5 overflow-y-auto border-r border-gray-100 py-2"
+          class="no-scrollbar relative z-10 flex w-[4.5rem] shrink-0 flex-col items-stretch gap-0.5 overflow-y-auto border-r border-gray-100 bg-white py-2"
           aria-label="Main modules"
         >
           <button
@@ -211,18 +218,18 @@
               :class="[
                 section.icon,
                 'text-[17px] leading-none',
-                isPrimaryActive(section) ? 'text-[#275a19]' : 'text-gray-400',
+                isPrimaryRouteActive(section) ? 'text-[#275a19]' : 'text-gray-400',
               ]"
               aria-hidden="true"
             />
             <span
               class="max-w-full truncate px-0.5 text-[9px] font-semibold leading-tight"
-              :class="isPrimaryActive(section) ? 'text-[#275a19]' : 'text-gray-500'"
+              :class="isPrimaryRouteActive(section) ? 'text-[#275a19]' : 'text-gray-500'"
             >
               {{ section.label }}
             </span>
             <span
-              v-if="isPrimaryActive(section)"
+              v-if="isPrimaryRouteActive(section)"
               class="gull-primary-notch pointer-events-none absolute right-0 top-1/2 z-10 -translate-y-1/2"
               aria-hidden="true"
             />
@@ -230,30 +237,34 @@
         </nav>
 
         <aside
-          v-if="visibleSection"
-          class="no-scrollbar flex min-w-0 flex-1 flex-col overflow-y-auto bg-white py-3 pl-2 pr-1"
+          v-if="flyoutSection"
+          class="no-scrollbar absolute bottom-0 left-full top-0 z-20 flex w-[13rem] flex-col overflow-y-auto border-r border-gray-200/90 bg-white py-3 pl-2 pr-1 shadow-lg"
           aria-label="Section pages"
         >
           <p
             class="mb-2 truncate px-2 text-[11px] font-bold uppercase tracking-wider text-gray-400"
           >
-            {{ visibleSection.label }}
+            {{ flyoutSection.label }}
           </p>
           <div class="flex flex-col gap-0.5">
             <router-link
-              v-for="child in visibleSection.children"
+              v-for="child in flyoutSection.children"
               :key="child.path"
               :to="child.path"
               class="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium no-underline transition-colors"
               :class="
                 isChildActive(child.path)
                   ? 'bg-[#275a19]/10 font-semibold text-[#275a19]'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'
               "
             >
               <i
                 v-if="child.icon"
-                :class="[child.icon, 'w-4 shrink-0 text-center text-[13px] text-gray-400']"
+                :class="[
+                  child.icon,
+                  'w-4 shrink-0 text-center text-[13px]',
+                  isChildActive(child.path) ? 'text-[#275a19]' : 'text-gray-400',
+                ]"
                 aria-hidden="true"
               />
               <span class="min-w-0 leading-snug">{{ child.label }}</span>
@@ -301,7 +312,7 @@
                 :class="
                   isChildActive(child.path)
                     ? 'bg-[#275a19]/10 font-semibold text-[#275a19]'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-200'
                 "
                 @click="closeSidebarMobile"
               >
@@ -314,7 +325,7 @@
 
       <!-- Main -->
       <main
-        class="gull-main min-h-[calc(100vh-4rem)] w-full flex-1 transition-[margin] duration-300 ease-out lg:ml-[17.5rem]"
+        class="gull-main min-h-[calc(100vh-4rem)] w-full flex-1 transition-[margin] duration-300 ease-out lg:ml-[4.5rem]"
         :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
       >
         <div class="tenant-dashboard-body mx-auto max-w-[1800px] px-3 py-3 sm:px-4 sm:py-4 lg:px-5">
@@ -380,6 +391,7 @@ const navSections = computed(() => [
       return true
     },
     children: [
+      { path: '/dashboard/order/create', label: t('adminLayout.nav.posCreateOrder'), icon: 'fas fa-cash-register' },
       { path: '/dashboard/orderlist', label: t('adminLayout.nav.orderList'), icon: 'fas fa-list' },
       { path: '/dashboard/orders/drafts', label: t('adminLayout.nav.drafts'), icon: 'fas fa-file-alt' },
       {
@@ -460,20 +472,25 @@ const pinnedSectionId = computed(() => {
   return bestId
 })
 
-const visibleSection = computed(() => {
-  const id = hoveredSectionId.value || pinnedSectionId.value
-  return navSections.value.find((s) => s.id === id) ?? navSections.value[0]
+/** Flyout panel: only while hovering the icon rail (or focused primary item). */
+const flyoutSection = computed(() => {
+  const id = hoveredSectionId.value
+  if (!id) return null
+  return navSections.value.find((s) => s.id === id) ?? null
 })
 
-function isPrimaryActive(section) {
-  return visibleSection.value?.id === section.id
+function isPrimaryRouteActive(section) {
+  return pinnedSectionId.value === section.id
 }
 
 function primaryItemClass(section) {
-  if (isPrimaryActive(section)) {
+  if (isPrimaryRouteActive(section)) {
     return 'bg-[#275a19]/8 text-[#275a19]'
   }
-  return 'bg-transparent text-gray-600 hover:bg-gray-50'
+  if (hoveredSectionId.value === section.id) {
+    return 'bg-gray-200/90 text-gray-800'
+  }
+  return 'bg-transparent text-gray-600 hover:bg-gray-100'
 }
 
 function isChildActive(childPath) {

@@ -302,6 +302,7 @@ header: {
   },
 
   adminLayout: {
+    pos: 'POS',
     searchPlaceholder: 'Search for features, products or help',
     notifications: 'Notifications',
     storeTheme: 'Store theme',
@@ -332,17 +333,48 @@ header: {
       orderList: 'All orders',
       drafts: 'Drafts',
       abandonedCheckouts: 'Abandoned checkouts',
+      posCreateOrder: 'POS — New sale',
       products: 'Products',
       addProduct: 'Add product',
       customers: 'Customers',
     },
   },
 
+  pos: {
+    backToOrders: 'Back to orders',
+  },
+
   dashboardHome: {
-    title: 'Dashboard',
+    title: 'Store overview',
     lead:
       'Welcome to your Seller Central–style dashboard. Manage products, track orders, and monitor performance from one place.',
-    sub: 'More widgets and analytics will appear here as we expand the dashboard.',
+    sub: 'Figures below are sample data until live analytics are connected.',
+    stats: {
+      revenue: 'Revenue (30 days)',
+      orders: 'Orders today',
+      aov: 'Avg. order value',
+      visitors: 'Store visitors',
+    },
+    cards: {
+      pendingFulfillment: 'Pending fulfillment',
+      lowStock: 'Low stock SKUs',
+      abandoned: 'Abandoned carts',
+      returns: 'Returns (30 days)',
+    },
+    chartTitle: 'Sales trend (sample)',
+    recentOrders: 'Recent orders',
+    recentSub: 'Sample rows — will sync with your order list.',
+    table: {
+      order: 'Order',
+      customer: 'Customer',
+      total: 'Total',
+      status: 'Status',
+    },
+    statuses: {
+      paid: 'Paid',
+      processing: 'Processing',
+      shipped: 'Shipped',
+    },
   },
 
 };

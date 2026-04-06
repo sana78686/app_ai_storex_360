@@ -1,11 +1,31 @@
 <template>
-  <div class="tenant-dashboard-page space-y-3 pb-8">
-    <!-- Page header (body start — breadcrumb + title, Gull-style) -->
-    <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
-      <div class="min-w-0">
-        <p class="tenant-dashboard-page__breadcrumb">Orders · Point of sale</p>
-        <h1 class="tenant-dashboard-page__title mt-1">New sale</h1>
-        <p class="mt-1 text-sm text-gray-500">Search, filter, add to cart, enter customer, complete payment — one screen.</p>
+  <div
+    class="pos-fullscreen flex max-h-[100dvh] min-h-[100dvh] flex-col overflow-hidden bg-[#f3f4f6] text-gray-800 antialiased"
+  >
+    <header
+      class="flex h-14 shrink-0 items-center border-b border-gray-200 bg-white px-3 shadow-sm sm:px-4"
+      style="padding-top: max(0.5rem, env(safe-area-inset-top, 0px))"
+    >
+      <router-link
+        to="/dashboard/orderlist"
+        class="inline-flex items-center gap-2 rounded-xl px-2 py-2 text-sm font-bold text-gray-800 no-underline transition-colors hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#275a19]/40 sm:px-3"
+      >
+        <svg class="h-5 w-5 shrink-0 text-[#275a19]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>{{ backLabel }}</span>
+      </router-link>
+    </header>
+
+    <div
+      class="min-h-0 flex-1 overflow-x-hidden p-2 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-3 lg:p-4 max-xl:overflow-y-auto xl:flex xl:flex-col xl:overflow-hidden"
+    >
+  <div class="flex shrink-0 flex-col gap-2 pb-2 max-xl:pb-4">
+    <!-- Page header — minimal height for more catalog space -->
+    <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+      <div class="min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-0">
+        <p class="tenant-dashboard-page__breadcrumb !mb-0">Orders · POS</p>
+        <h1 class="text-base font-extrabold tracking-tight text-gray-900 sm:text-lg">New sale</h1>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <div class="inline-flex rounded-lg border border-gray-200 bg-white p-0.5 shadow-sm">
@@ -30,176 +50,242 @@
           type="button"
           @click="createOrder"
           :disabled="orderItems.length === 0 || saving"
-          class="tenant-btn-submit px-4 py-2.5 text-sm font-bold disabled:opacity-40"
+          class="tenant-btn-submit px-3 py-2 text-sm font-bold disabled:opacity-40"
         >
           {{ saving ? 'Saving…' : 'Complete sale' }}
         </button>
       </div>
     </div>
+  </div>
 
-    <!-- Main panel -->
-    <div class="tenant-dashboard-panel overflow-hidden">
-      <div class="grid grid-cols-1 xl:grid-cols-12 xl:divide-x divide-gray-100">
-        <!-- Filters -->
-        <aside class="xl:col-span-2 border-b border-gray-100 bg-gray-50/60 p-4 xl:border-b-0">
-          <button
-            type="button"
-            class="mb-4 flex w-full items-center justify-between rounded-lg bg-[#275a19] px-3 py-2.5 text-left text-sm font-bold text-white shadow-md transition hover:bg-[#1f4814]"
-            @click="scrollToOrder"
-          >
-            <span>Current order</span>
-            <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-extrabold">{{ cartCount }}</span>
-          </button>
-
-          <div class="mb-5">
-            <p class="tenant-pos-filter-heading">Price</p>
-            <div class="space-y-1.5">
-              <label
-                v-for="opt in priceOptions"
-                :key="opt.value"
-                class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-white"
+    <!-- Main panel: xl fills viewport under header; catalog & checkout scroll independently -->
+    <div
+      class="tenant-dashboard-panel flex min-h-0 flex-1 flex-col overflow-hidden max-xl:min-h-0 max-xl:flex-none"
+    >
+      <div
+        class="grid min-h-0 flex-1 grid-cols-1 divide-y divide-gray-100 max-xl:flex-none xl:grid-cols-12 xl:divide-x xl:divide-y-0"
+      >
+        <!-- Product catalog (wide) + horizontal filters -->
+        <section
+          class="flex min-w-0 flex-col border-b border-gray-100 p-3 sm:p-4 max-xl:flex-none xl:col-span-8 xl:min-h-0 xl:border-b-0 xl:overflow-hidden"
+        >
+          <!-- One row: order + price + searchable category -->
+          <div class="mb-2 shrink-0 border-b border-gray-100 pb-2">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
+              <button
+                type="button"
+                class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#275a19] px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#1f4814] sm:text-sm"
+                @click="scrollToOrder"
               >
-                <input v-model="priceTier" type="radio" name="pos-price" :value="opt.value" class="text-[#275a19] focus:ring-[#275a19]" />
-                <span>{{ opt.label }}</span>
-              </label>
+                <span>Order</span>
+                <span class="rounded-full bg-white/20 px-1.5 py-0.5 text-[0.65rem] font-extrabold leading-none">{{ cartCount }}</span>
+              </button>
+              <div class="hidden h-6 w-px shrink-0 bg-gray-200 sm:block" aria-hidden="true" />
+              <div class="flex min-w-0 flex-[1_1_12rem] flex-wrap items-center gap-x-2 gap-y-1">
+                <span class="tenant-pos-filter-heading !mb-0 shrink-0">Price</span>
+                <div class="flex min-w-0 flex-wrap gap-1">
+                  <label
+                    v-for="opt in priceOptions"
+                    :key="opt.value"
+                    class="inline-flex cursor-pointer items-center gap-1 rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-[0.7rem] font-medium text-gray-700 shadow-sm has-[:checked]:border-[#275a19] has-[:checked]:bg-[#275a19]/10 has-[:checked]:text-[#1f4814] sm:px-2 sm:py-1 sm:text-xs"
+                  >
+                    <input v-model="priceTier" type="radio" name="pos-price" :value="opt.value" class="sr-only" />
+                    <span>{{ opt.label }}</span>
+                  </label>
+                </div>
+              </div>
+              <div class="hidden h-6 w-px shrink-0 bg-gray-200 sm:block" aria-hidden="true" />
+              <div class="flex min-w-0 flex-[1_1_10rem] items-center gap-1.5 sm:max-w-[16rem]">
+                <span class="tenant-pos-filter-heading !mb-0 hidden shrink-0 sm:inline">Category</span>
+                <div class="relative min-w-0 flex-1">
+                  <input
+                    v-model="categoryFilterInput"
+                    type="text"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    :aria-expanded="categoryMenuOpen"
+                    aria-controls="pos-category-listbox"
+                    placeholder="Search category…"
+                    autocomplete="off"
+                    class="w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-2 pr-8 text-xs outline-none focus:border-[#275a19] focus:ring-2 focus:ring-[#275a19]/20 sm:text-sm"
+                    @focus="onCategoryInputFocus"
+                    @blur="onCategoryInputBlur"
+                    @keydown.escape.prevent="closeCategoryMenu"
+                  />
+                  <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                  <ul
+                    v-show="categoryMenuOpen"
+                    id="pos-category-listbox"
+                    role="listbox"
+                    class="absolute left-0 right-0 top-full z-30 mt-1 max-h-52 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                  >
+                    <li role="option">
+                      <button
+                        type="button"
+                        class="flex w-full px-2 py-1.5 text-left text-xs hover:bg-gray-50 sm:text-sm"
+                        @mousedown.prevent="selectCategoryOption('')"
+                      >
+                        All categories
+                      </button>
+                    </li>
+                    <li v-for="cat in filteredCategoriesPicker" :key="cat.id" role="option">
+                      <button
+                        type="button"
+                        class="flex w-full px-2 py-1.5 text-left text-xs hover:bg-gray-50 sm:text-sm"
+                        @mousedown.prevent="selectCategoryOption(String(cat.id))"
+                      >
+                        {{ categoryLabel(cat) }}
+                      </button>
+                    </li>
+                    <li
+                      v-if="categoryMenuOpen && filteredCategoriesPicker.length === 0"
+                      class="px-2 py-2 text-center text-xs text-gray-500"
+                    >
+                      No match
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div v-if="brands.length" class="mt-2 flex flex-wrap items-end gap-x-4 gap-y-1 border-t border-gray-100 pt-2">
+              <p class="tenant-pos-filter-heading !mb-0 shrink-0">Brand</p>
+              <div class="-mx-1 flex max-h-16 flex-wrap gap-x-3 gap-y-1 overflow-y-auto px-1 sm:max-h-20">
+                <label
+                  v-for="b in brands"
+                  :key="b.id"
+                  class="inline-flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md px-1 py-0.5 text-xs text-gray-700 hover:bg-gray-50"
+                >
+                  <input
+                    type="checkbox"
+                    :value="b.id"
+                    v-model="filterBrandIds"
+                    class="rounded border-gray-300 text-[#275a19] focus:ring-[#275a19]"
+                  />
+                  <span class="max-w-[7rem] truncate sm:max-w-[10rem]">{{ b.name }}</span>
+                </label>
+              </div>
             </div>
           </div>
 
-          <div class="mb-5">
-            <p class="tenant-pos-filter-heading">Category</p>
-            <div class="max-h-48 space-y-1 overflow-y-auto pr-1">
-              <label class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-white">
-                <input v-model="filterCategoryId" type="radio" :value="''" class="text-[#275a19] focus:ring-[#275a19]" />
-                <span>All categories</span>
-              </label>
-              <label
-                v-for="cat in categories"
-                :key="cat.id"
-                class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-white"
-              >
-                <input v-model="filterCategoryId" type="radio" :value="String(cat.id)" class="text-[#275a19] focus:ring-[#275a19]" />
-                <span class="truncate">{{ cat.translation?.name || cat.name || '—' }}</span>
-              </label>
-            </div>
-          </div>
-
-          <div v-if="brands.length">
-            <p class="tenant-pos-filter-heading">Brand</p>
-            <div class="max-h-40 space-y-1 overflow-y-auto pr-1">
-              <label
-                v-for="b in brands"
-                :key="b.id"
-                class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-white"
-              >
-                <input
-                  type="checkbox"
-                  :value="b.id"
-                  v-model="filterBrandIds"
-                  class="rounded border-gray-300 text-[#275a19] focus:ring-[#275a19]"
-                />
-                <span class="truncate">{{ b.name }}</span>
-              </label>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Product catalog -->
-        <section class="xl:col-span-5 border-b border-gray-100 p-4 xl:border-b-0">
-          <div class="mb-3 flex flex-wrap items-center gap-2">
+          <div class="mb-2 flex shrink-0 flex-wrap items-center gap-2">
             <div class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
               <button
                 type="button"
                 @click="viewMode = 'grid'"
                 :class="viewMode === 'grid' ? 'bg-white shadow text-[#275a19]' : 'text-gray-500'"
-                class="rounded-md p-2"
+                class="rounded-md p-1.5"
                 aria-label="Grid view"
               >
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
               </button>
               <button
                 type="button"
                 @click="viewMode = 'list'"
                 :class="viewMode === 'list' ? 'bg-white shadow text-[#275a19]' : 'text-gray-500'"
-                class="rounded-md p-2"
+                class="rounded-md p-1.5"
                 aria-label="List view"
               >
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
               </button>
             </div>
-            <div class="relative min-w-[12rem] flex-1">
-              <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <div class="relative min-w-[10rem] flex-1">
+              <span class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               </span>
               <input
                 v-model="productQuery"
                 type="search"
                 placeholder="Search name or SKU…"
                 autocomplete="off"
-                class="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm outline-none focus:border-[#275a19] focus:ring-2 focus:ring-[#275a19]/20"
+                class="w-full rounded-lg border border-gray-200 py-1.5 pl-8 pr-2 text-xs outline-none focus:border-[#275a19] focus:ring-2 focus:ring-[#275a19]/20 sm:text-sm"
               />
             </div>
           </div>
 
-          <div v-if="loadingCatalog" class="py-16 text-center text-sm text-gray-500">Loading products…</div>
-          <div v-else-if="!displayRows.length" class="py-16 text-center text-sm text-gray-500">No products match your filters.</div>
+          <div
+            id="pos-catalog-scroll"
+            class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain xl:min-h-[12rem] [-webkit-overflow-scrolling:touch]"
+          >
+            <div v-if="loadingCatalog" class="py-12 text-center text-sm text-gray-500">Loading products…</div>
+            <div v-else-if="!displayRows.length" class="py-12 text-center text-sm text-gray-500">No products match your filters.</div>
 
-          <!-- Grid -->
-          <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <article
-              v-for="row in displayRows"
-              :key="row.key"
-              class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:border-[#275a19]/40"
+            <!-- Grid — compact tiles -->
+            <div
+              v-else-if="viewMode === 'grid'"
+              class="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-4 2xl:grid-cols-5"
             >
-              <div class="relative aspect-[4/3] bg-gray-100">
-                <img :src="row.image" alt="" class="h-full w-full object-cover" />
-              </div>
-              <div class="flex flex-1 flex-col p-3">
-                <p class="line-clamp-2 text-sm font-semibold text-gray-900">{{ row.name }}</p>
-                <p v-if="row.brandName" class="mt-0.5 text-xs text-gray-500">{{ row.brandName }}</p>
-                <p class="mt-2 text-base font-bold text-[#275a19]">Rs {{ row.price.toFixed(2) }}</p>
-                <div class="mt-3 flex gap-2">
-                  <button type="button" class="tenant-btn-submit flex-1 py-2 text-xs font-bold" @click="addToOrder(row)">Add</button>
+              <article
+                v-for="row in displayRows"
+                :key="row.key"
+                class="flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:border-[#275a19]/40"
+              >
+                <div class="relative h-16 w-full shrink-0 bg-gray-100 sm:h-[4.25rem] md:h-[4.5rem]">
+                  <img :src="row.image" alt="" class="h-full w-full object-cover" />
                 </div>
-              </div>
-            </article>
-          </div>
+                <div class="flex flex-1 flex-col p-1.5 sm:p-2">
+                  <p class="line-clamp-2 text-[0.65rem] font-semibold leading-tight text-gray-900 sm:text-xs">{{ row.name }}</p>
+                  <p v-if="row.brandName" class="mt-0.5 truncate text-[0.6rem] text-gray-500 sm:text-[0.65rem]">{{ row.brandName }}</p>
+                  <p class="mt-0.5 text-xs font-bold text-[#275a19] sm:text-sm">Rs {{ row.price.toFixed(2) }}</p>
+                  <div class="mt-1 flex gap-1">
+                    <button
+                      type="button"
+                      class="tenant-btn-submit flex-1 py-1 text-[0.65rem] font-bold sm:py-1.5 sm:text-xs"
+                      @click="addToOrder(row)"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
 
-          <!-- List -->
-          <div v-else class="tenant-data-table-wrap border border-gray-200">
-            <table class="tenant-data-table text-sm">
-              <thead>
-                <tr>
-                  <th class="w-14"> </th>
-                  <th>Product</th>
-                  <th class="w-28 text-right">Price</th>
-                  <th class="w-24 text-right"> </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in displayRows" :key="row.key">
-                  <td>
-                    <img :src="row.image" alt="" class="h-10 w-10 rounded-md object-cover" />
-                  </td>
-                  <td>
-                    <div class="font-medium text-gray-900">{{ row.name }}</div>
-                    <div v-if="row.brandName" class="text-xs text-gray-500">{{ row.brandName }}</div>
-                    <div class="text-xs text-gray-400">SKU {{ row.sku || '—' }}</div>
-                  </td>
-                  <td class="text-right font-semibold text-[#275a19]">Rs {{ row.price.toFixed(2) }}</td>
-                  <td class="text-right">
-                    <button type="button" class="tenant-btn-outline-accent tenant-btn-sm py-1 text-xs" @click="addToOrder(row)">Add</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <!-- List -->
+            <div v-else class="tenant-data-table-wrap border border-gray-200">
+              <table class="tenant-data-table text-xs sm:text-sm">
+                <thead>
+                  <tr>
+                    <th class="w-11"> </th>
+                    <th>Product</th>
+                    <th class="w-24 text-right">Price</th>
+                    <th class="w-20 text-right"> </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in displayRows" :key="row.key">
+                    <td>
+                      <img :src="row.image" alt="" class="h-8 w-8 rounded object-cover sm:h-9 sm:w-9" />
+                    </td>
+                    <td>
+                      <div class="font-medium text-gray-900">{{ row.name }}</div>
+                      <div v-if="row.brandName" class="text-xs text-gray-500">{{ row.brandName }}</div>
+                      <div class="text-xs text-gray-400">SKU {{ row.sku || '—' }}</div>
+                    </td>
+                    <td class="text-right font-semibold text-[#275a19]">Rs {{ row.price.toFixed(2) }}</td>
+                    <td class="text-right">
+                      <button type="button" class="tenant-btn-outline-accent tenant-btn-sm py-0.5 text-xs" @click="addToOrder(row)">Add</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
-        <!-- Order + customer + pay -->
-        <div id="pos-order-panel" class="xl:col-span-5 bg-gray-50/40 p-4">
-          <div class="space-y-4">
-            <section class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-              <div class="mb-3 flex items-center justify-between">
+        <!-- Order + customer + pay (narrow column, own scroll) -->
+        <div
+          id="pos-order-panel"
+          class="flex min-w-0 flex-col bg-gray-50/40 max-xl:flex-none xl:col-span-4 xl:min-h-0 xl:overflow-hidden"
+        >
+          <div
+            class="pos-order-scroll min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-3 [-webkit-overflow-scrolling:touch] xl:min-h-[12rem]"
+          >
+          <div class="space-y-3">
+            <section class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+              <div class="mb-2 flex items-center justify-between">
                 <h2 class="text-sm font-bold text-gray-900">Customer</h2>
                 <button type="button" class="text-xs font-semibold text-[#275a19] hover:underline" @click="setWalkIn">Walk-in</button>
               </div>
@@ -249,10 +335,10 @@
               </div>
             </section>
 
-            <section class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-              <h2 class="mb-3 text-sm font-bold text-gray-900">Order lines</h2>
+            <section class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+              <h2 class="mb-2 text-sm font-bold text-gray-900">Order lines</h2>
               <div v-if="!orderItems.length" class="py-6 text-center text-sm text-gray-500">No items — add products from the catalog.</div>
-              <ul v-else class="max-h-56 space-y-2 overflow-y-auto pr-1">
+              <ul v-else class="space-y-2 pr-1">
                 <li
                   v-for="(item, index) in orderItems"
                   :key="`${item.id}-${item.variant_id}-${index}`"
@@ -274,14 +360,14 @@
               </ul>
             </section>
 
-            <section class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-              <h2 class="mb-3 text-sm font-bold text-gray-900">Payment</h2>
+            <section class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+              <h2 class="mb-2 text-sm font-bold text-gray-900">Payment</h2>
               <div class="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   @click="paymentMethod = 'cash'"
                   :class="paymentMethod === 'cash' ? 'ring-2 ring-[#275a19] bg-[#275a19]/10' : 'border-gray-200'"
-                  class="rounded-lg border-2 py-3 text-sm font-bold"
+                  class="rounded-lg border-2 py-2 text-xs font-bold sm:text-sm"
                 >
                   Cash
                 </button>
@@ -289,15 +375,15 @@
                   type="button"
                   @click="paymentMethod = 'card'"
                   :class="paymentMethod === 'card' ? 'ring-2 ring-[#275a19] bg-[#275a19]/10' : 'border-gray-200'"
-                  class="rounded-lg border-2 py-3 text-sm font-bold"
+                  class="rounded-lg border-2 py-2 text-xs font-bold sm:text-sm"
                 >
                   Card
                 </button>
               </div>
             </section>
 
-            <section class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-              <h2 class="mb-3 text-sm font-bold text-gray-900">Summary</h2>
+            <section class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+              <h2 class="mb-2 text-sm font-bold text-gray-900">Summary</h2>
               <div class="space-y-2 text-sm text-gray-600">
                 <div class="flex justify-between">
                   <span>Subtotal</span>
@@ -324,23 +410,29 @@
                   <span>Rs {{ vatAmount.toFixed(2) }}</span>
                 </div>
               </div>
-              <div class="mt-4 flex items-baseline justify-between border-t border-gray-100 pt-3">
-                <span class="text-base font-bold text-gray-900">Total</span>
-                <span class="text-xl font-extrabold text-[#275a19]">Rs {{ total.toFixed(2) }}</span>
+              <div class="mt-3 flex items-baseline justify-between border-t border-gray-100 pt-2">
+                <span class="text-sm font-bold text-gray-900">Total</span>
+                <span class="text-lg font-extrabold text-[#275a19] sm:text-xl">Rs {{ total.toFixed(2) }}</span>
               </div>
             </section>
           </div>
         </div>
       </div>
+      </div>
+    </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
 import { formatApiErrorHtml } from '@tenant/helpers/apiErrorMessage'
+
+const { t } = useI18n()
+const backLabel = computed(() => t('pos.backToOrders'))
 
 const fulfillmentType = ref('pickup')
 const paymentMethod = ref('cash')
@@ -348,6 +440,9 @@ const productQuery = ref('')
 const viewMode = ref('grid')
 const priceTier = ref('all')
 const filterCategoryId = ref('')
+const categoryMenuOpen = ref(false)
+const categoryFilterInput = ref('')
+let categoryBlurTimer = null
 const filterBrandIds = ref([])
 const flatRows = ref([])
 const loadingCatalog = ref(false)
@@ -374,6 +469,61 @@ const customerDetails = ref({
   postcode: '',
   location: '',
   country: 'Germany',
+})
+
+function categoryLabel(cat) {
+  return cat?.translation?.name || cat?.name || '—'
+}
+
+const selectedCategoryLabel = computed(() => {
+  if (!filterCategoryId.value) return ''
+  const cat = categories.value.find((c) => String(c.id) === String(filterCategoryId.value))
+  return cat ? categoryLabel(cat) : ''
+})
+
+const filteredCategoriesPicker = computed(() => {
+  const q = categoryFilterInput.value.trim().toLowerCase()
+  const list = categories.value
+  if (!q) return list
+  return list.filter((c) => categoryLabel(c).toLowerCase().includes(q))
+})
+
+function onCategoryInputFocus() {
+  clearTimeout(categoryBlurTimer)
+  categoryMenuOpen.value = true
+  if (!categoryFilterInput.value.trim() && selectedCategoryLabel.value) {
+    categoryFilterInput.value = selectedCategoryLabel.value
+  }
+}
+
+function onCategoryInputBlur() {
+  categoryBlurTimer = setTimeout(() => {
+    categoryMenuOpen.value = false
+    categoryFilterInput.value = selectedCategoryLabel.value
+  }, 180)
+}
+
+function closeCategoryMenu() {
+  clearTimeout(categoryBlurTimer)
+  categoryMenuOpen.value = false
+  categoryFilterInput.value = selectedCategoryLabel.value
+}
+
+function selectCategoryOption(id) {
+  clearTimeout(categoryBlurTimer)
+  if (id === '' || id == null) {
+    filterCategoryId.value = ''
+    categoryFilterInput.value = ''
+  } else {
+    filterCategoryId.value = String(id)
+    const cat = categories.value.find((c) => String(c.id) === String(id))
+    categoryFilterInput.value = cat ? categoryLabel(cat) : ''
+  }
+  categoryMenuOpen.value = false
+}
+
+watch(filterCategoryId, () => {
+  if (!categoryMenuOpen.value) categoryFilterInput.value = selectedCategoryLabel.value
 })
 
 function variantLabel(v) {
@@ -514,6 +664,8 @@ onMounted(async () => {
   }
   await loadCatalog()
 })
+
+onUnmounted(() => clearTimeout(categoryBlurTimer))
 
 function scrollToOrder() {
   document.getElementById('pos-order-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' })

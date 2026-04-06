@@ -13,8 +13,8 @@ export default defineConfig({
       tenantAdmin: 'resources/js/tenant-admin/main.js',
 
       classic: 'resources/themes/classic/main.js',
-    //   modern: 'resources/themes/modern/main.js',
-    //   prism: 'resources/themes/prism/main.js',
+      modern: 'resources/themes/modern/main.js',
+      prism: 'resources/themes/prism/main.js',
     },
     refresh: true,
   })],
