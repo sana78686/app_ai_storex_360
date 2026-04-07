@@ -133,7 +133,7 @@ export default {
         if (response.data?.token) {
           localStorage.setItem('tenant_token', response.data.token)
           localStorage.setItem('tenant_user', JSON.stringify(response.data.user))
-          router.push('/dashboard')
+          router.push({ name: 'dashboard-home' })
         } else {
           errorMsg.value = response.data?.message || 'Signup failed'
         }

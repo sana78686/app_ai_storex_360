@@ -1,5 +1,9 @@
 <template>
-  <span class="tenant-field-tip" @mouseleave="open = false">
+  <span
+    class="tenant-field-tip"
+    :class="{ 'tenant-field-tip--popover-end': popoverEnd }"
+    @mouseleave="open = false"
+  >
     <button
       type="button"
       class="tenant-field-tip__trigger"
@@ -33,6 +37,8 @@ defineProps({
   text: { type: String, required: true },
   label: { type: String, default: 'On your storefront' },
   ariaLabel: { type: String, default: 'What customers see' },
+  /** Align tooltip popover to the right (helps on mobile) */
+  popoverEnd: { type: Boolean, default: true },
 })
 
 const open = ref(false)

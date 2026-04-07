@@ -1,7 +1,9 @@
 <template>
-  <div class="permissions-page">
-    <h2>Permissions</h2>
-    <button class="add-btn" @click="openAddModal">Add Permission</button>
+  <div class="permissions-page tenant-dashboard-page max-w-6xl px-3 py-4 sm:px-4">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h2 class="tenant-dashboard-page__title text-xl">Permissions</h2>
+      <button type="button" class="tenant-btn-submit tenant-btn-sm" @click="openAddModal">Add permission</button>
+    </div>
     <div v-if="loading" class="loading">Loading permissions...</div>
     <div v-else>
       <table class="permissions-table">
@@ -25,42 +27,56 @@
       </table>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div v-if="showModal" class="modal-overlay">
-      <div class="modal">
-        <h3>{{ editMode ? 'Edit Permission' : 'Add Permission' }}</h3>
-        <form @submit.prevent="editMode ? updatePermission() : addPermission()">
+    <div v-if="showModal" class="tenant-crud-modal-overlay" @click.self="closeModal">
+      <div class="tenant-crud-modal" role="dialog" aria-modal="true">
+        <h3 class="tenant-crud-modal__title">{{ editMode ? 'Edit permission' : 'Add permission' }}</h3>
+        <form class="space-y-3" @submit.prevent="editMode ? updatePermission() : addPermission()">
           <div>
-            <label>Name</label>
-            <input v-model="form.name" />
+            <div class="tenant-label-row">
+              <label class="tenant-field-label mb-0" for="perm-form-name">Name</label>
+              <span class="tenant-required-mark" aria-hidden="true">*</span>
+              <TenantFieldTip label="Permission name" text="A short code for this permission, used in your app logic." />
+            </div>
+            <input
+              id="perm-form-name"
+              v-model="form.name"
+              type="text"
+              class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2 text-[13px]"
+              autocomplete="off"
+            />
           </div>
-          <div class="modal-actions">
-            <button type="submit">{{ editMode ? 'Update' : 'Add' }}</button>
-            <button type="button" @click="closeModal">Cancel</button>
+          <div class="flex flex-wrap justify-end gap-2 pt-2">
+            <button type="button" class="tenant-btn-secondary tenant-btn-sm" @click="closeModal">Cancel</button>
+            <button type="submit" class="tenant-btn-submit tenant-btn-sm">{{ editMode ? 'Update' : 'Add' }}</button>
           </div>
-          <div v-if="error" class="error">{{ error }}</div>
+          <div v-if="error" class="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</div>
         </form>
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay">
-      <div class="modal">
-        <h3>Delete Permission</h3>
-        <p>Are you sure you want to delete permission <b>{{ selectedPermission && selectedPermission.name }}</b>?</p>
-        <div class="modal-actions">
-          <button @click="deletePermission">Yes, Delete</button>
-          <button @click="closeDeleteModal">Cancel</button>
+    <div v-if="showDeleteModal" class="tenant-crud-modal-overlay" @click.self="closeDeleteModal">
+      <div class="tenant-crud-modal" role="dialog" aria-modal="true">
+        <h3 class="tenant-crud-modal__title">Delete permission</h3>
+        <p class="text-sm text-gray-600">
+          Are you sure you want to delete <b>{{ selectedPermission && selectedPermission.name }}</b>?
+        </p>
+        <div class="mt-4 flex flex-wrap justify-end gap-2">
+          <button type="button" class="tenant-btn-secondary tenant-btn-sm" @click="closeDeleteModal">Cancel</button>
+          <button type="button" class="tenant-btn-submit tenant-btn-sm bg-red-700 hover:bg-red-800" @click="deletePermission">Delete</button>
         </div>
-        <div v-if="error" class="error">{{ error }}</div>
+        <div v-if="error" class="mt-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import { focusFirstValidationField } from '@tenant/helpers/formFocus'
+
+const PERM_FIELD_IDS = { name: 'perm-form-name' }
 
 const permissions = ref([])
 const loading = ref(true)
@@ -112,6 +128,7 @@ const addPermission = async () => {
     await fetchPermissions()
     closeModal()
   } catch (e) {
+    focusFirstValidationField(e, PERM_FIELD_IDS)
     error.value = e.response?.data?.message || 'Failed to add permission.'
   }
 }
@@ -125,6 +142,7 @@ const updatePermission = async () => {
     await fetchPermissions()
     closeModal()
   } catch (e) {
+    focusFirstValidationField(e, PERM_FIELD_IDS)
     error.value = e.response?.data?.message || 'Failed to update permission.'
   }
 }
@@ -153,26 +171,17 @@ const deletePermission = async () => {
   }
 }
 
+watch(showModal, async (open) => {
+  if (open) {
+    await nextTick()
+    document.getElementById('perm-form-name')?.focus({ preventScroll: true })
+  }
+})
+
 onMounted(fetchPermissions)
 </script>
 
 <style scoped>
-.permissions-page {
-  padding: 2rem;
-}
-.add-btn {
-  margin-bottom: 1rem;
-  padding: 0.5rem 1.2rem;
-  background: #00B894;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-.add-btn:hover {
-  background: #009e7a;
-}
 .permissions-table {
   width: 100%;
   border-collapse: collapse;
@@ -214,50 +223,5 @@ onMounted(fetchPermissions)
 }
 .delete-btn:hover {
   background: #444;
-}
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-.modal {
-    position: relative !important;
-  background: #fff !important;
-  color: #222 !important;
-  padding: 2rem !important;
-  border-radius: 8px !important;
-  min-width: 350px !important;
-  max-width: 480px !important;
-  width: 100%;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.15) !important;
-  z-index: 100000 !important;
-  display: block !important;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-.modal-actions {
-  margin-top: 1rem;
-  display: flex;
-  gap: 1rem;
-}
-.error {
-  color: #d81818;
-  margin-top: 0.5rem;
-}
-.modal input,
-.modal select {
-  width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.2rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  background: #fff;
-  color: #222;
 }
 </style> 

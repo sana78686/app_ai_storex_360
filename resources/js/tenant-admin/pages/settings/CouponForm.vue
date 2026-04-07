@@ -125,15 +125,15 @@
 
       <div class="flex flex-wrap justify-end gap-2 border-t border-gray-100 pt-3">
         <button type="button" class="tenant-btn-secondary" @click="$emit('cancel')">Cancel</button>
-        <button type="submit" class="tenant-btn-submit">{{ isEdit ? 'Update' : 'Save' }}</button>
       </div>
     </form>
   </div>
 </template>
 
 <script setup>
-import { reactive, computed, watch, ref, onMounted } from "vue"
-import axiosTenant from "@/api/axiosTenant"
+import { reactive, computed, watch, ref, onMounted, onUnmounted } from 'vue'
+import axiosTenant from '@/api/axiosTenant'
+import { injectSettingsStickySave } from '@tenant/settings/settingsStickyContext'
 
 const props = defineProps({
   couponId: Number
@@ -199,13 +199,16 @@ async function submit() {
   }
   emit("saved")
 }
-// Mount
 onMounted(() => {
   fetchCoupon()
   fetchCategories()
+  settingsSticky?.setSave(() => submit())
 })
 
-// Watch dynamic ID
+onUnmounted(() => {
+  settingsSticky?.clearSave()
+})
+
 watch(() => props.couponId, fetchCoupon)
 </script>
 

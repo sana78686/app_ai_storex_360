@@ -322,6 +322,7 @@ const router = createRouter({
 // ================================
 // AUTH GUARD (tenant admin SPA)
 // ================================
+/** Routes that never require tenant_token (sign-in, password, register). */
 const PUBLIC_DASHBOARD_NAMES = new Set([
   'admin-login',
   'admin-forgot-password',
@@ -329,17 +330,39 @@ const PUBLIC_DASHBOARD_NAMES = new Set([
   'tenant-register',
 ])
 
+/** Logged-in users are sent to the dashboard instead of these pages. */
+const REDIRECT_WHEN_AUTHENTICATED = new Set(['admin-login', 'tenant-register'])
+
+function normalizePathForGuard(path) {
+  if (!path) return '/'
+  const q = path.indexOf('?')
+  const base = q >= 0 ? path.slice(0, q) : path
+  const trimmed = base.replace(/\/+$/, '') || '/'
+  return trimmed
+}
+
+/** All tenant admin app URLs live under /dashboard (including unknown paths → login). */
+function isUnderDashboard(path) {
+  const p = normalizePathForGuard(path)
+  return p === '/dashboard' || p.startsWith('/dashboard/')
+}
+
 router.beforeEach((to, from, next) => {
-  if (PUBLIC_DASHBOARD_NAMES.has(to.name)) {
-    return next()
-  }
-
-  const needsAuth = to.matched.some((record) => record.meta.requiresAuth === true)
-  if (!needsAuth) {
-    return next()
-  }
-
   const token = localStorage.getItem('tenant_token')
+
+  if (!isUnderDashboard(to.path)) {
+    return next()
+  }
+
+  const isPublicAuth = to.name && PUBLIC_DASHBOARD_NAMES.has(to.name)
+
+  if (isPublicAuth) {
+    if (token && REDIRECT_WHEN_AUTHENTICATED.has(to.name)) {
+      return next({ name: 'dashboard-home' })
+    }
+    return next()
+  }
+
   if (!token) {
     return next({
       name: 'admin-login',

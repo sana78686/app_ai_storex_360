@@ -806,25 +806,154 @@
   background: rgb(243 244 246 / 0.65);
 }
 
+/* Zebra striping — add class tenant-data-table--striped on the same element as tenant-data-table */
+#app .tenant-data-table.tenant-data-table--striped tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+#app .tenant-data-table.tenant-data-table--striped tbody tr:nth-child(even):hover {
+  background: rgb(243 244 246 / 0.9);
+}
+
+/* Required marker — use <span class="tenant-required-mark">*</span> (not <abbr>) to avoid browser dotted underline */
+#app .tenant-required-mark,
+#app span.tenant-required {
+  color: #d72c0d;
+  font-weight: 600;
+  margin-left: 0.125rem;
+  text-decoration: none !important;
+  border: none !important;
+  font-style: normal;
+  cursor: default;
+  line-height: 1;
+}
+
+#app abbr.tenant-required {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  cursor: help;
+}
+
+/* Label + star + tip on one baseline row */
+#app .tenant-label-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.125rem 0.35rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+/* Settings & wide forms: main vs optional column (stacks on small screens) */
+#app .tenant-settings-form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  #app .tenant-settings-form-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+/* Match product editor field look inside settings (without wrapping whole page in editor class) */
+#app .settings-body .tenant-field-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #303030;
+}
+
+#app .settings-body .tenant-input-shopify {
+  border-radius: 0.375rem;
+  border: 1px solid #c9cccf;
+  background: #fff;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  color: #303030;
+}
+
+#app .settings-body .tenant-input-shopify:focus {
+  border-color: #303030;
+  outline: none;
+  box-shadow: 0 0 0 1px #303030;
+}
+
+/* Form labels anywhere under the tenant dashboard main area */
+#app .tenant-dashboard-body .tenant-field-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #303030;
+}
+
+#app .tenant-dashboard-body .tenant-input-shopify {
+  border-radius: 0.375rem;
+  border: 1px solid #c9cccf;
+  background: #fff;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  color: #303030;
+}
+
+#app .tenant-dashboard-body .tenant-input-shopify:focus {
+  border-color: #303030;
+  outline: none;
+  box-shadow: 0 0 0 1px #303030;
+}
+
+/* Dashboard: Shopify-style flat controls (matches product editor) */
+#app .tenant-dashboard-body .tenant-form-input-global {
+  border-radius: 0.375rem;
+  border: 1px solid #c9cccf;
+  background: #fff;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  color: #303030;
+}
+
+#app .tenant-dashboard-body .tenant-form-input-global:focus {
+  border-color: #303030;
+  outline: none;
+  box-shadow: 0 0 0 1px #303030;
+}
+
+#app .tenant-dashboard-body .tenant-float-field {
+  --tf-border: #c9cccf;
+}
+
+#app .tenant-dashboard-body .tenant-float-field input,
+#app .tenant-dashboard-body .tenant-float-field textarea,
+#app .tenant-dashboard-body .tenant-float-field select {
+  border-radius: 0.375rem;
+}
+
+#app .tenant-dashboard-body .tenant-float-field input:focus,
+#app .tenant-dashboard-body .tenant-float-field textarea:focus,
+#app .tenant-dashboard-body .tenant-float-field select:focus {
+  box-shadow: 0 0 0 1px #303030;
+}
+
 /* Inline help for forms (product create, settings, etc.) */
 #app .tenant-field-tip {
   position: relative;
   display: inline-flex;
   align-items: center;
+  align-self: center;
   vertical-align: middle;
-  margin-left: 0.25rem;
+  margin-left: 0.125rem;
+  flex-shrink: 0;
 }
 
 #app .tenant-field-tip__trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 1.25rem;
+  height: 1.25rem;
   padding: 0;
   border: none;
   border-radius: 9999px;
-  background: rgb(39 90 25 / 0.1);
+  background: rgb(39 90 25 / 0.12);
   color: #275a19;
   cursor: help;
   flex-shrink: 0;
@@ -852,9 +981,9 @@
   z-index: 80;
   left: 0;
   top: calc(100% + 0.35rem);
-  width: min(18rem, 85vw);
-  padding: 0.65rem 0.75rem;
-  border-radius: 0.65rem;
+  width: min(17rem, calc(100vw - 1.5rem));
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.5rem;
   background: #1f2937;
   color: #f9fafb;
   font-size: 0.8125rem;
@@ -862,6 +991,12 @@
   box-shadow:
     0 10px 25px -5px rgb(0 0 0 / 0.25),
     0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+/* Keep popover inside viewport on narrow screens / end-aligned labels */
+#app .tenant-field-tip--popover-end .tenant-field-tip__popover {
+  left: auto;
+  right: 0;
 }
 
 #app .tenant-field-tip__label {
@@ -964,10 +1099,14 @@
   background-image: none;
 }
 
-#app .tenant-product-editor--shopify .tenant-required {
+#app .tenant-product-editor--shopify .tenant-required,
+#app .tenant-product-editor--shopify .tenant-required-mark {
   color: #d72c0d;
   font-weight: 600;
   margin-left: 0.125rem;
+  text-decoration: none !important;
+  border: none !important;
+  line-height: 1;
 }
 
 #app .tenant-product-editor__header {
@@ -1019,6 +1158,51 @@
   letter-spacing: -0.02em;
   color: #111827;
   line-height: 1.2;
+}
+
+/* Add / edit modals (Users, Roles, Permissions, Attributes, etc.) */
+#app .tenant-crud-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: max(1rem, env(safe-area-inset-top, 0px)) 1rem 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  background: rgb(15 23 42 / 0.45);
+  backdrop-filter: blur(2px);
+}
+
+#app .tenant-crud-modal {
+  width: 100%;
+  max-width: 28rem;
+  margin: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.2);
+  padding: 1.25rem 1.5rem;
+  max-height: min(90vh, 100%);
+  overflow-y: auto;
+}
+
+#app .tenant-crud-modal__title {
+  margin: 0 0 1rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+#app .tenant-crud-modal .tenant-label-row {
+  margin-bottom: 0.35rem;
+}
+
+#app .tenant-crud-modal .tenant-field-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #303030;
 }
 
 #app .tenant-dashboard-panel {

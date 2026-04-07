@@ -9,18 +9,16 @@
     </div>
 
     <div class="tenant-settings-field-group">
-      <div class="tenant-float-field is-always-floated">
-        <select id="legal-form" v-model="form.legal_form">
-          <option value="UG">UG</option>
-          <option value="GmbH">GmbH</option>
-          <option value="SARL">SARL</option>
-          <option value="Sole Trader">Sole Trader</option>
-          <option value="Ltd">Ltd</option>
-          <option value="BV">BV</option>
-          <option value="OÜ">OÜ</option>
-        </select>
-        <label for="legal-form">Legal form</label>
+      <div class="tenant-label-row">
+        <span class="tenant-field-label">Legal form</span>
+        <TenantFieldTip label="Legal form" text="Your company type (for example GmbH or Ltd). Pick the one that matches your registration." />
       </div>
+      <TenantSelectSearch
+        v-model="form.legal_form"
+        input-id="legal-form"
+        placeholder="Search legal form…"
+        :options="legalFormOptions"
+      />
       <p class="tenant-settings-hint">Your company’s legal structure.</p>
     </div>
 
@@ -88,17 +86,21 @@
       <span>Part of the EU OSS scheme</span>
     </label>
 
-    <div class="pt-1">
-      <button type="submit" class="tenant-btn-submit">Save</button>
-    </div>
   </form>
 </template>
 
 <script>
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import TenantSelectSearch from '@tenant/components/TenantSelectSearch.vue'
+import { SETTINGS_STICKY_KEY } from '@tenant/settings/settingsStickyContext'
 
 export default {
+  components: { TenantFieldTip, TenantSelectSearch },
+  inject: {
+    settingsStickySave: { from: SETTINGS_STICKY_KEY, default: null },
+  },
   data() {
     return {
       search: '',
@@ -107,6 +109,16 @@ export default {
       autocompleteService: null,
       placesService: null,
 
+      legalFormOptions: [
+        { value: '', label: '— Select —' },
+        { value: 'UG', label: 'UG' },
+        { value: 'GmbH', label: 'GmbH' },
+        { value: 'SARL', label: 'SARL' },
+        { value: 'Sole Trader', label: 'Sole Trader' },
+        { value: 'Ltd', label: 'Ltd' },
+        { value: 'BV', label: 'BV' },
+        { value: 'OÜ', label: 'OÜ' },
+      ],
       form: {
         company_name: '',
         legal_form: '',
@@ -125,6 +137,11 @@ export default {
   mounted() {
     this.loadGoogle()
     this.loadLegalInfo()
+    this.settingsStickySave?.setSave(() => this.save())
+  },
+
+  beforeUnmount() {
+    this.settingsStickySave?.clearSave()
   },
 
   methods: {

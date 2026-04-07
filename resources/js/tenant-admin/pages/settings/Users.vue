@@ -1,7 +1,9 @@
 <template>
-  <div class="users-page">
-    <h2>Users</h2>
-    <button class="add-btn" @click="openAddModal">Add User</button>
+  <div class="users-page tenant-dashboard-page max-w-6xl px-3 py-4 sm:px-4">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h2 class="tenant-dashboard-page__title text-xl">Users</h2>
+      <button type="button" class="tenant-btn-submit tenant-btn-sm" @click="openAddModal">Add user</button>
+    </div>
     <div v-if="loading" class="loading">Loading users...</div>
     <div v-else>
       <table class="users-table">
@@ -34,63 +36,109 @@
       </table>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div v-if="showModal" class="modal-overlay">
-      <div class="modal">
-        <div>MODAL IS OPEN</div>
-        <h3>{{ editMode ? 'Edit User' : 'Add User' }}</h3>
-        <form @submit.prevent="editMode ? updateUser() : addUser()">
+    <div v-if="showModal" class="tenant-crud-modal-overlay" @click.self="closeModal">
+      <div class="tenant-crud-modal max-w-lg" role="dialog" aria-modal="true">
+        <h3 class="tenant-crud-modal__title">{{ editMode ? 'Edit user' : 'Add user' }}</h3>
+        <form class="space-y-3" @submit.prevent="editMode ? updateUser() : addUser()">
           <div>
-            <label>Name</label>
-            <input v-model="form.name" required />
+            <div class="tenant-label-row">
+              <label class="tenant-field-label mb-0" for="user-form-name">Name</label>
+              <span class="tenant-required-mark" aria-hidden="true">*</span>
+              <TenantFieldTip label="Name" text="The person’s display name in the admin." />
+            </div>
+            <input
+              id="user-form-name"
+              v-model="form.name"
+              type="text"
+              required
+              class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2 text-[13px]"
+              autocomplete="name"
+            />
           </div>
           <div>
-            <label>Email</label>
-            <input v-model="form.email" type="email" required />
+            <div class="tenant-label-row">
+              <label class="tenant-field-label mb-0" for="user-form-email">Email</label>
+              <span class="tenant-required-mark" aria-hidden="true">*</span>
+              <TenantFieldTip label="Email" text="Used to sign in. Must be unique." />
+            </div>
+            <input
+              id="user-form-email"
+              v-model="form.email"
+              type="email"
+              required
+              class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2 text-[13px]"
+              autocomplete="email"
+            />
           </div>
           <div v-if="!editMode">
-            <label>Password</label>
+            <div class="tenant-label-row">
+              <label class="tenant-field-label mb-0" for="user-form-password">Password</label>
+              <span class="tenant-required-mark" aria-hidden="true">*</span>
+              <TenantFieldTip label="Password" text="A strong password for the new account." />
+            </div>
             <input
+              id="user-form-password"
               v-model="form.password"
               name="password"
               type="password"
               autocomplete="new-password"
               required
+              class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2 text-[13px]"
             />
           </div>
           <div>
-            <label>Roles</label>
-            <select v-model="form.roles" multiple required>
+            <div class="tenant-label-row">
+              <label class="tenant-field-label mb-0" for="user-form-roles">Roles</label>
+              <span class="tenant-required-mark" aria-hidden="true">*</span>
+              <TenantFieldTip label="Roles" text="Hold Ctrl (Windows) or Cmd (Mac) to pick more than one role." />
+            </div>
+            <select
+              id="user-form-roles"
+              v-model="form.roles"
+              multiple
+              required
+              class="tenant-input-shopify tenant-form-input-global min-h-[7rem] w-full px-3 py-2 text-[13px]"
+            >
               <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
             </select>
           </div>
-          <div class="modal-actions">
-            <button type="submit">{{ editMode ? 'Update' : 'Add' }}</button>
-            <button type="button" @click="closeModal">Cancel</button>
+          <div class="flex flex-wrap justify-end gap-2 pt-2">
+            <button type="button" class="tenant-btn-secondary tenant-btn-sm" @click="closeModal">Cancel</button>
+            <button type="submit" class="tenant-btn-submit tenant-btn-sm">{{ editMode ? 'Update' : 'Add' }}</button>
           </div>
-          <div v-if="error" class="error">{{ error }}</div>
+          <div v-if="error" class="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</div>
         </form>
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay">
-      <div class="modal">
-        <h3>Delete User</h3>
-        <p>Are you sure you want to delete user <b>{{ selectedUser?.email }}</b>?</p>
-        <div class="modal-actions">
-          <button @click="deleteUser">Yes, Delete</button>
-          <button @click="closeDeleteModal">Cancel</button>
+    <div v-if="showDeleteModal" class="tenant-crud-modal-overlay" @click.self="closeDeleteModal">
+      <div class="tenant-crud-modal" role="dialog" aria-modal="true">
+        <h3 class="tenant-crud-modal__title">Delete user</h3>
+        <p class="text-sm text-gray-600">
+          Are you sure you want to delete <b>{{ selectedUser?.email }}</b>?
+        </p>
+        <div class="mt-4 flex flex-wrap justify-end gap-2">
+          <button type="button" class="tenant-btn-secondary tenant-btn-sm" @click="closeDeleteModal">Cancel</button>
+          <button type="button" class="tenant-btn-submit tenant-btn-sm bg-red-700 hover:bg-red-800" @click="deleteUser">Delete</button>
         </div>
-        <div v-if="error" class="error">{{ error }}</div>
+        <div v-if="error" class="mt-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import { focusFirstValidationField } from '@tenant/helpers/formFocus'
+
+const USER_FIELD_IDS = {
+  name: 'user-form-name',
+  email: 'user-form-email',
+  password: 'user-form-password',
+  roles: 'user-form-roles',
+}
 
 const users = ref([])
 const roles = ref([])
@@ -128,7 +176,6 @@ const openAddModal = () => {
   form.value = { name: '', email: '', password: '', roles: [] }
   error.value = ''
   showModal.value = true
-  console.log(showModal.value)
 }
 
 const openEditModal = (user) => {
@@ -158,6 +205,7 @@ const addUser = async () => {
     await fetchUsers()
     closeModal()
   } catch (e) {
+    focusFirstValidationField(e, USER_FIELD_IDS)
     error.value = e.response?.data?.message || 'Failed to add user.'
   }
 }
@@ -171,6 +219,7 @@ const updateUser = async () => {
     await fetchUsers()
     closeModal()
   } catch (e) {
+    focusFirstValidationField(e, USER_FIELD_IDS)
     error.value = e.response?.data?.message || 'Failed to update user.'
   }
 }
@@ -198,6 +247,13 @@ const deleteUser = async () => {
   }
 }
 
+watch(showModal, async (open) => {
+  if (open) {
+    await nextTick()
+    document.getElementById('user-form-name')?.focus({ preventScroll: true })
+  }
+})
+
 onMounted(() => {
   fetchUsers()
   fetchRoles()
@@ -205,22 +261,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.users-page {
-  padding: 2rem;
-}
-.add-btn {
-  margin-bottom: 1rem;
-  padding: 0.5rem 1.2rem;
-  background: #00B894;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-.add-btn:hover {
-  background: #009e7a;
-}
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -262,103 +302,5 @@ onMounted(() => {
 }
 .delete-btn:hover {
   background: #444;
-}
-
-/* ... (keep your existing styles for other elements) ... */
-
-.modal-overlay {
-  position: fixed !important;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999 !important;
-}
-
-.modal {
-  position: relative !important;
-  background: #fff !important;
-  color: #222 !important;
-  padding: 2rem !important;
-  border-radius: 8px !important;
-  min-width: 350px !important;
-  max-width: 480px !important;
-  width: 100%;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.15) !important;
-  z-index: 100000 !important;
-  display: block !important;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal h3 {
-  margin-top: 0;
-  color: #333;
-  font-size: 1.5rem;
-}
-
-.modal form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.modal label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-weight: 500;
-}
-
-.modal input,
-.modal select {
-  width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.2rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  background: #fff;
-  color: #222;
-}
-
-.modal select[multiple] {
-  min-height: 100px;
-  
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.modal-actions button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.modal-actions button[type="submit"] {
-  background: #00B894;
-  color: white;
-}
-
-.modal-actions button[type="button"] {
-  background: #eee;
-  color: #333;
-}
-
-.error {
-  color: #e74c3c;
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: #fdecea;
-  border-radius: 4px;
 }
 </style>

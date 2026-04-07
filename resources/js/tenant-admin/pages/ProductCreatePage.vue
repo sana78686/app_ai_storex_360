@@ -2,7 +2,7 @@
   <div class="tenant-product-editor tenant-product-editor--shopify pb-12 text-[13px] leading-snug">
     <!-- Section 1: stays visible while you scroll -->
     <header
-      class="tenant-product-editor__header sticky top-0 z-[100] border-b border-[#e2e8e4] shadow-sm"
+      class="tenant-product-editor__header sticky top-16 z-[45] border-b border-[#e3e3e3] bg-white shadow-sm"
       role="banner"
     >
       <div class="mx-auto flex max-w-[920px] flex-col gap-2 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
@@ -53,9 +53,9 @@
             </div>
             <div class="space-y-3">
               <div>
-                <div class="mb-1 flex flex-wrap items-center gap-1">
-                  <label class="tenant-field-label inline" for="product-name">Title</label>
-                  <abbr class="tenant-required no-underline" title="Required">*</abbr>
+                <div class="tenant-label-row">
+                  <label class="tenant-field-label mb-0 cursor-pointer" for="product-name">Title</label>
+                  <span class="tenant-required-mark" aria-hidden="true">*</span>
                   <TenantFieldTip
                     label="Title"
                     text="The product name shown in your store, search, cart, and orders."
@@ -71,8 +71,8 @@
                 />
               </div>
               <div>
-                <div class="mb-1 flex flex-wrap items-center gap-1">
-                  <label class="tenant-field-label">Description</label>
+                <div class="tenant-label-row">
+                  <span class="tenant-field-label">Description</span>
                   <TenantFieldTip
                     label="Description"
                     text="Details for the product page: features, size, care, etc."
@@ -85,39 +85,34 @@
                 />
               </div>
               <div>
-                <div class="mb-1 flex flex-wrap items-center gap-1">
-                  <label class="tenant-field-label">Category</label>
+                <div class="tenant-label-row">
+                  <span class="tenant-field-label">Category</span>
                   <TenantFieldTip
                     label="Category"
-                    text="Where this product appears in your store navigation."
+                    text="Where this product appears in your store navigation. Type to search."
                   />
                 </div>
                 <div class="space-y-2">
-                  <select
+                  <TenantSelectSearch
                     v-model="selectedL1"
-                    class="tenant-input-shopify w-full px-3 py-2 outline-none"
-                    @change="handleL1Change"
-                  >
-                    <option value="">Main category</option>
-                    <option v-for="cat in categoriesL1" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-                  </select>
-                  <select
+                    input-id="product-cat-l1"
+                    placeholder="Search main category…"
+                    :options="categoryOptionsL1"
+                  />
+                  <TenantSelectSearch
                     v-if="categoriesL2.length"
                     v-model="selectedL2"
-                    class="tenant-input-shopify w-full px-3 py-2 outline-none"
-                    @change="handleL2Change"
-                  >
-                    <option value="">Sub-category</option>
-                    <option v-for="cat in categoriesL2" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-                  </select>
-                  <select
+                    input-id="product-cat-l2"
+                    placeholder="Search sub-category…"
+                    :options="categoryOptionsL2"
+                  />
+                  <TenantSelectSearch
                     v-if="categoriesL3.length"
                     v-model="form.categories_id"
-                    class="tenant-input-shopify w-full px-3 py-2 outline-none"
-                  >
-                    <option value="">Specific type</option>
-                    <option v-for="cat in categoriesL3" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-                  </select>
+                    input-id="product-cat-l3"
+                    placeholder="Search type…"
+                    :options="categoryOptionsL3"
+                  />
                 </div>
               </div>
             </div>
@@ -219,9 +214,9 @@
             </div>
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div>
-                <div class="mb-1 flex flex-wrap items-center gap-1">
-                  <label class="tenant-field-label inline" for="product-price">Price</label>
-                  <abbr class="tenant-required no-underline" title="Required">*</abbr>
+                <div class="tenant-label-row">
+                  <label class="tenant-field-label mb-0 cursor-pointer" for="product-price">Price</label>
+                  <span class="tenant-required-mark" aria-hidden="true">*</span>
                   <TenantFieldTip label="Price" text="The amount customers pay for one item." />
                 </div>
                 <div class="relative">
@@ -322,6 +317,7 @@
                 <div class="relative">
                   <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[#616161]">Rs</span>
                   <input
+                    id="product-compare"
                     v-model.number="form.compare_at_price"
                     type="number"
                     min="0"
@@ -335,6 +331,7 @@
                 <div class="relative">
                   <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[#616161]">Rs</span>
                   <input
+                    id="product-cost"
                     v-model.number="form.cost_per_item"
                     type="number"
                     min="0"
@@ -589,14 +586,30 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import draggable from 'vuedraggable'
 import Editor from '@tinymce/tinymce-vue'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
 import { formatApiErrorHtml } from '@tenant/helpers/apiErrorMessage'
+import { focusFirstValidationField } from '@tenant/helpers/formFocus'
 import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import TenantSelectSearch from '@tenant/components/TenantSelectSearch.vue'
+
+const PRODUCT_VALIDATION_FIELD_IDS = {
+  name: 'product-name',
+  sku: 'product-sku',
+  barcode: 'product-barcode',
+  price: 'product-price',
+  stock: 'product-qty',
+  quantity: 'product-qty',
+  categories_id: 'product-cat-l3',
+  brand_id: 'product-brand',
+  compare_at_price: 'product-compare',
+  cost_per_item: 'product-cost',
+  type: 'product-name',
+}
 
 const router = useRouter()
 
@@ -647,6 +660,38 @@ const statusBadgeClass = computed(() => {
   if (s === 'active') return 'bg-emerald-100 text-emerald-800'
   if (s === 'archived') return 'bg-gray-200 text-gray-700'
   return 'bg-amber-100 text-amber-900'
+})
+
+const categoryOptionsL1 = computed(() => [
+  { value: '', label: 'None' },
+  ...categoriesL1.value.map((c) => ({
+    value: c.id,
+    label: c.translation?.name || '—',
+  })),
+])
+
+const categoryOptionsL2 = computed(() => [
+  { value: '', label: 'None' },
+  ...categoriesL2.value.map((c) => ({
+    value: c.id,
+    label: c.translation?.name || '—',
+  })),
+])
+
+const categoryOptionsL3 = computed(() => [
+  { value: '', label: 'None' },
+  ...categoriesL3.value.map((c) => ({
+    value: c.id,
+    label: c.translation?.name || '—',
+  })),
+])
+
+watch(selectedL1, () => {
+  handleL1Change()
+})
+
+watch(selectedL2, () => {
+  handleL2Change()
 })
 const calculatedProfit = computed(() => {
   const cost = form.value.cost_per_item
@@ -830,6 +875,10 @@ const handleSubmit = async () => {
   const f = form.value
   const name = (f.name || '').trim()
   if (!name) {
+    await nextTick()
+    const el = document.getElementById('product-name')
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    el?.focus({ preventScroll: true })
     await Swal.fire({
       icon: 'warning',
       title: 'Title required',
@@ -901,6 +950,7 @@ const handleSubmit = async () => {
     await router.push({ name: 'product-list' })
   } catch (error) {
     console.error('Error saving product:', error.response?.data || error)
+    focusFirstValidationField(error, PRODUCT_VALIDATION_FIELD_IDS)
     await Swal.fire({
       icon: 'error',
       title: 'Save failed',
@@ -956,6 +1006,8 @@ const fetchBrands = async () => {
 onMounted(async () => {
   categoriesL1.value = await fetchCategories('null')
   await fetchBrands()
+  await nextTick()
+  document.getElementById('product-name')?.focus({ preventScroll: true })
 })
 
 // When Level 1 changes, reset others and fetch Level 2

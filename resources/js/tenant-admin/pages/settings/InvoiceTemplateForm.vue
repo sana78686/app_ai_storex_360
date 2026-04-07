@@ -1,104 +1,109 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6 space-y-6">
+  <div class="tenant-invoice-template pb-24 text-[13px] leading-snug">
+    <header
+      class="sticky top-16 z-[45] -mx-1 mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200/90 bg-white/95 px-3 py-2.5 shadow-sm backdrop-blur-sm sm:-mx-0 sm:px-4"
+    >
+      <h1 class="text-base font-bold text-gray-900 sm:text-lg">Invoice template</h1>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="tenant-btn-secondary tenant-btn-sm" @click="preview">Preview</button>
+        <button type="button" class="tenant-btn-submit tenant-btn-sm" @click="save">Save template</button>
+      </div>
+    </header>
 
-    <!-- Page Title -->
-    <h1 class="text-2xl font-bold tracking-tight">Create Invoice Template</h1>
-
-    <!-- Template Name -->
-    <div>
-      <label class="font-medium block mb-1">Template Name</label>
-      <input
-        v-model="form.name"
-        placeholder="e.g. Modern Clean, Classic, Minimalist"
-        class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300"
-      />
-    </div>
-
-    <!-- HTML Editor -->
-    <div>
-      <label class="font-medium block mb-1">Full Invoice HTML</label>
-      <textarea
-        v-model="form.template_html"
-        rows="18"
-        class="w-full border rounded-lg px-3 py-2 font-mono text-sm bg-gray-50 focus:ring focus:ring-blue-300"
-      ></textarea>
-    </div>
-
-    <!-- CSS Editor -->
-    <div>
-      <label class="font-medium block mb-1">Custom CSS</label>
-      <textarea
-        v-model="form.template_css"
-        rows="10"
-        class="w-full border rounded-lg px-3 py-2 font-mono text-sm bg-gray-50 focus:ring focus:ring-blue-300"
-      ></textarea>
-    </div>
-
-    <!-- Placeholder Tools -->
-    <div class="bg-gray-100 border rounded-lg p-4">
-      <h3 class="font-semibold mb-2">Available Placeholders</h3>
-
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <button
-          v-for="item in placeholders"
-          :key="item.key"
-          @click="insertPlaceholder(item.key)"
-          class="px-3 py-2 text-sm bg-white shadow rounded-lg border hover:bg-blue-50 hover:text-blue-700 transition"
-        >
-          {{ item.key }}
-        </button>
+    <div class="mx-auto max-w-4xl space-y-4 px-1 sm:px-0">
+      <div>
+        <div class="tenant-label-row">
+          <label class="tenant-field-label mb-0" for="inv-tpl-name">Template name</label>
+          <span class="tenant-required-mark" aria-hidden="true">*</span>
+          <TenantFieldTip label="Name" text="A short name so you can pick this design later." />
+        </div>
+        <input
+          id="inv-tpl-name"
+          v-model="form.name"
+          type="text"
+          placeholder="e.g. Modern Clean"
+          class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2"
+        />
       </div>
 
-      <p class="text-xs text-gray-600 mt-2">
-        Click any placeholder to insert it into the HTML editor.
-      </p>
+      <div>
+        <div class="tenant-label-row">
+          <label class="tenant-field-label mb-0" for="inv-tpl-html">Invoice HTML</label>
+          <TenantFieldTip label="HTML" text="Full HTML for the printed or PDF invoice. Use placeholders below." />
+        </div>
+        <textarea
+          id="inv-tpl-html"
+          v-model="form.template_html"
+          rows="16"
+          class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2 font-mono text-[12px]"
+        />
+      </div>
+
+      <div>
+        <div class="tenant-label-row">
+          <label class="tenant-field-label mb-0" for="inv-tpl-css">Custom CSS</label>
+          <TenantFieldTip label="CSS" text="Optional styles applied when the invoice is rendered." />
+        </div>
+        <textarea
+          id="inv-tpl-css"
+          v-model="form.template_css"
+          rows="10"
+          class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2 font-mono text-[12px]"
+        />
+      </div>
+
+      <div class="rounded-xl border border-[#e3e3e3] bg-[#fafafa] p-4">
+        <h3 class="mb-2 text-sm font-bold text-[#303030]">Placeholders</h3>
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <button
+            v-for="item in placeholders"
+            :key="item.key"
+            type="button"
+            class="rounded-lg border border-[#e3e3e3] bg-white px-2 py-2 text-left text-[11px] text-[#303030] transition hover:bg-[#f3f4f6]"
+            @click="insertPlaceholder(item.key)"
+          >
+            {{ item.label || item.key }}
+          </button>
+        </div>
+        <p class="mt-2 text-[11px] text-[#616161]">Click to append to the HTML field.</p>
+      </div>
+
+      <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800">
+        <input v-model="form.is_default" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#275a19]" />
+        <span>Set as default template</span>
+      </label>
     </div>
+  </div>
 
-    <!-- Set as default -->
-    <label class="flex items-center gap-2 mt-4">
-      <input type="checkbox" v-model="form.is_default" />
-      <span>Set as default template</span>
-    </label>
-<button
-  @click="preview"
-  class="w-full bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition"
->
-  Preview Template
-</button>
-
-    <!-- Sticky Save Bar -->
-    <div class="sticky bottom-0 bg-white py-3 border-t">
+  <div
+    v-if="showPreview"
+    class="fixed inset-0 z-[10060] flex items-center justify-center bg-black/50 p-4"
+    @click.self="showPreview = false"
+  >
+    <div class="relative flex h-[min(85vh,720px)] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-xl">
       <button
-        @click="save"
-        class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+        type="button"
+        class="absolute right-3 top-3 z-10 rounded-lg px-2 py-1 text-sm text-gray-600 hover:bg-gray-100"
+        @click="showPreview = false"
       >
-        Save Template
+        Close
       </button>
+      <iframe :srcdoc="previewHtml" class="h-full w-full flex-1 border-0" title="Preview" />
     </div>
   </div>
-  <div v-if="showPreview" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white w-[80%] h-[80%] rounded-lg overflow-hidden relative">
-
-    <button
-      @click="showPreview = false"
-      class="absolute top-3 right-3 text-gray-600 hover:text-black"
-    >
-      ✕
-    </button>
-
-    <iframe
-      :srcdoc="previewHtml"
-      class="w-full h-full border-none"
-    ></iframe>
-
-  </div>
-</div>
-
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted, nextTick } from 'vue'
 import Swal from 'sweetalert2'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import { focusFirstValidationField } from '@tenant/helpers/formFocus'
+
+const INV_TPL_IDS = {
+  name: 'inv-tpl-name',
+  template_html: 'inv-tpl-html',
+  template_css: 'inv-tpl-css',
+}
 
 const showPreview = ref(false)
 const previewHtml = ref('')
@@ -141,9 +146,7 @@ const form = reactive({
   },
 })
 
-// Full list of placeholders
 const placeholders = [
-  // Company / Tenant
   { key: '{{ $settings->company_name }}', label: 'Company Name' },
   { key: '{{ $settings->street }}', label: 'Street' },
   { key: '{{ $settings->zip }}', label: 'ZIP / Postal Code' },
@@ -156,8 +159,6 @@ const placeholders = [
   { key: '{{ $settings->iban }}', label: 'IBAN' },
   { key: '{{ $settings->swift }}', label: 'BIC / SWIFT' },
   { key: '{{ $settings->logo }}', label: 'Company Logo' },
-
-  // Invoice-level
   { key: '{{ $invoice->invoice_number }}', label: 'Invoice Number' },
   { key: '{{ $invoice_date }}', label: 'Invoice Date' },
   { key: '{{ $due_date }}', label: 'Due Date' },
@@ -168,8 +169,6 @@ const placeholders = [
   { key: '{{ $invoice->subtotal }}', label: 'Subtotal' },
   { key: '{{ $invoice->total }}', label: 'Total' },
   { key: '{{ $invoice->currency }}', label: 'Currency' },
-
-  // Items (loop wrapper)
   {
     key: `@foreach($invoice->items as $item)
 <tr>
@@ -180,21 +179,17 @@ const placeholders = [
   <td>{{ $item->total }}</td>
 </tr>
 @endforeach`,
-    label: 'Invoice Items Table Rows'
+    label: 'Invoice Items Table Rows',
   },
-
-  // Formatted
   { key: '{{ number_format($invoice->subtotal, 2) }}', label: 'Formatted Subtotal' },
   { key: '{{ number_format($invoice->total, 2) }}', label: 'Formatted Total' },
   { key: '{{ number_format($item->quantity * $item->price, 2) }}', label: 'Formatted Item Total' },
 ]
 
-// Insert placeholder into editor
 const insertPlaceholder = (key) => {
   form.template_html += key
 }
 
-// Preview locally
 const preview = () => {
   const html = `
     <h2>Invoice Preview</h2>
@@ -207,7 +202,7 @@ const preview = () => {
       <tr>
         <th>Name</th><th>Description</th><th>Qty</th><th>Price</th><th>Total</th>
       </tr>
-      ${form.invoice.items.map(i => `<tr><td>${i.name}</td><td>${i.description}</td><td>${i.quantity}</td><td>${i.price}</td><td>${i.total}</td></tr>`).join('')}
+      ${form.invoice.items.map((i) => `<tr><td>${i.name}</td><td>${i.description}</td><td>${i.quantity}</td><td>${i.price}</td><td>${i.total}</td></tr>`).join('')}
     </table>
   `
   previewHtml.value = html
@@ -215,22 +210,40 @@ const preview = () => {
 }
 
 const save = async () => {
-  await Swal.fire({
-    icon: 'success',
-    title: 'Saved',
-    text: 'Template saved successfully!',
-  })
+  const name = (form.name || '').trim()
+  if (!name) {
+    await nextTick()
+    const el = document.getElementById('inv-tpl-name')
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    el?.focus({ preventScroll: true })
+    await Swal.fire({ icon: 'warning', title: 'Name required', text: 'Please enter a template name.' })
+    return
+  }
+  try {
+    await Swal.fire({
+      icon: 'success',
+      title: 'Saved',
+      text: 'Template saved successfully!',
+    })
+  } catch (e) {
+    focusFirstValidationField(e, INV_TPL_IDS)
+    await Swal.fire({
+      icon: 'error',
+      title: 'Save failed',
+      text: e.response?.data?.message || 'Could not save.',
+    })
+  }
 }
+
+onMounted(async () => {
+  await nextTick()
+  document.getElementById('inv-tpl-name')?.focus({ preventScroll: true })
+})
 </script>
 
-
-
-<style>
-/* Optional subtle shadow for editors */
-textarea {
-  transition: box-shadow 0.2s ease;
-}
-textarea:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+<style scoped>
+.tenant-invoice-template :deep(textarea:focus),
+.tenant-invoice-template :deep(input:focus) {
+  outline: none;
 }
 </style>

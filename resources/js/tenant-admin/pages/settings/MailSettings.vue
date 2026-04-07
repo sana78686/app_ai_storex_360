@@ -1,15 +1,16 @@
 <template>
-  <div class="mail-settings-form max-w-xl tenant-settings-stack">
-    <div class="tenant-float-field is-always-floated">
-      <select id="mail-provider" v-model="form.provider">
-        <option value="php">PHP Mail (default)</option>
-        <option value="smtp">SMTP</option>
-        <option value="mailgun">Mailgun</option>
-        <option value="microsoft">Microsoft</option>
-        <option value="sendgrid">SendGrid</option>
-        <option value="sparkpost">SparkPost</option>
-      </select>
-      <label for="mail-provider">Mail provider</label>
+  <div class="mail-settings-form tenant-settings-stack w-full max-w-xl">
+    <div>
+      <div class="tenant-label-row">
+        <span class="tenant-field-label">Mail provider</span>
+        <TenantFieldTip label="Provider" text="How your store sends email. SMTP is common for your own mail server." />
+      </div>
+      <TenantSelectSearch
+        v-model="form.provider"
+        input-id="mail-provider"
+        placeholder="Search provider…"
+        :options="providerOptions"
+      />
     </div>
 
     <template v-if="form.provider === 'smtp'">
@@ -36,23 +37,32 @@
         />
         <label for="mail-smtp-pass">SMTP password</label>
       </div>
-      <div class="tenant-float-field is-always-floated">
-        <select id="mail-smtp-enc" v-model="form.smtp_encryption">
-          <option value="">None</option>
-          <option value="ssl">SSL</option>
-          <option value="tls">TLS</option>
-        </select>
-        <label for="mail-smtp-enc">Encryption</label>
+      <div>
+        <div class="tenant-label-row">
+          <span class="tenant-field-label">Encryption</span>
+          <TenantFieldTip label="Encryption" text="TLS or SSL for the SMTP connection. Your host usually tells you which to use." />
+        </div>
+        <TenantSelectSearch
+          v-model="form.smtp_encryption"
+          input-id="mail-smtp-enc"
+          placeholder="Search…"
+          :options="smtpEncOptions"
+        />
       </div>
     </template>
 
     <template v-if="form.provider === 'mailgun'">
-      <div class="tenant-float-field is-always-floated">
-        <select id="mail-mg-region" v-model="form.mailgun_region">
-          <option value="us">US</option>
-          <option value="eu">EU</option>
-        </select>
-        <label for="mail-mg-region">Mailgun region</label>
+      <div>
+        <div class="tenant-label-row">
+          <span class="tenant-field-label">Mailgun region</span>
+          <TenantFieldTip label="Region" text="Pick the region where your Mailgun account lives (US or EU)." />
+        </div>
+        <TenantSelectSearch
+          v-model="form.mailgun_region"
+          input-id="mail-mg-region"
+          placeholder="Search…"
+          :options="mailgunRegionOptions"
+        />
       </div>
       <div class="tenant-float-field">
         <input id="mail-mg-domain" v-model="form.mailgun_domain" type="text" placeholder=" " />
@@ -121,20 +131,43 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+    <div class="flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
       <button type="button" class="tenant-btn-secondary" @click="testConfig">Test configuration</button>
-      <button type="button" class="tenant-btn-submit" @click="save">Save</button>
     </div>
   </div>
 </template>
 
 <script>
-import axiosTenant from '@/api/axiosTenant';
-import Swal from 'sweetalert2';
+import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import TenantSelectSearch from '@tenant/components/TenantSelectSearch.vue'
+import { SETTINGS_STICKY_KEY } from '@tenant/settings/settingsStickyContext'
 
 export default {
+  components: { TenantFieldTip, TenantSelectSearch },
+  inject: {
+    settingsStickySave: { from: SETTINGS_STICKY_KEY, default: null },
+  },
   data() {
     return {
+      providerOptions: [
+        { value: 'php', label: 'PHP Mail (default)' },
+        { value: 'smtp', label: 'SMTP' },
+        { value: 'mailgun', label: 'Mailgun' },
+        { value: 'microsoft', label: 'Microsoft' },
+        { value: 'sendgrid', label: 'SendGrid' },
+        { value: 'sparkpost', label: 'SparkPost' },
+      ],
+      smtpEncOptions: [
+        { value: '', label: 'None' },
+        { value: 'ssl', label: 'SSL' },
+        { value: 'tls', label: 'TLS' },
+      ],
+      mailgunRegionOptions: [
+        { value: 'us', label: 'US' },
+        { value: 'eu', label: 'EU' },
+      ],
       form: {
         provider: "php",
 
@@ -160,12 +193,17 @@ export default {
 
         // SparkPost
         sparkpost_api_key: "",
-      }
-    };
+      },
+    }
   },
 
   mounted() {
-    this.load();
+    this.load()
+    this.settingsStickySave?.setSave(() => this.save())
+  },
+
+  beforeUnmount() {
+    this.settingsStickySave?.clearSave()
   },
 
   methods: {
@@ -214,6 +252,6 @@ export default {
         });
       }
     }
-  }
-};
+  },
+}
 </script>

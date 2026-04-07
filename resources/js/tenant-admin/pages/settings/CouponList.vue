@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="coupons.data?.length" class="tenant-data-table-wrap">
-      <table class="tenant-data-table">
+      <table class="tenant-data-table tenant-data-table--striped">
         <thead>
           <tr>
             <th>Code</th>

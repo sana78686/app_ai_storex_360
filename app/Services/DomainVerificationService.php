@@ -14,7 +14,7 @@ class DomainVerificationService
 //     ]
 // ];
 
-        $records = dns_get_record('$domain->domain, DNS_CNAME');
+        $records = @dns_get_record($domain->domain, DNS_CNAME) ?: [];
 
         if (!$records) {
             return false;

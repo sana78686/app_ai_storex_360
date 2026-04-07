@@ -10,15 +10,17 @@
       <label for="inv-next">Next invoice number</label>
     </div>
 
-    <div class="tenant-float-field is-always-floated">
-      <select id="inv-currency" v-model="form.default_currency">
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="PKR">PKR</option>
-        <option value="GBP">GBP</option>
-        <option value="AED">AED</option>
-      </select>
-      <label for="inv-currency">Default currency</label>
+    <div>
+      <div class="tenant-label-row">
+        <span class="tenant-field-label">Default currency</span>
+        <TenantFieldTip label="Currency" text="Currency code used on new invoices when nothing else is set." />
+      </div>
+      <TenantSelectSearch
+        v-model="form.default_currency"
+        input-id="inv-currency"
+        placeholder="Search currency…"
+        :options="currencyOptions"
+      />
     </div>
 
     <div class="tenant-float-field tenant-float-field--compact-textarea">
@@ -41,16 +43,37 @@
     </label>
 
     <div class="flex flex-wrap gap-2 border-t border-gray-100 pt-3">
-      <button type="submit" class="tenant-btn-submit">Save settings</button>
       <button type="button" class="tenant-btn-secondary" @click="revertForm">Cancel</button>
     </div>
   </form>
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, onUnmounted } from 'vue'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import TenantSelectSearch from '@tenant/components/TenantSelectSearch.vue'
+import { injectSettingsStickySave } from '@tenant/settings/settingsStickyContext'
+import { focusFirstValidationField } from '@tenant/helpers/formFocus'
+
+const currencyOptions = [
+  { value: 'USD', label: 'USD' },
+  { value: 'EUR', label: 'EUR' },
+  { value: 'PKR', label: 'PKR' },
+  { value: 'GBP', label: 'GBP' },
+  { value: 'AED', label: 'AED' },
+]
+
+const INVOICE_SETTINGS_FIELD_IDS = {
+  prefix: 'inv-prefix',
+  next_number: 'inv-next',
+  default_currency: 'inv-currency',
+  intro_text: 'inv-intro',
+  footer_text: 'inv-footer',
+}
+
+const settingsSticky = injectSettingsStickySave()
 
 const form = reactive({
   prefix: '',
@@ -77,20 +100,36 @@ async function saveSettings() {
     }
   })
 
-  await axiosTenant.post('/invoice-settings', fd, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  try {
+    await axiosTenant.post('/invoice-settings', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
 
-  await Swal.fire({
-    icon: 'success',
-    title: 'Saved',
-    text: 'Invoice settings updated!',
-  })
+    await Swal.fire({
+      icon: 'success',
+      title: 'Saved',
+      text: 'Invoice settings updated!',
+    })
+  } catch (err) {
+    focusFirstValidationField(err, INVOICE_SETTINGS_FIELD_IDS)
+    await Swal.fire({
+      icon: 'error',
+      title: 'Save failed',
+      text: err.response?.data?.message || 'Could not save invoice settings.',
+    })
+  }
 }
 
 function revertForm() {
   loadSettings()
 }
 
-onMounted(() => loadSettings())
+onMounted(() => {
+  loadSettings()
+  settingsSticky?.setSave(saveSettings)
+})
+
+onUnmounted(() => {
+  settingsSticky?.clearSave()
+})
 </script>

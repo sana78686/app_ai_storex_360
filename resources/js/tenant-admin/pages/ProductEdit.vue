@@ -1,55 +1,105 @@
 <template>
-  <div class="min-h-screen bg-[#f1f1f1] pb-20 font-sans text-[#303030]">
-    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
-      <div class="flex items-center gap-4">
-        <button @click="closeModal" class="p-1.5 hover:bg-gray-100 rounded-md transition text-gray-500">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        </button>
-        <h1 class="text-sm font-bold">{{ form.name || 'Unsaved Product' }}</h1>
-        <span class="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Draft</span>
-      </div>
-      <div class="flex gap-3">
-        <button @click="closeModal" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 bg-white">Discard</button>
-        <button @click="handleSubmit" class="px-3 py-1.5 bg-[#1a1a1a] text-white rounded-lg text-sm font-semibold hover:bg-black transition-colors shadow-sm">Save</button>
+  <div class="tenant-product-editor tenant-product-editor--shopify pb-12 text-[13px] leading-snug">
+    <header
+      class="tenant-product-editor__header sticky top-16 z-[45] border-b border-[#e3e3e3] bg-white shadow-sm"
+      role="banner"
+    >
+      <div class="mx-auto flex max-w-[920px] flex-col gap-2 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+        <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            class="shrink-0 rounded-lg p-2 text-gray-500 transition hover:bg-gray-100"
+            aria-label="Go back to products"
+            @click="closeModal"
+          >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+          <div class="min-w-0 flex-1">
+            <p class="tenant-product-editor__eyebrow mb-0.5">Products</p>
+            <h1 class="truncate text-[15px] font-semibold text-[#303030]">{{ form.name.trim() ? form.name : 'Edit product' }}</h1>
+          </div>
+          <span
+            class="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide"
+            :class="statusBadgeClass"
+          >
+            {{ statusLabel }}
+          </span>
+        </div>
+        <div class="flex w-full gap-2 sm:w-auto sm:shrink-0 sm:justify-end">
+          <button type="button" class="tenant-btn-secondary tenant-btn-sm min-h-[40px] flex-1 sm:flex-none sm:min-h-0" @click="closeModal">
+            Discard
+          </button>
+          <button type="button" class="tenant-btn-submit tenant-btn-sm min-h-[40px] flex-1 sm:flex-none sm:min-h-0" @click="handleSubmit">
+            Save product
+          </button>
+        </div>
       </div>
     </header>
 
-    <main class="max-w-[1150px] mx-auto mt-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-      <div class="lg:col-span-2 space-y-6">
-
-        <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
-          <div>
-            <label class="block text-xs font-semibold mb-1.5">Title</label>
-            <input v-model="form.name" type="text" placeholder="Short sleeve t-shirt" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-black outline-none transition-all" />
+    <div class="mx-auto mt-3 max-w-[920px] px-3 sm:px-4">
+      <div class="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4 lg:items-start">
+        <div class="space-y-3 lg:col-span-8">
+        <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3 space-y-4">
+          <div class="mb-3 flex flex-wrap items-center gap-1.5">
+            <h2 class="tenant-product-editor__section-title">Product details</h2>
+            <TenantFieldTip label="Help" text="Main info customers see: title, description, category, photos, price, and stock." />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-1.5">Description</label>
+            <div class="tenant-label-row">
+              <label class="tenant-field-label mb-0 cursor-pointer" for="product-name">Title</label>
+              <span class="tenant-required-mark" aria-hidden="true">*</span>
+              <TenantFieldTip label="Title" text="The product name shown in your store, search, cart, and orders." />
+            </div>
+            <input
+              id="product-name"
+              v-model="form.name"
+              type="text"
+              placeholder="Short sleeve t-shirt"
+              class="tenant-input-shopify w-full px-3 py-2 transition"
+              autocomplete="off"
+            />
+          </div>
+          <div>
+            <div class="tenant-label-row">
+              <span class="tenant-field-label">Description</span>
+              <TenantFieldTip label="Description" text="Details for the product page: features, size, care, etc." />
+            </div>
             <Editor
               api-key="gxuz0hko2aulkfi1oewoca3b7oz93uo8ib39y3gx0ahwf9va"
               v-model="form.detailed_description"
               :init="editorInit"
             />
           </div>
-         <div>
-  <label class="block text-xs font-semibold text-gray-700 mb-1.5">Product Organization</label>
-  <div class="space-y-3">
-    <select v-model="selectedL1" @change="handleL1Change" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
-      <option value="">Select Main Category</option>
-      <option v-for="cat in categoriesL1" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-    </select>
-
-    <select v-if="categoriesL2.length" v-model="selectedL2" @change="handleL2Change" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
-      <option value="">Select Sub-category</option>
-      <option v-for="cat in categoriesL2" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-    </select>
-
-    <select v-if="categoriesL3.length" v-model="form.categories_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
-      <option value="">Select Specific Type</option>
-      <option v-for="cat in categoriesL3" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-    </select>
-  </div>
-</div>
+          <div>
+            <div class="tenant-label-row">
+              <span class="tenant-field-label">Category</span>
+              <TenantFieldTip label="Category" text="Where this product appears in your store. Type to search." />
+            </div>
+            <div class="space-y-2">
+              <TenantSelectSearch
+                v-model="selectedL1"
+                input-id="product-cat-l1"
+                placeholder="Search main category…"
+                :options="categoryOptionsL1"
+              />
+              <TenantSelectSearch
+                v-if="categoriesL2.length"
+                v-model="selectedL2"
+                input-id="product-cat-l2"
+                placeholder="Search sub-category…"
+                :options="categoryOptionsL2"
+              />
+              <TenantSelectSearch
+                v-if="categoriesL3.length"
+                v-model="form.categories_id"
+                input-id="product-cat-l3"
+                placeholder="Search type…"
+                :options="categoryOptionsL3"
+              />
+            </div>
+          </div>
         </section>
 
         <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
@@ -93,7 +143,7 @@
   <draggable
     v-else
     v-model="form.media_files"
-    item-key="id"
+    item-key="_clientKey"
     class="flex flex-wrap gap-3"
     ghost-class="opacity-40"
     animation="250"
@@ -141,9 +191,10 @@
       <div class="relative group">
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rs</span>
         <input
+          id="product-price"
           v-model.number="form.price"
           type="number"
-          class="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          class="tenant-input-shopify w-full py-2 pl-9 pr-3"
           placeholder="0.00"
         />
       </div>
@@ -170,7 +221,7 @@
             <label class="block text-xs text-gray-600 mb-1">Compare-at price</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rs</span>
-              <input v-model.number="form.compare_at_price" type="number" class="w-full border border-gray-300 rounded-lg pl-9 py-1.5 text-sm outline-none" placeholder="0.00" />
+              <input id="product-compare" v-model.number="form.compare_at_price" type="number" class="tenant-input-shopify w-full py-2 pl-9 pr-3" placeholder="0.00" />
               <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </button>
@@ -250,7 +301,7 @@
       <span class="text-gray-500 mr-2">Cost</span>
       <div class="flex items-center">
         <span class="text-gray-400 text-xs mr-1">Rs</span>
-        <input v-model.number="form.cost_per_item" type="number" class="w-16 outline-none bg-transparent" placeholder="--" />
+        <input id="product-cost" v-model.number="form.cost_per_item" type="number" class="w-16 outline-none bg-transparent" placeholder="--" />
       </div>
     </div>
 
@@ -287,9 +338,10 @@
       <div class="px-4 py-3 flex justify-between items-center bg-white">
         <span class="text-sm text-gray-700">Shop location</span>
         <input
+          id="product-qty"
           v-model.number="form.quantity"
           type="number"
-          class="w-32 px-3 py-1.5 border border-gray-300 rounded-lg text-right text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          class="tenant-input-shopify w-32 px-3 py-2 text-right"
         />
       </div>
     </div>
@@ -320,11 +372,11 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1.5">SKU (Stock Keeping Unit)</label>
-            <input v-model="form.sku" type="text" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-black" />
+            <input id="product-sku" v-model="form.sku" type="text" class="tenant-input-shopify w-full px-3 py-2" />
           </div>
           <div>
             <label class="block text-xs font-medium text-gray-600 mb-1.5">Barcode (ISBN, UPC, GTIN, etc.)</label>
-            <input v-model="form.barcode" type="text" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-black" />
+            <input id="product-barcode" v-model="form.barcode" type="text" class="tenant-input-shopify w-full px-3 py-2" />
           </div>
         </div>
 
@@ -553,14 +605,20 @@
 </section>
       </div>
 
-      <div class="space-y-6">
-        <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-          <h3 class="text-xs font-bold uppercase text-gray-500 mb-3 tracking-wider">Status</h3>
-          <select v-model="form.status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
-            <option value="active">Active</option>
+      <div class="space-y-3 lg:col-span-4">
+        <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+          <div class="mb-2 flex flex-wrap items-center gap-1.5">
+            <h3 class="tenant-product-editor__section-title">Status</h3>
+            <TenantFieldTip
+              label="Status"
+              text="Draft: not visible. Active: visible in store. Archived: hidden from customers."
+            />
+          </div>
+          <select v-model="form.status" class="tenant-input-shopify w-full px-3 py-2 outline-none">
             <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="archived">Archived</option>
           </select>
-          <p class="mt-2 text-[11px] text-gray-500">This product will be hidden from all sales channels.</p>
         </section>
 
         <!-- <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
@@ -583,20 +641,40 @@
         </section> -->
       </div>
 
-    </main>
+    </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import draggable from 'vuedraggable'
 import Editor from '@tinymce/tinymce-vue'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
 import { formatApiErrorHtml } from '@tenant/helpers/apiErrorMessage'
+import { focusFirstValidationField } from '@tenant/helpers/formFocus'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import TenantSelectSearch from '@tenant/components/TenantSelectSearch.vue'
+import { useRoute, useRouter } from 'vue-router'
+
 const currentLocale = ref('en')
-import { useRoute } from 'vue-router'
 const route = useRoute()
+const router = useRouter()
+
+const PRODUCT_VALIDATION_FIELD_IDS = {
+  name: 'product-name',
+  sku: 'product-sku',
+  barcode: 'product-barcode',
+  price: 'product-price',
+  stock: 'product-qty',
+  quantity: 'product-qty',
+  categories_id: 'product-cat-l3',
+  brand_id: 'product-brand',
+  compare_at_price: 'product-compare',
+  cost_per_item: 'product-cost',
+  type: 'product-name',
+}
 // --- State ---
 const categoriesL1 = ref([])
 const categoriesL2 = ref([])
@@ -646,10 +724,59 @@ const form = ref({
 })
 
 // --- Computed ---
-const calculatedProfit = computed(() => (form.value.price || 0) - (form.value.cost_per_item || 0))
+const statusLabel = computed(() => {
+  const labels = { draft: 'Draft', active: 'Active', archived: 'Archived' }
+  return labels[form.value.status] || 'Draft'
+})
+
+const statusBadgeClass = computed(() => {
+  const s = form.value.status
+  if (s === 'active') return 'bg-emerald-100 text-emerald-800'
+  if (s === 'archived') return 'bg-gray-200 text-gray-700'
+  return 'bg-amber-100 text-amber-900'
+})
+
+const categoryOptionsL1 = computed(() => [
+  { value: '', label: 'None' },
+  ...categoriesL1.value.map((c) => ({
+    value: c.id,
+    label: c.translation?.name || '—',
+  })),
+])
+
+const categoryOptionsL2 = computed(() => [
+  { value: '', label: 'None' },
+  ...categoriesL2.value.map((c) => ({
+    value: c.id,
+    label: c.translation?.name || '—',
+  })),
+])
+
+const categoryOptionsL3 = computed(() => [
+  { value: '', label: 'None' },
+  ...categoriesL3.value.map((c) => ({
+    value: c.id,
+    label: c.translation?.name || '—',
+  })),
+])
+
+const calculatedProfit = computed(() => {
+  const cost = form.value.cost_per_item
+  const c = cost === '' || cost === null ? 0 : Number(cost)
+  return (form.value.price || 0) - (Number.isFinite(c) ? c : 0)
+})
+
 const calculatedMargin = computed(() => {
-  if (!form.value.price) return 0
+  if (!form.value.price || form.value.price === 0) return '0.00'
   return ((calculatedProfit.value / form.value.price) * 100).toFixed(2)
+})
+
+watch(selectedL1, () => {
+  handleL1Change()
+})
+
+watch(selectedL2, () => {
+  handleL2Change()
 })
 
 // --- Unit Price Methods ---
@@ -670,18 +797,28 @@ const clearUnitPrice = () => {
 // --- Media Methods ---
 const triggerFileInput = () => fileInput.value.click()
 
+function ensureMediaClientKey(file) {
+  if (!file._clientKey) {
+    file._clientKey =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `m-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+  }
+  return file
+}
+
 const handleFileSelect = (event) => {
-  const files = Array.from(event.target.files).map(file => {
+  const files = Array.from(event.target.files).map((file) => {
     file.preview = URL.createObjectURL(file)
-    return file
+    return ensureMediaClientKey(file)
   })
   form.value.media_files.push(...files)
 }
 
 const handleFileDrop = (event) => {
-  const files = Array.from(event.dataTransfer.files).map(file => {
+  const files = Array.from(event.dataTransfer.files).map((file) => {
     file.preview = URL.createObjectURL(file)
-    return file
+    return ensureMediaClientKey(file)
   })
   form.value.media_files.push(...files)
 }
@@ -825,34 +962,68 @@ const loadProduct = async (id) => {
 
     // 2. Media Mapping (Critical for your draggable UI)
     if (product.media && product.media.length > 0) {
-      form.value.media_files = product.media.map(item => ({
+      form.value.media_files = product.media.map((item) => ({
         id: item.id,
-        preview: item.cdn_url, // Map cdn_url to your preview key
-        file: null,            // Existing files won't have a File object
-        is_main: item.is_main
-      }));
+        _clientKey: item.id != null ? `media-${item.id}` : `media-${item.cdn_url}`,
+        preview: item.cdn_url,
+        file: null,
+        is_main: item.is_main,
+      }))
     }
 
-    // 3. Category Handling (If you have logic for L1, L2, L3)
-    form.value.categories_id = product.category_id;
-console.log( form.value.categories_id)
-    // Note: You might need to trigger your category fetch logic
-    // here to populate selectedL1/L2 based on the category_id.
+    form.value.categories_id = product.category_id || product.categories_id || ''
+
+    const archived =
+      product.status === 'archived' ||
+      product.is_archived === 1 ||
+      product.is_archived === true
+    const active =
+      product.is_active == 1 ||
+      product.is_active === true ||
+      product.is_active === '1' ||
+      product.status === 'active'
+    form.value.status = archived ? 'archived' : active ? 'active' : 'draft'
 
   } catch (error) {
     console.error("Failed to load product:", error);
   }
 };
 
+const closeModal = async () => {
+  const r = await Swal.fire({
+    icon: 'question',
+    title: 'Discard changes?',
+    showCancelButton: true,
+    confirmButtonText: 'Discard',
+    cancelButtonText: 'Keep editing',
+  })
+  if (r.isConfirmed) {
+    await router.push({ name: 'product-list' })
+  }
+}
+
 // --- Submit ---
 const handleSubmit = async () => {
-  // 1. Validation: Ensure we have an ID for update
   const productId = route.params.id
   if (!productId) {
     await Swal.fire({
       icon: 'error',
       title: 'Cannot update',
       text: 'Product ID is missing. Cannot update.',
+    })
+    return
+  }
+
+  const name = (form.value.name || '').trim()
+  if (!name) {
+    await nextTick()
+    const el = document.getElementById('product-name')
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    el?.focus({ preventScroll: true })
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Title required',
+      text: 'Please enter a product title before saving.',
     })
     return
   }
@@ -935,6 +1106,7 @@ const handleSubmit = async () => {
     })
   } catch (err) {
     console.error('Update Error:', err.response?.data)
+    focusFirstValidationField(err, PRODUCT_VALIDATION_FIELD_IDS)
     await Swal.fire({
       icon: 'error',
       title: 'Update failed',
@@ -945,21 +1117,16 @@ const handleSubmit = async () => {
 }
 
 
-// category logic
 const fetchCategories = async (parentId = 'null') => {
-    try {
-        const response = await axiosTenant.get(`/categories?parent_id=productId`)
-        return response.data.categories // Assuming your controller returns the array directly
-    } catch (error) {
-        console.error("Error fetching categories:", error)
-        return []
-    }
+  const pid = parentId === 'null' || parentId === null || parentId === '' ? 'null' : parentId
+  try {
+    const response = await axiosTenant.get(`/categories?parent_id=${pid}`)
+    return response.data.categories || []
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    return []
+  }
 }
-
-// Initial load for Level 1
-onMounted(async () => {
-    categoriesL1.value = await fetchCategories('null')
-})
 
 // When Level 1 changes, reset others and fetch Level 2
 const handleL1Change = async () => {
@@ -984,24 +1151,25 @@ const handleL2Change = async () => {
         categoriesL3.value = []
     }
 }
-// --- Lifecycle ---
-onMounted(() => {
-      // Get the 'id' from the URL parameter
-      const productId = route.params.id
 
-      if (productId) {
-        loadProduct(productId)
-      }
-    })
+onMounted(async () => {
+  categoriesL1.value = await fetchCategories('null')
+  const productId = route.params.id
+  if (productId) {
+    await loadProduct(productId)
+    await nextTick()
+    document.getElementById('product-name')?.focus({ preventScroll: true })
+  }
+})
 </script>
 
 <style>
-/* Optional: Shopify-style custom focus for TinyMCE */
-.tox-tinymce {
-    border: 1px solid #d1d5db !important;
-    border-radius: 8px !important;
+.tenant-product-editor--shopify .tox-tinymce {
+  border: 1px solid #c9cccf !important;
+  border-radius: 0.375rem !important;
 }
-.tox-tinymce--focused {
-    border: 1px solid #000 !important;
+.tenant-product-editor--shopify .tox-tinymce--focused {
+  border-color: #303030 !important;
+  box-shadow: 0 0 0 1px #303030 !important;
 }
 </style>

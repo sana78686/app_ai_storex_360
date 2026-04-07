@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Domain extends Model
 {
-    //  protected $connection = 'central';
+    /** Domains live on the central DB, not the per-tenant database. */
+    protected $connection = 'central';
+
     protected $guarded = [];
 
     public function tenant()

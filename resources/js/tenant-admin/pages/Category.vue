@@ -1,175 +1,183 @@
 <template>
-  <div class="max-w-6xl mx-auto pb-20 animate-fade-in">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-      <div>
-        <nav class="flex text-[11px] font-bold text-orange-600 uppercase tracking-widest mb-2">
-          <span>Catalog</span>
-          <span class="mx-2 text-gray-400">/</span>
-          <span class="text-gray-500">Categories</span>
-        </nav>
-        <h1 class="text-2xl font-extrabold text-[#0F1111]">Add Category</h1>
+  <div class="tenant-category-page tenant-dashboard-page mx-auto max-w-5xl px-3 py-4 pb-20 text-[13px] sm:px-4">
+    <header
+      class="sticky top-16 z-[45] -mx-1 mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200/90 bg-white/95 px-3 py-2.5 shadow-sm backdrop-blur-sm sm:-mx-0 sm:px-4"
+    >
+      <div class="min-w-0">
+        <p class="tenant-dashboard-page__breadcrumb mb-0.5">Catalog / Categories</p>
+        <h1 class="tenant-dashboard-page__title text-lg sm:text-xl">Add category</h1>
       </div>
-      <div class="flex items-center gap-3">
-        <button class="px-6 py-2 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 transition-all">
-          Cancel
-        </button>
-        <button class="px-6 py-2 text-sm font-bold text-white bg-[#232f3e] rounded shadow-md hover:bg-[#131921] transition-all">
-          Save Category
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="tenant-btn-secondary tenant-btn-sm" @click="goBack">Cancel</button>
+        <button type="button" class="tenant-btn-submit tenant-btn-sm" :disabled="saving" @click="saveCategory">
+          {{ saving ? 'Saving…' : 'Save category' }}
         </button>
       </div>
-    </div>
+    </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-      <div class="lg:col-span-8 space-y-6">
-
-        <div class="bg-white border border-gray-200 rounded shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-100 bg-[#f8fafc]">
-            <h3 class="text-[12px] font-bold text-gray-700 uppercase tracking-wider">General Details</h3>
-          </div>
-          <div class="p-6 space-y-6">
+    <div class="tenant-settings-form-grid">
+      <div class="space-y-4">
+        <section class="rounded-xl border border-[#e3e3e3] bg-white p-4 shadow-sm sm:p-5">
+          <h2 class="mb-3 text-xs font-bold uppercase tracking-wide text-[#616161]">General</h2>
+          <div class="space-y-4">
             <div>
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Category Name</label>
-              <input v-model="form.name" type="text" placeholder="Enter category name"
-                class="w-full border border-gray-300 rounded px-4 py-2.5 text-sm focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Description</label>
-              <textarea v-model="form.description" rows="5" placeholder="Describe this category for your customers..."
-                class="w-full border border-gray-300 rounded px-4 py-2.5 text-sm focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white border border-gray-200 rounded shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-100 bg-[#f8fafc]">
-            <h3 class="text-[12px] font-bold text-gray-700 uppercase tracking-wider">Search Engine Optimization</h3>
-          </div>
-          <div class="p-6 space-y-5">
-            <div>
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Friendly URL (Slug)</label>
-              <div class="flex rounded-md shadow-sm">
-                <span class="inline-flex items-center px-3 rounded-l border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-xs font-medium">
-                  shop.de/c/
-                </span>
-                <input v-model="form.slug" type="text" class="flex-1 border border-gray-300 rounded-r px-4 py-2 text-sm focus:border-orange-500 outline-none" />
+              <div class="tenant-label-row">
+                <label class="tenant-field-label mb-0" for="cat-name">Category name</label>
+                <span class="tenant-required-mark" aria-hidden="true">*</span>
+                <TenantFieldTip label="Name" text="The name shoppers see in your store navigation." />
               </div>
+              <input
+                id="cat-name"
+                v-model="form.name"
+                type="text"
+                class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2"
+                placeholder="e.g. Electronics"
+                autocomplete="off"
+              />
+            </div>
+            <div>
+              <div class="tenant-label-row">
+                <label class="tenant-field-label mb-0" for="cat-desc">Description</label>
+                <TenantFieldTip label="Description" text="Optional text for category pages or SEO." />
+              </div>
+              <textarea
+                id="cat-desc"
+                v-model="form.description"
+                rows="4"
+                class="tenant-input-shopify tenant-form-input-global w-full px-3 py-2"
+                placeholder="Describe this category…"
+              />
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
-      <div class="lg:col-span-4 space-y-6">
-
-        <div class="bg-white border border-gray-200 rounded shadow-sm p-6">
-          <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">Availability</h3>
-          <div class="space-y-3">
-            <select v-model="form.status" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-orange-500 outline-none bg-white font-medium">
-              <option value="active">Active / Visible</option>
-              <option value="draft">Draft / Hidden</option>
-            </select>
-            <div class="flex items-center gap-2 px-1">
-              <input type="checkbox" id="nav" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500" />
-              <label for="nav" class="text-[11px] text-gray-600 font-medium">Show in Main Navigation</label>
-            </div>
+      <div class="space-y-4">
+        <section class="rounded-xl border border-[#e3e3e3] bg-white p-4 shadow-sm sm:p-5">
+          <h2 class="mb-3 text-xs font-bold uppercase tracking-wide text-[#616161]">Placement</h2>
+          <div class="tenant-label-row">
+            <span class="tenant-field-label">Parent category</span>
+            <TenantFieldTip label="Parent" text="Leave empty for a top-level category, or nest under another." />
           </div>
-        </div>
+          <TenantSelectSearch
+            v-model="form.parent_id"
+            input-id="cat-parent"
+            placeholder="Search parent…"
+            :options="parentOptions"
+          />
+        </section>
 
-        <div class="bg-white border border-gray-200 rounded shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-100 bg-[#f8fafc]">
-            <h3 class="text-[12px] font-bold text-gray-700 uppercase tracking-wider">Placement</h3>
-          </div>
-          <div class="p-6 space-y-6">
-            <div>
-              <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2">Parent Category</label>
-              <select v-model="form.parent" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-orange-500 outline-none bg-white">
-                <option :value="null">None (Root Level)</option>
-                <option v-for="cat in mockCategories" :key="cat.id" :value="cat.name">
-                  {{ cat.name }}
-                </option>
-              </select>
-            </div>
-
-            <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
-              <label class="block text-[10px] font-extrabold text-gray-400 uppercase mb-3 tracking-tighter">Live Hierarchy Preview</label>
-              <div class="space-y-2">
-                <div class="flex items-center text-xs text-gray-400">
-                  <i class="fas fa-folder-open mr-2"></i> Root
-                </div>
-                <div v-if="form.parent" class="flex items-center text-xs text-gray-600 ml-4">
-                  <div class="w-px h-4 bg-gray-300 -mt-4 mr-2"></div>
-                  <i class="fas fa-chevron-right text-[10px] mr-2 opacity-50"></i>
-                  <span class="font-bold">{{ form.parent }}</span>
-                </div>
-                <div class="flex items-center text-xs text-orange-600 font-extrabold" :class="form.parent ? 'ml-8' : 'ml-4'">
-                  <div class="w-px h-4 bg-gray-300 -mt-4 mr-2"></div>
-                  <div class="w-2 h-2 rounded-full bg-orange-500 mr-2 animate-pulse"></div>
-                  {{ form.name || 'New Category' }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white border border-gray-200 rounded shadow-sm p-6">
-          <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">Category Image</h3>
-          <div @click="$refs.fileInput.click()" class="group relative aspect-square w-full border-2 border-dashed border-gray-200 rounded flex flex-col items-center justify-center hover:bg-orange-50/30 hover:border-orange-400 cursor-pointer transition-all overflow-hidden">
-            <div v-if="previewImage" class="absolute inset-0">
-               <img :src="previewImage" class="w-full h-full object-cover" />
-               <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                 <span class="text-white text-xs font-bold">Change Image</span>
-               </div>
-            </div>
-            <div v-else class="text-center">
-              <i class="fas fa-image text-3xl text-gray-200 mb-2 group-hover:text-orange-300"></i>
-              <p class="text-[10px] font-bold text-gray-400 uppercase">Drop image here</p>
-            </div>
-            <input ref="fileInput" type="file" class="hidden" @change="handleFileUpload" />
-          </div>
-        </div>
-
+        <section
+          v-if="previewImage"
+          class="rounded-xl border border-[#e3e3e3] bg-white p-4 shadow-sm sm:p-5"
+        >
+          <h2 class="mb-2 text-xs font-bold uppercase tracking-wide text-[#616161]">Image preview</h2>
+          <img :src="previewImage" alt="" class="max-h-40 rounded-lg object-contain" />
+        </section>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
+import axiosTenant from '@/api/axiosTenant'
+import Swal from 'sweetalert2'
+import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+import TenantSelectSearch from '@tenant/components/TenantSelectSearch.vue'
+import { focusFirstValidationField } from '@tenant/helpers/formFocus'
 
+const router = useRouter()
+const saving = ref(false)
 const previewImage = ref(null)
-const form = reactive({
+const categoryTree = ref([])
+
+const form = ref({
   name: '',
   description: '',
-  slug: '',
-  status: 'active',
-  parent: null
+  parent_id: '',
 })
 
-// Mock data for the parent selector
-const mockCategories = [
-  { id: 1, name: 'Electronics' },
-  { id: 2, name: 'Fashion' },
-  { id: 3, name: 'Home & Kitchen' },
-  { id: 4, name: 'Sports' }
-]
-
-const handleFileUpload = (e) => {
-  const file = e.target.files[0]
-  if (file) previewImage.value = URL.createObjectURL(file)
+const CAT_FIELD_IDS = {
+  name: 'cat-name',
+  description: 'cat-desc',
+  parent_id: 'cat-parent',
 }
+
+function translationName(cat) {
+  const t = cat.translations?.find((x) => x.locale === 'en') || cat.translations?.[0]
+  return t?.name || '—'
+}
+
+function flattenTree(nodes, prefix = '') {
+  const out = []
+  if (!nodes) return out
+  for (const c of nodes) {
+    out.push({ value: c.id, label: `${prefix}${translationName(c)}` })
+    if (c.children?.length) {
+      out.push(...flattenTree(c.children, `${prefix}— `))
+    }
+  }
+  return out
+}
+
+const parentOptions = computed(() => [
+  { value: '', label: 'None (root)' },
+  ...flattenTree(categoryTree.value),
+])
+
+async function loadCategories() {
+  try {
+    const res = await axiosTenant.get('/categories')
+    categoryTree.value = res.data.categories || []
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+function goBack() {
+  router.push({ name: 'dashboard-home' })
+}
+
+async function saveCategory() {
+  const name = (form.value.name || '').trim()
+  if (!name) {
+    await nextTick()
+    const el = document.getElementById('cat-name')
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    el?.focus({ preventScroll: true })
+    await Swal.fire({ icon: 'warning', title: 'Name required', text: 'Please enter a category name.' })
+    return
+  }
+
+  saving.value = true
+  try {
+    const payload = {
+      name,
+      description: (form.value.description || '').trim() || null,
+      parent_id: form.value.parent_id === '' || form.value.parent_id == null ? null : form.value.parent_id,
+    }
+    await axiosTenant.post('/categories', payload)
+    await Swal.fire({ icon: 'success', title: 'Saved', text: 'Category created.' })
+    form.value = { name: '', description: '', parent_id: '' }
+    previewImage.value = null
+    await loadCategories()
+  } catch (e) {
+    focusFirstValidationField(e, CAT_FIELD_IDS)
+    await Swal.fire({
+      icon: 'error',
+      title: 'Save failed',
+      text: e.response?.data?.message || 'Could not save category.',
+    })
+  } finally {
+    saving.value = false
+  }
+}
+
+onMounted(async () => {
+  await loadCategories()
+  await nextTick()
+  document.getElementById('cat-name')?.focus({ preventScroll: true })
+})
 </script>
-
-<style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-input, textarea, select {
-  font-family: inherit;
-}
-</style>

@@ -92,9 +92,20 @@ export default {
     function postLoginPath() {
       const r = route.query.redirect
       if (typeof r === 'string' && r.startsWith('/') && !r.startsWith('//')) {
+        const pathOnly = r.split('?')[0] || ''
+        const lower = pathOnly.toLowerCase()
+        const authPaths = [
+          '/dashboard/login',
+          '/dashboard/register',
+          '/dashboard/forgot-password',
+          '/dashboard/reset-password',
+        ]
+        if (authPaths.some((p) => lower === p || lower.startsWith(`${p}/`))) {
+          return { name: 'dashboard-home' }
+        }
         return r
       }
-      return '/dashboard'
+      return { name: 'dashboard-home' }
     }
     const loading = ref(false)
     const googleLoading = ref(false)
