@@ -902,6 +902,74 @@
   color: #1c1f1e;
 }
 
+/* Shopify-like product editor: flat canvas, dense cards, minimal shadow */
+#app .tenant-product-editor--shopify {
+  background: #f6f6f7;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+#app .tenant-product-editor--shopify .tenant-product-editor__header {
+  background: #fff;
+  border-bottom-color: #e3e3e3;
+  backdrop-filter: none;
+}
+
+#app .tenant-product-editor--shopify .tenant-product-editor__section {
+  border-color: #e3e3e3;
+  border-radius: 0.5rem;
+  box-shadow: none;
+  background: #fff;
+}
+
+#app .tenant-product-editor--shopify .tenant-product-editor__section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #303030;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+#app .tenant-product-editor--shopify .tenant-product-editor__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #616161;
+}
+
+#app .tenant-product-editor--shopify .tenant-field-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #303030;
+}
+
+#app .tenant-product-editor--shopify .tenant-input-shopify {
+  border-radius: 0.375rem;
+  border: 1px solid #c9cccf;
+  background: #fff;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+}
+
+#app .tenant-product-editor--shopify .tenant-input-shopify:focus {
+  border-color: #303030;
+  outline: none;
+  box-shadow: 0 0 0 1px #303030;
+}
+
+#app .tenant-product-editor--shopify select.tenant-input-shopify {
+  cursor: pointer;
+  appearance: auto;
+  background-image: none;
+}
+
+#app .tenant-product-editor--shopify .tenant-required {
+  color: #d72c0d;
+  font-weight: 600;
+  margin-left: 0.125rem;
+}
+
 #app .tenant-product-editor__header {
   border-bottom: 1px solid #e2e8e4;
   background: rgb(255 255 255 / 0.92);

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Jobs\ImportProductsJob;
@@ -272,13 +273,44 @@ public function updateStatus(Request $request, $id)
              ======================= */
                     $data = $request->only([
              'sku',
-             'price','compare_at_price','track_quantity','stock',
-             'type','is_active','is_featured','allow_backorder',
-             'brand_id','status'
+             'barcode',
+             'price',
+             'compare_at_price',
+             'cost_per_item',
+             'track_quantity',
+             'stock',
+             'type',
+             'is_active',
+             'is_featured',
+             'allow_backorder',
+             'brand_id',
+             'status',
          ]);
 
             $data['name'] = $request->input('name') ?: 'Untitled';
             $data['detailed_description'] = $request->input('detailed_description');
+            $data['charge_tax'] = $request->boolean('charge_tax', true);
+
+            $stock = (int) $request->input('stock', 0);
+            $data['stock'] = max(0, $stock);
+            if (Schema::hasColumn('products', 'quantity')) {
+                $data['quantity'] = $data['stock'];
+            }
+            if (Schema::hasColumn('products', 'inventory_tracked')) {
+                $data['inventory_tracked'] = $request->boolean('track_quantity', true);
+            }
+
+            $data['track_quantity'] = $request->boolean('track_quantity', true);
+            $data['is_active'] = $request->boolean('is_active', true);
+            $data['is_featured'] = $request->boolean('is_featured', false);
+            $data['allow_backorder'] = $request->boolean('allow_backorder', false);
+
+            $cmp = $request->input('compare_at_price');
+            $data['compare_at_price'] = ($cmp === '' || $cmp === null) ? null : $cmp;
+            $cst = $request->input('cost_per_item');
+            $data['cost_per_item'] = ($cst === '' || $cst === null) ? null : $cst;
+            $bid = $request->input('brand_id');
+            $data['brand_id'] = ($bid === '' || $bid === null) ? null : (int) $bid;
 
             $product = Product::create($data);
             // Generate slug manually
@@ -514,12 +546,43 @@ public function updateStatus(Request $request, $id)
          ======================= */
        $defaultLocale = config('app.fallback_locale', 'en');
 
-          $product->update($request->only([
+          $update = $request->only([
               'sku',
-              'price','compare_at_price','track_quantity','stock',
-              'type','is_active','is_featured','allow_backorder',
-              'brand_id','status'
-          ]));
+              'barcode',
+              'price',
+              'compare_at_price',
+              'cost_per_item',
+              'track_quantity',
+              'stock',
+              'type',
+              'is_active',
+              'is_featured',
+              'allow_backorder',
+              'brand_id',
+              'status',
+          ]);
+          $stock = (int) $request->input('stock', $product->stock ?? 0);
+          $update['stock'] = max(0, $stock);
+          if (Schema::hasColumn('products', 'quantity')) {
+              $update['quantity'] = $update['stock'];
+          }
+          if (Schema::hasColumn('products', 'inventory_tracked')) {
+              $update['inventory_tracked'] = $request->boolean('track_quantity', true);
+          }
+          $update['track_quantity'] = $request->boolean('track_quantity', true);
+          $update['is_active'] = $request->boolean('is_active', true);
+          $update['is_featured'] = $request->boolean('is_featured', false);
+          $update['allow_backorder'] = $request->boolean('allow_backorder', false);
+          $update['charge_tax'] = $request->boolean('charge_tax', true);
+
+          $cmp = $request->input('compare_at_price');
+          $update['compare_at_price'] = ($cmp === '' || $cmp === null) ? null : $cmp;
+          $cst = $request->input('cost_per_item');
+          $update['cost_per_item'] = ($cst === '' || $cst === null) ? null : $cst;
+          $bid = $request->input('brand_id');
+          $update['brand_id'] = ($bid === '' || $bid === null) ? null : (int) $bid;
+
+          $product->update($update);
 
           // Update or Create Translation
           $product->translations()->updateOrCreate(

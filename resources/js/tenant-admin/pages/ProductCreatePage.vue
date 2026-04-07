@@ -1,381 +1,392 @@
 <template>
-  <div class="tenant-product-editor pb-16 text-[15px] leading-relaxed">
-    <header class="tenant-product-editor__header sticky top-0 z-50 px-4 sm:px-6 py-3 flex flex-wrap gap-3 justify-between items-center shadow-sm">
-      <div class="flex items-center gap-3 min-w-0">
-        <button type="button" @click="closeModal" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition shrink-0" aria-label="Back">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        </button>
-        <div class="min-w-0">
-          <p class="tenant-product-editor__eyebrow mb-0.5">Products</p>
-          <h1 class="text-base font-bold text-gray-900 truncate">{{ form.name || 'New product' }}</h1>
+  <div class="tenant-product-editor tenant-product-editor--shopify pb-12 text-[13px] leading-snug">
+    <!-- Section 1: stays visible while you scroll -->
+    <header
+      class="tenant-product-editor__header sticky top-0 z-[100] border-b border-[#e2e8e4] shadow-sm"
+      role="banner"
+    >
+      <div class="mx-auto flex max-w-[920px] flex-col gap-2 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+        <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            class="shrink-0 rounded-lg p-2 text-gray-500 transition hover:bg-gray-100"
+            aria-label="Go back to products"
+            @click="closeModal"
+          >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+          <div class="min-w-0 flex-1">
+            <p class="tenant-product-editor__eyebrow mb-0.5">Products</p>
+            <h1 class="truncate text-[15px] font-semibold text-[#303030]">{{ form.name.trim() ? form.name : 'New product' }}</h1>
+          </div>
+          <span
+            class="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide"
+            :class="statusBadgeClass"
+          >
+            {{ statusLabel }}
+          </span>
         </div>
-        <span class="tenant-badge tenant-badge--pending text-[10px] shrink-0">Draft</span>
-      </div>
-      <div class="flex gap-2 shrink-0">
-        <button type="button" @click="closeModal" class="tenant-btn-secondary tenant-btn-sm">Discard</button>
-        <button type="button" @click="handleSubmit" class="tenant-btn-submit tenant-btn-sm">Save product</button>
+        <div class="flex w-full gap-2 sm:w-auto sm:shrink-0 sm:justify-end">
+          <button type="button" class="tenant-btn-secondary tenant-btn-sm min-h-[40px] flex-1 sm:flex-none sm:min-h-0" @click="closeModal">
+            Discard
+          </button>
+          <button type="button" class="tenant-btn-submit tenant-btn-sm min-h-[40px] flex-1 sm:flex-none sm:min-h-0" @click="handleSubmit">
+            Save product
+          </button>
+        </div>
       </div>
     </header>
 
-    <main class="max-w-[1180px] mx-auto mt-6 px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <div class="lg:col-span-2 space-y-5">
-
-        <section class="tenant-product-editor__section p-5 space-y-4">
-          <div class="flex items-center flex-wrap gap-1">
-            <h2 class="tenant-product-editor__section-title">Details</h2>
-            <TenantFieldTip
-              text="The title and description appear on the product page in your storefront. Clear titles help customers find this product in search and category listings."
-            />
-          </div>
-          <div>
-            <div class="flex items-center gap-1 mb-1.5">
-              <label class="text-xs font-semibold text-gray-800">Title</label>
-              <TenantFieldTip text="Shown as the main product name on the storefront, cart, checkout, and order emails." />
+    <div class="mx-auto mt-3 max-w-[920px] px-3 sm:px-4">
+      <div class="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4 lg:items-start">
+        <!-- Main column (Shopify-style) -->
+        <div class="space-y-3 lg:col-span-8">
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-3 flex flex-wrap items-center gap-1.5">
+              <h2 class="tenant-product-editor__section-title">Product details</h2>
+              <TenantFieldTip
+                label="Help"
+                text="Main info customers see: title, description, category, photos, price, and stock."
+              />
             </div>
-            <input v-model="form.name" type="text" placeholder="e.g. Short sleeve t-shirt" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#275a19]/25 focus:border-[#275a19] outline-none transition-all bg-white" />
-          </div>
-          <div>
-            <div class="flex items-center gap-1 mb-1.5">
-              <label class="text-xs font-semibold text-gray-800">Description</label>
-              <TenantFieldTip text="Full product story: features, sizing, care instructions. This rich text is shown on the product detail page below the title and price." />
+            <div class="space-y-3">
+              <div>
+                <div class="mb-1 flex flex-wrap items-center gap-1">
+                  <label class="tenant-field-label inline" for="product-name">Title</label>
+                  <abbr class="tenant-required no-underline" title="Required">*</abbr>
+                  <TenantFieldTip
+                    label="Title"
+                    text="The product name shown in your store, search, cart, and orders."
+                  />
+                </div>
+                <input
+                  id="product-name"
+                  v-model="form.name"
+                  type="text"
+                  placeholder="Short sleeve t-shirt"
+                  class="tenant-input-shopify w-full px-3 py-2 transition"
+                  autocomplete="off"
+                />
+              </div>
+              <div>
+                <div class="mb-1 flex flex-wrap items-center gap-1">
+                  <label class="tenant-field-label">Description</label>
+                  <TenantFieldTip
+                    label="Description"
+                    text="Details for the product page: features, size, care, etc."
+                  />
+                </div>
+                <Editor
+                  api-key="gxuz0hko2aulkfi1oewoca3b7oz93uo8ib39y3gx0ahwf9va"
+                  v-model="form.detailed_description"
+                  :init="editorInit"
+                />
+              </div>
+              <div>
+                <div class="mb-1 flex flex-wrap items-center gap-1">
+                  <label class="tenant-field-label">Category</label>
+                  <TenantFieldTip
+                    label="Category"
+                    text="Where this product appears in your store navigation."
+                  />
+                </div>
+                <div class="space-y-2">
+                  <select
+                    v-model="selectedL1"
+                    class="tenant-input-shopify w-full px-3 py-2 outline-none"
+                    @change="handleL1Change"
+                  >
+                    <option value="">Main category</option>
+                    <option v-for="cat in categoriesL1" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
+                  </select>
+                  <select
+                    v-if="categoriesL2.length"
+                    v-model="selectedL2"
+                    class="tenant-input-shopify w-full px-3 py-2 outline-none"
+                    @change="handleL2Change"
+                  >
+                    <option value="">Sub-category</option>
+                    <option v-for="cat in categoriesL2" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
+                  </select>
+                  <select
+                    v-if="categoriesL3.length"
+                    v-model="form.categories_id"
+                    class="tenant-input-shopify w-full px-3 py-2 outline-none"
+                  >
+                    <option value="">Specific type</option>
+                    <option v-for="cat in categoriesL3" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <Editor
-              api-key="gxuz0hko2aulkfi1oewoca3b7oz93uo8ib39y3gx0ahwf9va"
-              v-model="form.detailed_description"
-              :init="editorInit"
-            />
-          </div>
-         <div>
-  <div class="flex items-center gap-1 mb-1.5">
-    <label class="text-xs font-semibold text-gray-800">Categories</label>
-    <TenantFieldTip text="Controls where this product appears in your store navigation and filters. Shoppers browse by these category levels on the storefront." />
-  </div>
-  <div class="space-y-2.5">
-    <select v-model="selectedL1" @change="handleL1Change" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
-      <option value="">Select Main Category</option>
-      <option v-for="cat in categoriesL1" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-    </select>
+          </section>
 
-    <select v-if="categoriesL2.length" v-model="selectedL2" @change="handleL2Change" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
-      <option value="">Select Sub-category</option>
-      <option v-for="cat in categoriesL2" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-    </select>
-
-    <select v-if="categoriesL3.length" v-model="form.categories_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black bg-white">
-      <option value="">Select Specific Type</option>
-      <option v-for="cat in categoriesL3" :key="cat.id" :value="cat.id">{{ cat.translation?.name || '—' }}</option>
-    </select>
-  </div>
-</div>
-        </section>
-
-        <section class="tenant-product-editor__section p-5">
-  <div class="flex justify-between items-center mb-3 min-h-[24px]">
-    <div v-if="selectedIndices.length === 0" class="flex items-center gap-2">
-      <h3 class="tenant-product-editor__section-title">Media</h3>
-      <TenantFieldTip text="The first image is the main photo on product cards and at the top of the product page. Additional images appear in the gallery for shoppers to browse." />
-    </div>
-
-    <div v-else class="flex items-center justify-between w-full">
-      <div class="flex items-center gap-3">
-        <div class="bg-gray-800 text-white px-2 py-0.5 rounded text-xs flex items-center gap-2">
-          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"/></svg>
-          {{ selectedIndices.length }} file{{ selectedIndices.length > 1 ? 's' : '' }} selected
-        </div>
-      </div>
-      <button type="button" @click="removeSelectedFiles" class="text-red-600 text-xs font-medium hover:underline">
-        Remove
-      </button>
-    </div>
-
-    <button v-if="selectedIndices.length === 0" type="button" @click="triggerFileInput" class="text-blue-600 text-xs font-medium hover:underline">
-      Add from URL
-    </button>
-  </div>
-
-  <div
-    v-if="form.media_files.length === 0"
-    @click="triggerFileInput"
-    @drop.prevent="handleFileDrop"
-    @dragover.prevent
-    class="border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center bg-gray-50/50 hover:bg-gray-50 transition cursor-pointer"
-  >
-    <div class="flex gap-3 mb-3">
-      <button class="bg-white border border-gray-300 px-3 py-1.5 rounded-lg text-sm font-medium shadow-sm">Upload new</button>
-      <button class="text-gray-600 px-3 py-1.5 text-sm font-medium">Select existing</button>
-    </div>
-    <p class="text-xs text-gray-400">Accepts images, videos, or 3D models</p>
-    <input ref="fileInput" type="file" multiple accept="image/*" class="hidden" @change="handleFileSelect" />
-  </div>
-
-  <draggable
-    v-else
-    v-model="form.media_files"
-    item-key="_clientKey"
-    class="flex flex-wrap gap-3"
-    ghost-class="opacity-40"
-    animation="250"
-  >
-    <template #item="{ element, index }">
-      <div
-        class="relative border border-gray-200 rounded-lg overflow-hidden bg-white group cursor-move shadow-sm"
-        :class="index === 0 ? 'w-full sm:w-[212px] sm:h-[212px] h-64' : 'w-[100px] h-[100px]'"
-      >
-        <div class="absolute top-2 left-2 z-20">
-          <input
-            type="checkbox"
-            :value="index"
-            v-model="selectedIndices"
-            @click.stop
-            class="w-4 h-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer"
-          />
-        </div>
-
-        <img :src="element.preview" class="w-full h-full object-cover" />
-
-        <div v-if="index === 0" class="absolute bottom-2 left-2 bg-white/90 px-2 py-0.5 rounded text-[10px] font-bold text-gray-700 border border-gray-200">
-          Main
-        </div>
-      </div>
-    </template>
-
-    <template #footer>
-      <div
-        @click="triggerFileInput"
-        class="w-[100px] h-[100px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition cursor-pointer"
-      >
-        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-        <input ref="fileInput" type="file" multiple accept="image/*" class="hidden" @change="handleFileSelect" />
-      </div>
-    </template>
-  </draggable>
-</section>
-
-       <section class="tenant-product-editor__section overflow-hidden">
-  <div class="p-5">
-    <div class="flex items-center gap-2 mb-3">
-      <h3 class="tenant-product-editor__section-title">Pricing</h3>
-      <TenantFieldTip text="The price shown to customers on the storefront, cart, and checkout. Compare-at can show a ‘was’ price if your theme supports it." />
-    </div>
-
-    <div class="mb-4 max-w-[240px]">
-      <div class="relative group">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rs</span>
-        <input
-          v-model.number="form.price"
-          type="number"
-          class="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-          placeholder="0.00"
-        />
-      </div>
-    </div>
-
-    <div class="border-t border-gray-100 pt-4">
-      <button
-        @click="showAdditional = !showAdditional"
-        class="flex items-center justify-between w-full text-left group"
-      >
-        <span class="text-xs font-bold text-gray-700">Additional display prices</span>
-        <svg
-          class="w-4 h-4 text-gray-500 transition-transform"
-          :class="{'rotate-180': showAdditional}"
-          fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      <div v-show="showAdditional" class="mt-4 space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs text-gray-600 mb-1">Compare-at price</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rs</span>
-              <input v-model.number="form.compare_at_price" type="number" class="w-full border border-gray-300 rounded-lg pl-9 py-1.5 text-sm outline-none" placeholder="0.00" />
-              <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-2 flex min-h-[22px] items-center justify-between">
+              <div v-if="selectedIndices.length === 0" class="flex flex-wrap items-center gap-1.5">
+                <h3 class="tenant-product-editor__section-title">Media</h3>
+                <TenantFieldTip
+                  label="Media"
+                  text="First image is the main photo. Drag to reorder."
+                />
+              </div>
+              <div v-else class="flex w-full items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="rounded bg-[#303030] px-2 py-0.5 text-[11px] font-medium text-white">
+                    {{ selectedIndices.length }} selected
+                  </span>
+                </div>
+                <button type="button" class="text-[12px] font-medium text-[#d72c0d] hover:underline" @click="removeSelectedFiles">
+                  Remove
+                </button>
+              </div>
+              <button
+                v-if="selectedIndices.length === 0"
+                type="button"
+                class="text-[12px] font-medium text-[#2c6ecb] hover:underline"
+                @click="triggerFileInput"
+              >
+                Add files
               </button>
             </div>
+
+            <div
+              v-if="form.media_files.length === 0"
+              class="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-[#c9cccf] bg-[#fafafa] px-4 py-6 transition hover:bg-[#f3f3f3]"
+              @click="triggerFileInput"
+              @drop.prevent="handleFileDrop"
+              @dragover.prevent
+            >
+              <p class="mb-2 text-center text-[12px] text-[#616161]">Drag images here or click to upload</p>
+              <span class="tenant-input-shopify inline-block px-3 py-1.5 text-[12px] font-medium text-[#303030]">Upload</span>
+              <input ref="fileInput" type="file" multiple accept="image/*" class="hidden" @change="handleFileSelect" />
+            </div>
+
+            <draggable
+              v-else
+              v-model="form.media_files"
+              item-key="_clientKey"
+              class="flex flex-wrap gap-2"
+              ghost-class="opacity-40"
+              animation="200"
+            >
+              <template #item="{ element, index }">
+                <div
+                  class="group relative cursor-move overflow-hidden rounded-md border border-[#e3e3e3] bg-white"
+                  :class="index === 0 ? 'h-40 w-full max-w-[200px] sm:h-[168px] sm:w-[168px]' : 'h-[72px] w-[72px]'"
+                >
+                  <div class="absolute left-1 top-1 z-20">
+                    <input
+                      type="checkbox"
+                      :value="index"
+                      v-model="selectedIndices"
+                      class="h-3.5 w-3.5 cursor-pointer rounded border-[#c9cccf]"
+                      @click.stop
+                    />
+                  </div>
+                  <img :src="element.preview" class="h-full w-full object-cover" />
+                  <div
+                    v-if="index === 0"
+                    class="absolute bottom-1 left-1 rounded border border-[#e3e3e3] bg-white/95 px-1.5 py-0.5 text-[10px] font-semibold text-[#303030]"
+                  >
+                    Main
+                  </div>
+                </div>
+              </template>
+              <template #footer>
+                <div
+                  class="flex h-[72px] w-[72px] cursor-pointer items-center justify-center rounded-md border border-dashed border-[#c9cccf] hover:bg-[#fafafa]"
+                  @click="triggerFileInput"
+                >
+                  <svg class="h-5 w-5 text-[#8c9196]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <input ref="fileInput" type="file" multiple accept="image/*" class="hidden" @change="handleFileSelect" />
+                </div>
+              </template>
+            </draggable>
+          </section>
+
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-2 flex flex-wrap items-center gap-1.5">
+              <h3 class="tenant-product-editor__section-title">Pricing & inventory</h3>
+              <TenantFieldTip
+                label="Pricing"
+                text="Price and quantity. Turn off track quantity if you do not count stock for this product."
+              />
+            </div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+              <div>
+                <div class="mb-1 flex flex-wrap items-center gap-1">
+                  <label class="tenant-field-label inline" for="product-price">Price</label>
+                  <abbr class="tenant-required no-underline" title="Required">*</abbr>
+                  <TenantFieldTip label="Price" text="The amount customers pay for one item." />
+                </div>
+                <div class="relative">
+                  <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[#616161]">Rs</span>
+                  <input
+                    id="product-price"
+                    v-model.number="form.price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    class="tenant-input-shopify w-full py-2 pl-8 pr-3"
+                  />
+                </div>
+              </div>
+              <div class="space-y-2 rounded-md border border-[#e3e3e3] bg-[#fafafa] px-3 py-2.5">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="tenant-field-label text-[12px]">Track quantity</span>
+                  <label class="inline-flex cursor-pointer items-center gap-0">
+                    <input v-model="form.inventory_tracked" type="checkbox" class="peer sr-only" />
+                    <span
+                      class="relative h-6 w-11 shrink-0 rounded-full bg-[#c9cccf] transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-[#303030] peer-checked:after:translate-x-[1.125rem]"
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label class="mb-0.5 block text-[11px] text-[#616161]" for="product-qty">Quantity</label>
+                  <input
+                    id="product-qty"
+                    v-model.number="form.quantity"
+                    type="number"
+                    min="0"
+                    class="tenant-input-shopify w-full px-3 py-2 text-right"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Sidebar (Shopify-style) -->
+        <div class="space-y-3 lg:col-span-4">
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-2 flex flex-wrap items-center gap-1.5">
+              <h3 class="tenant-product-editor__section-title">Status</h3>
+              <TenantFieldTip
+                label="Status"
+                text="Draft: not visible. Active: visible in store. Archived: hidden from customers."
+              />
+            </div>
+            <select v-model="form.status" class="tenant-input-shopify w-full px-3 py-2 outline-none">
+              <option value="draft">Draft</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </section>
+
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-2 flex flex-wrap items-center gap-1.5">
+              <h3 class="tenant-product-editor__section-title">Brand</h3>
+              <TenantFieldTip label="Brand" text="Product brand, if you use brands in your store." />
+            </div>
+            <select id="product-brand" v-model="form.brand_id" class="tenant-input-shopify mb-3 w-full px-3 py-2 outline-none">
+              <option value="">—</option>
+              <option v-for="b in brands" :key="b.id" :value="b.id">{{ b.name }}</option>
+            </select>
+            <label class="flex cursor-pointer items-start gap-2 border-t border-[#e3e3e3] pt-2.5">
+              <input v-model="form.is_featured" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-[#c9cccf] text-[#303030]" />
+              <span class="text-[12px] leading-tight text-[#303030]">Featured product</span>
+            </label>
+          </section>
+
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-2 flex flex-wrap items-center gap-1.5">
+              <h3 class="tenant-product-editor__section-title">SKU & barcode</h3>
+              <TenantFieldTip label="Codes" text="Your internal SKU and package barcode (optional)." />
+            </div>
+            <div class="space-y-2">
+              <div>
+                <label class="mb-0.5 block text-[11px] text-[#616161]" for="product-sku">SKU</label>
+                <input id="product-sku" v-model="form.sku" type="text" placeholder="—" class="tenant-input-shopify w-full px-3 py-2" />
+              </div>
+              <div>
+                <label class="mb-0.5 block text-[11px] text-[#616161]" for="product-barcode">Barcode</label>
+                <input id="product-barcode" v-model="form.barcode" type="text" placeholder="—" class="tenant-input-shopify w-full px-3 py-2" />
+              </div>
+            </div>
+          </section>
+
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-2 flex flex-wrap items-center gap-1.5">
+              <h3 class="tenant-product-editor__section-title">More pricing</h3>
+              <TenantFieldTip label="Pricing" text="Compare-at price, your cost, and tax." />
+            </div>
+            <div class="space-y-2">
+              <div>
+                <label class="mb-0.5 block text-[11px] text-[#616161]">Compare-at</label>
+                <div class="relative">
+                  <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[#616161]">Rs</span>
+                  <input
+                    v-model.number="form.compare_at_price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="tenant-input-shopify w-full py-2 pl-8 pr-3"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="mb-0.5 block text-[11px] text-[#616161]">Cost per item</label>
+                <div class="relative">
+                  <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-[#616161]">Rs</span>
+                  <input
+                    v-model.number="form.cost_per_item"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="tenant-input-shopify w-full py-2 pl-8 pr-3"
+                  />
+                </div>
+              </div>
+              <label class="flex cursor-pointer items-center gap-2 pt-0.5">
+                <input id="tax" v-model="form.charge_tax" type="checkbox" class="h-4 w-4 rounded border-[#c9cccf] text-[#303030]" />
+                <span class="text-[12px] text-[#303030]">Charge tax</span>
+              </label>
+              <div class="grid grid-cols-2 gap-2 border-t border-[#e3e3e3] pt-2">
+                <div class="rounded border border-[#e3e3e3] bg-[#fafafa] px-2 py-1.5">
+                  <span class="text-[10px] text-[#616161]">Profit</span>
+                  <p class="text-[12px] font-semibold text-[#303030]">{{ form.price ? 'Rs ' + calculatedProfit.toFixed(2) : '—' }}</p>
+                </div>
+                <div class="rounded border border-[#e3e3e3] bg-[#fafafa] px-2 py-1.5">
+                  <span class="text-[10px] text-[#616161]">Margin</span>
+                  <p class="text-[12px] font-semibold text-[#303030]">{{ form.price ? calculatedMargin + '%' : '—' }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="tenant-product-editor__section px-3 py-3 sm:px-4 sm:py-3">
+            <div class="mb-2 flex flex-wrap items-center gap-1.5">
+              <h3 class="tenant-product-editor__section-title">Inventory policy</h3>
+              <TenantFieldTip label="Backorder" text="Allow customers to buy when quantity is zero." />
+            </div>
+            <label class="flex cursor-pointer items-start gap-2">
+              <input id="oversell" v-model="form.continue_selling" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-[#c9cccf] text-[#303030]" />
+              <span class="text-[12px] leading-tight text-[#303030]">Continue selling when out of stock</span>
+            </label>
+          </section>
+        </div>
+
+        <section class="tenant-product-editor__section overflow-hidden lg:col-span-12">
+          <div class="flex items-center gap-2 border-b border-[#e3e3e3] px-3 py-2.5 sm:px-4">
+            <h3 class="tenant-product-editor__section-title">Variants</h3>
+            <TenantFieldTip
+              label="Variants"
+              text="Different options (size, color, etc.). Each combination can have its own price, stock, SKU, and images."
+            />
           </div>
-          <div class="relative">
-  <label class="block text-xs text-gray-600 mb-1">Unit price</label>
 
-  <div
-    @click="showUnitPricePopover = !showUnitPricePopover"
-    class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white cursor-pointer flex justify-between items-center outline-none focus:ring-1 focus:ring-black"
-    :class="{'ring-1 ring-black': showUnitPricePopover}"
-  >
-    <span :class="form.unit_price_total ? 'text-black' : 'text-gray-400'">
-      {{ form.unit_price_total ? `${form.unit_price_total} ${form.unit_price_type} / ${form.unit_price_base}${form.unit_price_base_type}` : '--' }}
-    </span>
-    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </div>
-
-  <div v-if="showUnitPricePopover" class="absolute z-50 top-full mt-1 right-0 w-[280px] bg-white border border-gray-200 rounded-xl shadow-xl p-4">
-
-    <div class="mb-4">
-      <label class="block text-[11px] text-gray-500 mb-1">Total amount</label>
-      <div class="flex items-center gap-1">
-        <input
-          v-model="tempUnitPrice.total"
-          type="number"
-          class="flex-1 border-2 border-blue-500 rounded-lg px-2 py-1 text-sm outline-none"
-        />
-        <select v-model="tempUnitPrice.type" class="border border-gray-300 rounded-lg px-1 py-1 text-sm bg-gray-50">
-          <option value="g">g</option>
-          <option value="kg">kg</option>
-          <option value="ml">ml</option>
-          <option value="l">l</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="mb-6">
-      <label class="block text-[11px] text-gray-500 mb-1">Base measure</label>
-      <div class="flex items-center gap-1">
-        <input
-          v-model="tempUnitPrice.base"
-          type="number"
-          class="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm outline-none"
-        />
-        <select v-model="tempUnitPrice.baseType" class="border border-gray-300 rounded-lg px-1 py-1 text-sm bg-gray-50">
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-      <button @click="clearUnitPrice" class="text-red-700 text-sm hover:underline">Clear</button>
-      <div class="flex gap-2">
-        <button @click="showUnitPricePopover = false" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium">Cancel</button>
-        <button @click="applyUnitPrice" class="px-4 py-1.5 bg-gray-200 text-gray-500 rounded-lg text-sm font-medium">Done</button>
-      </div>
-    </div>
-  </div>
-</div>
-        </div>
-
-        <div class="flex items-center gap-2 py-2">
-          <input v-model="form.charge_tax" type="checkbox" id="tax" class="w-4 h-4 rounded border-gray-400 text-black focus:ring-black" />
-          <label for="tax" class="text-sm text-gray-700 cursor-pointer">Charge tax on this product</label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bg-gray-50/50 p-4 border-t border-gray-100 flex flex-wrap gap-2">
-    <div class="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-1 text-sm shadow-sm group">
-      <span class="text-gray-500 mr-2">Cost</span>
-      <div class="flex items-center">
-        <span class="text-gray-400 text-xs mr-1">Rs</span>
-        <input v-model.number="form.cost_per_item" type="number" class="w-16 outline-none bg-transparent" placeholder="--" />
-      </div>
-    </div>
-
-    <div class="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-1 text-sm shadow-sm">
-      <span class="text-gray-500 mr-2">Profit</span>
-      <span class="text-gray-800 font-medium">{{ form.price ? 'Rs ' + calculatedProfit.toFixed(2) : '--' }}</span>
-    </div>
-
-    <div class="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-1 text-sm shadow-sm">
-      <span class="text-gray-500 mr-2">Margin</span>
-      <span class="text-gray-800 font-medium">{{ form.price ? calculatedMargin + '%' : '--' }}</span>
-    </div>
-  </div>
-</section>
-
-        <section class="tenant-product-editor__section overflow-hidden">
-  <div class="p-5 pb-3 flex justify-between items-center gap-3 flex-wrap">
-    <div class="flex items-center gap-2">
-      <h3 class="tenant-product-editor__section-title">Inventory</h3>
-      <TenantFieldTip text="When tracking is on, sold quantity reduces available stock and can hide ‘add to cart’ when out of stock (unless you allow selling when out of stock)." />
-    </div>
-    <div class="flex items-center gap-2">
-      <span class="text-xs text-gray-600 font-medium">Track quantity</span>
-      <label class="relative inline-flex items-center cursor-pointer">
-        <input type="checkbox" v-model="form.inventory_tracked" class="sr-only peer">
-        <div class="w-8 h-4 bg-gray-300 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>
-      </label>
-    </div>
-  </div>
-
-  <div class="px-5 pb-5">
-    <div class="border border-gray-200 rounded-xl overflow-hidden mb-4">
-      <div class="bg-gray-50/80 border-b border-gray-100 px-4 py-2">
-        <span class="text-[11px] font-bold text-gray-600 tracking-tight uppercase">Available quantity</span>
-      </div>
-      <div class="px-4 py-3 flex justify-between items-center bg-white">
-        <span class="text-sm text-gray-700">Default location</span>
-        <input
-          v-model.number="form.quantity"
-          type="number"
-          class="w-32 px-3 py-1.5 border border-gray-300 rounded-lg text-right text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
-    </div>
-
-    <div class="pt-4 border-t border-gray-100">
-      <div v-if="!showAdvancedInventory" class="flex items-center justify-between">
-        <div class="flex gap-2">
-          <span class="px-3 py-1 bg-gray-100 border border-gray-200 rounded-lg text-xs font-medium text-gray-600">SKU</span>
-          <span class="px-3 py-1 bg-gray-100 border border-gray-200 rounded-lg text-xs font-medium text-gray-600">Barcode</span>
-          <div class="px-3 py-1 bg-gray-100 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 flex items-center gap-1">
-            <span>Sell when out of stock</span>
-            <span class="text-gray-400">Off</span>
-          </div>
-        </div>
-        <button @click="showAdvancedInventory = true" class="text-gray-400 hover:text-gray-600">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-        </button>
-      </div>
-
-      <div v-else>
-        <div class="flex justify-between items-center mb-4">
-          <span class="text-sm font-bold text-gray-900">More details</span>
-          <button @click="showAdvancedInventory = false" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1.5">SKU (Stock Keeping Unit)</label>
-            <input v-model="form.sku" type="text" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-black" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1.5">Barcode (ISBN, UPC, GTIN, etc.)</label>
-            <input v-model="form.barcode" type="text" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-black" />
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <input type="checkbox" id="oversell" v-model="form.continue_selling" class="w-4 h-4 rounded border-gray-300 accent-black">
-          <label for="oversell" class="text-sm text-gray-700">Continue selling when out of stock</label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</section>
-<section class="tenant-product-editor__section overflow-hidden">
-  <div class="p-5 pb-3 border-b border-gray-100 flex items-center gap-2">
-    <h3 class="tenant-product-editor__section-title">Variants</h3>
-    <TenantFieldTip text="Options like size or color create separate purchasable combinations. Each variant can have its own price, stock, SKU, and images on the storefront." />
-    <!-- <button
-      v-if="options.length < 1"
-      @click="addOption"
-      class="text-gray-600 text-xs font-semibold hover:underline"
-    >
-      + Add options like size or color
-    </button> -->
-  </div>
-
-  <div v-if="options.length > 0" class="p-2 space-y-4 bg-gray-50/30">
-    <div v-for="(option, index) in options" :key="index" class="p-4 bg-white border border-gray-200 rounded-xl space-y-3">
+          <div v-if="options.length > 0" class="space-y-2 bg-[#fafafa] p-2 sm:p-3">
+            <div
+              v-for="(option, index) in options"
+              :key="index"
+              class="space-y-2 rounded-md border border-[#e3e3e3] bg-white p-3"
+            >
       <div class="flex justify-between items-center">
         <label class="text-xs font-bold uppercase text-gray-500">Option name</label>
         <button @click="removeOption(index)" class="text-gray-400 hover:text-red-500">
@@ -383,10 +394,7 @@
         </button>
       </div>
 
-      <select
-        v-model="option.name"
-        class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-black"
-      >
+              <select v-model="option.name" class="tenant-input-shopify w-full px-3 py-2 text-[13px] outline-none">
         <option value="" disabled>Select option</option>
         <option
           v-for="opt in availableOptionNames(option.name)"
@@ -403,28 +411,32 @@
             <button @click="removeTag(index, vIdx)" class="text-gray-400 hover:text-black">&times;</button>
           </div>
         </div>
-        <input
-          v-model="option.currentInput"
-          @input="processVariants"
-          @keydown.enter.prevent="addTag(index)"
-          type="text"
-          placeholder="Add another value"
-          class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-black"
-        />
-      </div>
-    </div>
-  </div>
-  <div class="px-5 py-3">
-  <button class="px-3 py-1 bg-gray-100 border border-gray-200 rounded-lg text-xs font-medium text-gray-600"
-      v-if="options.length < 3"
-      @click="addOption"
-
-    >
-      + Add options like size or color
-    </button>
-    </div>
-  <div v-if="variants.length > 0">
-  <div v-if="options.length > 1" class="px-5 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+              <input
+                v-model="option.currentInput"
+                type="text"
+                placeholder="Add value, Enter"
+                class="tenant-input-shopify w-full px-3 py-2 text-[13px]"
+                @input="processVariants"
+                @keydown.enter.prevent="addTag(index)"
+              />
+            </div>
+            </div>
+          </div>
+          <div class="px-3 py-2 sm:px-4">
+            <button
+              v-if="options.length < 3"
+              type="button"
+              class="rounded-md border border-[#e3e3e3] bg-white px-3 py-1.5 text-[12px] font-medium text-[#303030] hover:bg-[#fafafa]"
+              @click="addOption"
+            >
+              + Add option (e.g. Size)
+            </button>
+          </div>
+          <div v-if="variants.length > 0">
+            <div
+              v-if="options.length > 1"
+              class="flex items-center justify-between border-b border-[#e3e3e3] bg-[#fafafa] px-3 py-2 text-[12px] text-[#616161]"
+            >
     <span class="text-xs font-medium text-gray-600">Previewing combinations</span>
     <button class="text-xs font-bold text-blue-600 flex items-center gap-1 group">
       Group by {{ options[0].name }}
@@ -434,31 +446,31 @@
     </button>
   </div>
 
-  <table class="w-full text-left border-collapse">
-    <thead class="bg-gray-50/50 border-b border-gray-100">
-      <tr>
-        <th class="p-3 w-10">
-          <input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-black">
-        </th>
-        <th class="p-3 text-[11px] font-bold text-gray-500 uppercase tracking-tight">Variant</th>
-        <th class="p-3 text-[11px] font-bold text-gray-500 uppercase tracking-tight">Price</th>
-        <th class="p-3 text-[11px] font-bold text-gray-500 uppercase tracking-tight">Available</th>
-        <th class="p-3 text-[11px] font-bold text-gray-500 uppercase tracking-tight">SKU</th>
-        <th class="p-3 w-10"></th>
-      </tr>
-    </thead>
+            <table class="w-full border-collapse text-left text-[13px]">
+              <thead class="border-b border-[#e3e3e3] bg-[#fafafa]">
+                <tr>
+                  <th class="w-8 p-2">
+                    <input type="checkbox" class="h-3.5 w-3.5 rounded border-[#c9cccf]" />
+                  </th>
+                  <th class="p-2 text-[11px] font-semibold uppercase tracking-wide text-[#616161]">Variant</th>
+                  <th class="p-2 text-[11px] font-semibold uppercase tracking-wide text-[#616161]">Price</th>
+                  <th class="p-2 text-[11px] font-semibold uppercase tracking-wide text-[#616161]">Stock</th>
+                  <th class="p-2 text-[11px] font-semibold uppercase tracking-wide text-[#616161]">SKU</th>
+                  <th class="w-8 p-2"></th>
+                </tr>
+              </thead>
     <tbody>
       <template v-for="(variant, vIdx) in variants" :key="vIdx">
         <tr
-          class="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+          class="cursor-pointer border-b border-[#e3e3e3] transition-colors hover:bg-[#fafafa]"
           @click="variant.expanded = !variant.expanded"
         >
-          <td class="p-3" @click.stop>
-            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-black">
+          <td class="p-2" @click.stop>
+            <input type="checkbox" class="h-3.5 w-3.5 rounded border-[#c9cccf]" />
           </td>
-          <td class="p-3">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-gray-50 rounded border border-gray-200 flex items-center justify-center overflow-hidden relative">
+          <td class="p-2">
+            <div class="flex items-center gap-2">
+              <div class="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded border border-[#e3e3e3] bg-[#fafafa]">
                 <img v-if="variant.media.length" :src="variant.media[0].preview" class="w-full h-full object-cover" />
                 <svg v-else class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -467,34 +479,34 @@
                   +{{ variant.media.length - 1 }}
                 </div>
               </div>
-              <span class="text-sm font-medium text-gray-800">{{ variant.title }}</span>
+              <span class="text-[13px] font-medium text-[#303030]">{{ variant.title }}</span>
             </div>
           </td>
-          <td class="p-3">
-            <div class="relative w-24">
-              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">Rs</span>
+          <td class="p-2">
+            <div class="relative w-[5.5rem]">
+              <span class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[11px] text-[#8c9196]">Rs</span>
               <input
                 v-model.number="variant.price"
                 type="number"
-                class="w-full pl-7 pr-2 py-1 border border-gray-300 rounded text-sm outline-none focus:ring-1 focus:ring-black"
+                class="tenant-input-shopify w-full py-1 pl-6 pr-1.5 text-[13px]"
                 @click.stop
               />
             </div>
           </td>
-          <td class="p-3">
+          <td class="p-2">
             <input
               v-model.number="variant.qty"
               type="number"
-              class="w-16 px-2 py-1 border border-gray-300 rounded text-sm text-right outline-none focus:ring-1 focus:ring-black"
+              class="tenant-input-shopify w-14 px-2 py-1 text-right text-[13px]"
               @click.stop
             />
           </td>
-          <td class="p-3 text-sm text-gray-500 font-mono">
-            {{ variant.sku || '--' }}
+          <td class="p-2 font-mono text-[12px] text-[#616161]">
+            {{ variant.sku || '—' }}
           </td>
-          <td class="p-3">
+          <td class="p-2">
             <svg
-              class="w-4 h-4 text-gray-400 transition-transform duration-200"
+              class="h-4 w-4 text-[#8c9196] transition-transform duration-200"
               :class="{'rotate-180': variant.expanded}"
               fill="none" stroke="currentColor" viewBox="0 0 24 24"
             >
@@ -503,9 +515,9 @@
           </td>
         </tr>
 
-        <tr v-if="variant.expanded" class="bg-gray-50/30">
-  <td colspan="6" class="p-6 border-b border-gray-100">
-    <div class="space-y-6">
+        <tr v-if="variant.expanded" class="bg-[#fafafa]">
+          <td colspan="6" class="border-b border-[#e3e3e3] p-3 sm:p-4">
+            <div class="space-y-4">
       <div>
         <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3">
           Variant Media ({{ variant.media.length }}) — <span class="text-orange-600">Drag to reorder (First is Main)</span>
@@ -558,71 +570,35 @@
         </draggable>
       </div>
 
-      <div class="grid grid-cols-2 gap-4 max-w-xl">
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">Variant SKU</label>
-          <input v-model="variant.sku" type="text" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-orange-500 bg-white" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">Barcode</label>
-          <input v-model="variant.barcode" type="text" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-orange-500 bg-white" />
-        </div>
-      </div>
-    </div>
-  </td>
-</tr>
+              <div class="max-w-md">
+                <label class="mb-1 block text-[12px] font-medium text-[#303030]">Variant SKU</label>
+                <input v-model="variant.sku" type="text" class="tenant-input-shopify w-full px-3 py-2 text-[13px]" />
+                <p class="mt-1 text-[11px] text-[#616161]">Optional code for this variant (saved on the variant row).</p>
+              </div>
+            </div>
+          </td>
+        </tr>
       </template>
     </tbody>
   </table>
-</div>
-</section>
-      </div>
-
-      <div class="space-y-6">
-        <section class="tenant-product-editor__section p-5">
-          <div class="flex items-center gap-2 mb-2">
-            <h3 class="tenant-product-editor__eyebrow !text-gray-600 !tracking-widest">Status</h3>
-            <TenantFieldTip text="Draft: hidden from customers. Active: visible in your catalog (subject to theme and collection rules)." />
           </div>
-          <select v-model="form.status" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#275a19]/25 focus:border-[#275a19] bg-white">
-            <option value="active">Active</option>
-            <option value="draft">Draft</option>
-          </select>
-          <p class="mt-2 text-xs text-gray-500 leading-snug">Draft products are not shown to shoppers until you activate them.</p>
         </section>
-
-        <!-- <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-          <h3 class="text-xs font-bold uppercase text-gray-500 mb-4 tracking-wider">Product organization</h3>
-          <div class="space-y-4">
-
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1.5">Vendor</label>
-              <input v-model="form.vendor" type="text" placeholder="e.g. Adidas" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1.5">Collections</label>
-              <input v-model="form.collection" type="text" placeholder="Summer 2026" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1.5">Tags</label>
-              <input v-model="form.tags" type="text" placeholder="Vintage, Cotton" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black" />
-            </div>
-          </div>
-        </section> -->
       </div>
-
-    </main>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import draggable from 'vuedraggable'
 import Editor from '@tinymce/tinymce-vue'
 import axiosTenant from '@/api/axiosTenant'
 import Swal from 'sweetalert2'
 import { formatApiErrorHtml } from '@tenant/helpers/apiErrorMessage'
 import TenantFieldTip from '@tenant/components/TenantFieldTip.vue'
+
+const router = useRouter()
 
 // --- State ---
 // --- Category State ---
@@ -632,23 +608,13 @@ const categoriesL3 = ref([])
 
 const selectedL1 = ref('')
 const selectedL2 = ref('')
-const showAdvancedInventory = ref(false)
 const selectedIndices = ref([])
-const showAdditional = ref(false)
 const fileInput = ref(null)
-const categories = ref([{ id: 1, name: 'T-Shirts' }, { id: 2, name: 'Accessories' }])
-const showUnitPricePopover = ref(false)
+const brands = ref([])
 const options = ref([])
 const variants = ref([])
 const allowedNames = ['Color', 'Size', 'Material']
 
-// Temporary state for the popover inputs
-const tempUnitPrice = ref({
-  total: 0,
-  type: 'g',
-  base: 1,
-  baseType: 'kg'
-})
 const form = ref({
     name: '',
     detailed_description: '',
@@ -656,46 +622,41 @@ const form = ref({
     categories_id: '',
     status: 'draft',
     price: 0,
-    compare_at_price: 0,
-    cost_per_item: 0,
+    compare_at_price: null,
+    cost_per_item: null,
     charge_tax: true,
     inventory_tracked: true,
     quantity: 0,
     sku: '',
     barcode: '',
+    brand_id: '',
+    is_featured: false,
     vendor: '',
     collection: '',
     tags: '',
     continue_selling: false,
 })
 
-// --- Pricing Logic ---
-// Add these to your form ref
-// form.value.unit_price_total = null
-// form.value.unit_price_type = 'g'
-// form.value.unit_price_base = 1
-// form.value.unit_price_base_type = 'kg'
+const statusLabel = computed(() => {
+  const labels = { draft: 'Draft', active: 'Active', archived: 'Archived' }
+  return labels[form.value.status] || 'Draft'
+})
 
-const applyUnitPrice = () => {
-  form.value.unit_price_total = tempUnitPrice.value.total
-  form.value.unit_price_type = tempUnitPrice.value.type
-  form.value.unit_price_base = tempUnitPrice.value.base
-  form.value.unit_price_base_type = tempUnitPrice.value.baseType
-  showUnitPricePopover.value = false
-}
-
-const clearUnitPrice = () => {
-  form.value.unit_price_total = null
-  tempUnitPrice.value.total = 0
-  showUnitPricePopover.value = false
-}
+const statusBadgeClass = computed(() => {
+  const s = form.value.status
+  if (s === 'active') return 'bg-emerald-100 text-emerald-800'
+  if (s === 'archived') return 'bg-gray-200 text-gray-700'
+  return 'bg-amber-100 text-amber-900'
+})
 const calculatedProfit = computed(() => {
-    return (form.value.price || 0) - (form.value.cost_per_item || 0)
+  const cost = form.value.cost_per_item
+  const c = cost === '' || cost === null ? 0 : Number(cost)
+  return (form.value.price || 0) - (Number.isFinite(c) ? c : 0)
 })
 
 const calculatedMargin = computed(() => {
-    if (!form.value.price || form.value.price === 0) return 0
-    return ((calculatedProfit.value / form.value.price) * 100).toFixed(2)
+  if (!form.value.price || form.value.price === 0) return '0.00'
+  return ((calculatedProfit.value / form.value.price) * 100).toFixed(2)
 })
 
 // --- Media Methods ---
@@ -818,7 +779,7 @@ const removeOption = (index) => {
 
 // --- TinyMCE Init ---
 const editorInit = {
-    height: 300,
+    height: 260,
     menubar: false,
     plugins: 'lists link code table wordcount',
     toolbar: 'formatselect | bold italic underline strikethrough | alignleft aligncenter alignright | bullist numlist | link table code removeformat',
@@ -893,8 +854,15 @@ const handleSubmit = async () => {
   formData.append('track_quantity', f.inventory_tracked ? '1' : '0')
   formData.append('stock', String(f.quantity ?? 0))
   formData.append('is_active', f.status === 'active' ? '1' : '0')
-  formData.append('is_featured', '0')
+  formData.append('is_featured', f.is_featured ? '1' : '0')
   formData.append('allow_backorder', f.continue_selling ? '1' : '0')
+  formData.append('charge_tax', f.charge_tax ? '1' : '0')
+  if (f.cost_per_item !== '' && f.cost_per_item != null) {
+    formData.append('cost_per_item', String(f.cost_per_item))
+  }
+  if (f.brand_id !== '' && f.brand_id != null) {
+    formData.append('brand_id', String(f.brand_id))
+  }
   if (f.categories_id !== '' && f.categories_id != null) {
     formData.append('categories_id', String(f.categories_id))
   }
@@ -904,7 +872,6 @@ const handleSubmit = async () => {
     formData.append(`variants[${i}][price]`, String(v.price ?? 0))
     formData.append(`variants[${i}][qty]`, String(v.qty ?? 0))
     formData.append(`variants[${i}][sku]`, v.sku || '')
-    formData.append(`variants[${i}][barcode]`, v.barcode || '')
     ;(v.options || []).forEach((opt) => {
       formData.append(`variants[${i}][options][${opt.name}]`, opt.value)
     })
@@ -929,8 +896,9 @@ const handleSubmit = async () => {
     await Swal.fire({
       icon: 'success',
       title: 'Saved',
-      text: 'Product saved!',
+      text: 'Your product was saved. You can find it in the product list.',
     })
+    await router.push({ name: 'product-list' })
   } catch (error) {
     console.error('Error saving product:', error.response?.data || error)
     await Swal.fire({
@@ -945,17 +913,17 @@ const handleSubmit = async () => {
 
 
 const closeModal = async () => {
-    const r = await Swal.fire({
-      icon: 'warning',
-      title: 'Discard changes?',
-      text: 'Discard unsaved changes?',
-      showCancelButton: true,
-      confirmButtonText: 'Discard',
-      cancelButtonText: 'Keep editing',
-    })
-    if (r.isConfirmed) {
-        // Handle closing logic
-    }
+  const r = await Swal.fire({
+    icon: 'warning',
+    title: 'Leave this page?',
+    text: 'If you leave now, you may lose what you typed.',
+    showCancelButton: true,
+    confirmButtonText: 'Leave',
+    cancelButtonText: 'Keep editing',
+  })
+  if (r.isConfirmed) {
+    await router.push({ name: 'product-list' })
+  }
 }
 
 
@@ -975,9 +943,19 @@ const fetchCategories = async (parentId = 'null') => {
     }
 }
 
-// Initial load for Level 1
+const fetchBrands = async () => {
+  try {
+    const res = await axiosTenant.get('/brands')
+    brands.value = res.data?.brands || []
+  } catch (e) {
+    console.error('Error fetching brands:', e)
+    brands.value = []
+  }
+}
+
 onMounted(async () => {
-    categoriesL1.value = await fetchCategories('null')
+  categoriesL1.value = await fetchCategories('null')
+  await fetchBrands()
 })
 
 // When Level 1 changes, reset others and fetch Level 2
@@ -1006,12 +984,12 @@ const handleL2Change = async () => {
 </script>
 
 <style>
-/* Optional: Shopify-style custom focus for TinyMCE */
-.tox-tinymce {
-    border: 1px solid #d1d5db !important;
-    border-radius: 8px !important;
+.tenant-product-editor--shopify .tox-tinymce {
+  border: 1px solid #c9cccf !important;
+  border-radius: 0.375rem !important;
 }
-.tox-tinymce--focused {
-    border: 1px solid #000 !important;
+.tenant-product-editor--shopify .tox-tinymce--focused {
+  border-color: #303030 !important;
+  box-shadow: 0 0 0 1px #303030 !important;
 }
 </style>
